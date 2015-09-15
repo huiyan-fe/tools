@@ -1,0 +1,146 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+    <style type="text/css">
+    html,body{
+        width:100%;
+        height:100%;
+        margin:0;
+        padding:0;
+    }
+    #map{
+        width:100%;
+        height:100%;
+    }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+
+    <div style="position:absolute;left:0;top:0;background:rgba(255,255,255,0.5);">
+    <p>
+    <input type="search" id="searchText"/> 
+    <button onclick="poisearch()">搜索</button>
+    </p>
+    x:
+    <input id="x" type="text" />
+    y:
+    <input id="y" type="text" />
+    <button onclick="pointToLngLat()">pointToLngLat</button>
+    <button onclick="lnglatToPoint()">lnglatToPoint</button>
+    </div>
+    <div id="result" style="position:absolute;top:100px;left:10px;background:#fff;padding:5px;">
+    </div>
+    <script type="text/javascript">
+        var map = new BMap.Map('map');
+
+        var point = new BMap.Point(116.404, 39.915);
+        map.centerAndZoom(point,15);
+        map.enableScrollWheelZoom();
+
+        var project = map.getMapType().getProjection();
+
+        function lnglatToPoint(){
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var lnglat = project.lngLatToPoint(new BMap.Point(x, y));
+            document.getElementById('result').innerHTML = lnglat.x + ',' + lnglat.y;
+        }
+
+        function pointToLngLat(){
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var lnglat = project.pointToLngLat(new BMap.Pixel(x, y));
+            document.getElementById('result').innerHTML = lnglat.lng + ',' + lnglat.lat;
+        }
+
+var overlays = [];
+var mercatorProjection = map.getMapType().getProjection();
+var overlaycomplete = function(e){
+    overlays.push(e.overlay);
+
+    var overlay = e.overlay;
+    if (overlay && overlay instanceof BMap.Polygon) {
+        var area = parseInt(BMapLib.GeoUtils.getPolygonArea(overlay));
+        var opts = {
+          position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMap.Size(30, -30)    //设置文本偏移量
+        }
+        var label = new BMap.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label); 
+    }
+
+    var bounds = e.overlay.getBounds();
+    var ne = bounds.getNorthEast();
+    var sw = bounds.getSouthWest();
+    var neMc = mercatorProjection.lngLatToPoint(ne);
+    var swMc = mercatorProjection.lngLatToPoint(sw);
+    var pathStr = "";
+    var pathmcStr = "";
+    var path = e.overlay.getPath();
+    for (var i = 0; i < path.length; i++) {
+        pathStr += path[i].lng + "," + path[i].lat + ";";
+        var mc = mercatorProjection.lngLatToPoint(path[i]);
+        pathmcStr += mc.x + "," + mc.y + ";";
+    }
+    document.getElementById('result').innerHTML = "经纬度:左下角,右上角：" + sw.lng + "," + sw.lat + ";" + ne.lng + "," + ne.lat
+                                                 + "<br/>墨卡托坐标:左下角,右上角：" + swMc.x + "," + swMc.y + ";" + neMc.x + "," + neMc.y
+                                                 + "<br/>path:" + pathStr
+                                                 + "<br/>墨卡托path:" + pathmcStr;
+};
+
+
+var styleOptions = {
+        strokeColor:"red",    //边线颜色。
+        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+        strokeWeight: 3,       //边线的宽度，以像素为单位。
+        strokeOpacity: 0.8,    //边线透明度，取值范围0 - 1。
+        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+        strokeStyle: 'solid' //边线的样式，solid或dashed。
+    }
+
+
+    //实例化鼠标绘制工具
+    var drawingManager = new BMapLib.DrawingManager(map, {
+        isOpen: false, //是否开启绘制模式
+        enableDrawingTool: true, //是否显示工具栏
+        drawingToolOptions: {
+            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+            offset: new BMap.Size(5, 5), //偏离值
+            scale: 0.8 //工具栏缩放比例
+        },
+        circleOptions: styleOptions, //圆的样式
+        polylineOptions: styleOptions, //线的样式
+        polygonOptions: styleOptions, //多边形的样式
+        rectangleOptions: styleOptions //矩形的样式
+    });  
+     //添加鼠标绘制工具监听事件，用于获取绘制结果
+    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+
+    var local = new BMap.LocalSearch(map, {
+        renderOptions:{map: map}
+    });
+    function poisearch() {
+        var text = document.getElementById('searchText').value;
+        local.search(text);
+    }
+
+
+    </script>
+	
+</body>
+</html>

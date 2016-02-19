@@ -1,8 +1,9 @@
+
 <!DOCTYPE HTML>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-	<meta charset="UTF-8">
-	<title></title>
+    <meta charset="UTF-8">
+    <title></title>
     <style type="text/css">
     html,body{
         width:100%;
@@ -20,14 +21,17 @@
 
     <div id="map"></div>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+    <script type="text/javascript" src="DrawingManager.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
 
-    <div style="position:absolute;left:0;top:0;background:rgba(255,255,255,0.5);">
+    <div id="polylineLength" style="position:absolute;right:10px;top:50px;background:white;"></div>
+    <div style="position:absolute;left:10px;top:0;background:rgba(255,255,255,0.5);">
     <p>
     <input type="search" id="searchText"/> 
     <button onclick="poisearch()">搜索</button>
+    <input type="search" id="boundaryText"/> 
+    <button onclick="boundarySearch()">行政区划搜索</button>
     </p>
     x:
     <input id="x" type="text" />
@@ -35,14 +39,23 @@
     <input id="y" type="text" />
     <button onclick="pointToLngLat()">pointToLngLat</button>
     <button onclick="lnglatToPoint()">lnglatToPoint</button>
+    <button onclick="marker()">打点</button>
+        <br><br>
+        <textarea type="text" style="width: 300px;height: 80px" id="more" placeholder="多个转换输入示例：116.391639,39.915941;116.391639,39.910849;116.391639,39.915941"></textarea>
+        <button onclick="morePointToLngLat()">manyPointToLngLat</button>
+        <button onclick="moreLnglatToPoint()">manyLnglatToPoint</button>
+        <button onclick="moremarker()">打点</button>
     </div>
-    <div id="result" style="position:absolute;top:100px;left:10px;background:#fff;padding:5px;">
+    <div id="result" style="position:absolute;top:185px;left:10px; right:10px;background:#fff; overflow: auto">
     </div>
     <script type="text/javascript">
-        var map = new BMap.Map('map');
+        var map = new BMap.Map('map', {
+            enableMapClick: false
+        });
 
-        var point = new BMap.Point(116.404, 39.915);
-        map.centerAndZoom(point,15);
+        // 鐧惧害鍦板浘API鍔熻兘
+        var point = new BMap.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??
+        map.centerAndZoom(point,15);                     // 鍒濆??嬪寲鍦板浘,璁剧疆涓??蹇冪偣鍧愭爣鍜屽湴鍥剧骇鍒??銆??
         map.enableScrollWheelZoom();
 
         var project = map.getMapType().getProjection();
@@ -61,19 +74,122 @@
             document.getElementById('result').innerHTML = lnglat.lng + ',' + lnglat.lat;
         }
 
+        function marker() {
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var point = new BMap.Point(x, y);
+            var marker = new BMap.Marker(point);
+            map.addOverlay(marker);
+
+            var opts = {
+            }
+            var infoWindow = new BMap.InfoWindow(x + ',' + y, opts);  // 创建信息窗口对象 
+            var points = [point];
+            map.setViewport(points);
+            marker.addEventListener("click", function(){          
+                map.openInfoWindow(infoWindow, point); //开启信息窗口
+            });
+
+        }
+
+        function moremarker() {
+            var tex=document.getElementById('more').value;
+            var points=tex.split(";");
+            var html="";
+            var pointArr = [];
+            for(var i=0;i<points.length;i++){
+                var point=points[i].split(",");
+                point = new BMap.Point(point[0], point[1]);
+                pointArr.push(point);
+                var marker = new BMap.Marker(point);
+                map.addOverlay(marker);
+
+                (function(marker, point){
+                var opts = {};
+                var infoWindow = new BMap.InfoWindow(point.lng + ',' + point.lat, opts);  // 创建信息窗口对象 
+                marker.addEventListener("click", function(){          
+                    map.openInfoWindow(infoWindow, point); //开启信息窗口
+                });
+                })(marker, point);
+            }
+
+            map.setViewport(pointArr);
+        }
+
+        function morePointToLngLat(){
+            var tex=document.getElementById('more').value;
+            var points=tex.split(";");
+            var html="";
+            for(var i=0;i<points.length;i++){
+                var point=points[i].split(",");
+                var lnglat = project.pointToLngLat(new BMap.Pixel(point[0], point[1]));
+                html = html+lnglat.lng + ',' + lnglat.lat+";";
+            }
+            document.getElementById('result').innerHTML = html;
+        }
+
+        function moreLnglatToPoint(){
+            var tex=document.getElementById('more').value;
+            var points=tex.split(";");
+            var html="";
+            for(var i=0;i<points.length;i++){
+                var point=points[i].split(",");
+                var lnglat = project.lngLatToPoint(new BMap.Point(point[0], point[1]));
+                html = html+lnglat.x + ',' + lnglat.y+";";
+            }
+            document.getElementById('result').innerHTML = html;
+        }
+
 var overlays = [];
 var mercatorProjection = map.getMapType().getProjection();
 var overlaycomplete = function(e){
     overlays.push(e.overlay);
-
     var overlay = e.overlay;
-    if (overlay && overlay instanceof BMap.Polygon) {
+    if (e.overlay.toString() == '[object Marker]') {
+        var point  =e.overlay.getPosition();
+        document.getElementById('result').innerHTML = "经纬度:" + point.lng + "," + point.lat;
+    }
+
+    if (e.overlay.toString() == '[object Circle]') {
+        var opts = {
+          position : e.overlay.getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMap.Size(30, -30)    //设置文本偏移量
+        }
+        map.addOverlay(new BMap.Marker(e.overlay.getCenter()));
+
+        var label = new BMap.Label("半径是:" + parseInt(e.overlay.getRadius()), opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label);
+    }
+
+    if (e.overlay.toString() == '[object Polygon]') {
         var area = parseInt(BMapLib.GeoUtils.getPolygonArea(overlay));
         var opts = {
           position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
           offset   : new BMap.Size(30, -30)    //设置文本偏移量
         }
         var label = new BMap.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label); 
+    } else if (e.overlay.toString() == '[object Polyline]') {
+        var distance = parseInt(BMapLib.GeoUtils.getPolylineDistance(overlay));
+        var opts = {
+          position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMap.Size(30, -30)    //设置文本偏移量
+        }
+        var label = new BMap.Label("长度:" + Math.round(distance) + "米", opts);  // 创建文本标注对象
             label.setStyle({
                  color : "red",
                  fontSize : "12px",
@@ -93,12 +209,14 @@ var overlaycomplete = function(e){
     var pathmcStr = "";
     var path = e.overlay.getPath();
     for (var i = 0; i < path.length; i++) {
-        pathStr += path[i].lng + "," + path[i].lat + ";";
+        pathStr += path[i].lng + "," + path[i].lat + ",";
         var mc = mercatorProjection.lngLatToPoint(path[i]);
-        pathmcStr += mc.x + "," + mc.y + ";";
+        pathmcStr += mc.x + "," + mc.y + ",";
     }
-    document.getElementById('result').innerHTML = "经纬度:左下角,右上角：" + sw.lng + "," + sw.lat + ";" + ne.lng + "," + ne.lat
-                                                 + "<br/>墨卡托坐标:左下角,右上角：" + swMc.x + "," + swMc.y + ";" + neMc.x + "," + neMc.y
+    pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+    pathStr = pathStr.substr(0, pathStr.length - 1);
+    document.getElementById('result').innerHTML = "经纬度:左下角,右上角：" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat
+                                                 + "<br/>墨卡托坐标:左下角,右上角：" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y
                                                  + "<br/>path:" + pathStr
                                                  + "<br/>墨卡托path:" + pathmcStr;
 };
@@ -114,7 +232,7 @@ var styleOptions = {
     }
 
 
-    //实例化鼠标绘制工具
+//实例化鼠标绘制工具
     var drawingManager = new BMapLib.DrawingManager(map, {
         isOpen: false, //是否开启绘制模式
         enableDrawingTool: true, //是否显示工具栏
@@ -139,8 +257,28 @@ var styleOptions = {
         local.search(text);
     }
 
+function boundarySearch(){
+        var text = document.getElementById('boundaryText').value;
+        var bdary = new BMap.Boundary();
+        bdary.get(text , function(rs){       //获取行政区域
+            //map.clearOverlays();        //清除地图覆盖物       
+            var count = rs.boundaries.length; //行政区域的点有多少个
+            if (count === 0) {
+                alert('未能获取当前输入行政区域');
+                return ;
+            }
+            var pointArray = [];
+            for (var i = 0; i < count; i++) {
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
+                map.addOverlay(ply);  //添加覆盖物
+                pointArray = pointArray.concat(ply.getPath());
+            }    
+            map.setViewport(pointArray);    //调整视野                 
+        });   
+}
 
     </script>
-	
+    
 </body>
 </html>
+

@@ -1,4 +1,3 @@
-
 <!DOCTYPE HTML>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
@@ -15,6 +14,41 @@
         width:100%;
         height:100%;
     }
+    input {
+        margin-top: 10px;
+        padding: 0 6px;
+        height: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    button {
+        height: 20px;
+        cursor: pointer;
+        display: inline-block;
+        border: 0;
+        color: #fff;
+        background: #0c88e8;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+    #result {
+        -webkit-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+        -moz-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+        box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+    }
+    #result span {
+        display: inline-block;
+        width: 185px;
+        background: #0c88e8;
+        padding: 5px;
+        color: #fff;
+    }
+    #container {
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+        -moz-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+    }
     </style>
 </head>
 <body>
@@ -26,27 +60,23 @@
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
 
     <div id="polylineLength" style="position:absolute;right:10px;top:50px;background:white;"></div>
-    <div style="position:absolute;left:10px;top:0;background:rgba(255,255,255,0.5);">
-    <p>
-    <input type="search" id="searchText"/> 
-    <button onclick="poisearch()">搜索</button>
-    <input type="search" id="boundaryText"/> 
-    <button onclick="boundarySearch()">行政区划搜索</button>
-    </p>
-    x:
-    <input id="x" type="text" />
-    y:
-    <input id="y" type="text" />
-    <button onclick="pointToLngLat()">pointToLngLat</button>
-    <button onclick="lnglatToPoint()">lnglatToPoint</button>
-    <button onclick="marker()">打点</button>
-        <br><br>
-        <textarea type="text" style="width: 300px;height: 80px" id="more" placeholder="多个转换输入示例：116.391639,39.915941;116.391639,39.910849;116.391639,39.915941"></textarea>
-        <button onclick="morePointToLngLat()">manyPointToLngLat</button>
-        <button onclick="moreLnglatToPoint()">manyLnglatToPoint</button>
-        <button onclick="moremarker()">打点</button>
+    <div id="container" style="position:absolute;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
+        <input id="searchText" placeholder="POI点"/>
+        <button onclick="poisearch()">搜索</button>
+        </br>
+        <input id="boundaryText" placeholder="行政区划"/>
+        <button onclick="boundarySearch()">搜索</button>
+        </br>
+        <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="more" placeholder="需要转换的数据格式示例：116.391639,39.915941,116.391639,39.910849"></textarea>
+        <div style="margin-top:10px;">
+            <button onclick="morePointToLngLat()">PointToLngLat</button>
+            <button onclick="moreLnglatToPoint()">LnglatToPoint</button>
+            <button onclick="moremarker()">打点</button>
+            <button onclick="morePolyline()">画线</button>
+            <button onclick="morePolygon()">画面</button>
+        </div>
     </div>
-    <div id="result" style="position:absolute;top:185px;left:10px; right:10px;background:#fff; overflow: auto">
+    <div id="result" style="position:absolute;bottom:0px;left:0px; right:0px;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
     </div>
     <script type="text/javascript">
         var map = new BMap.Map('map', {
@@ -94,12 +124,11 @@
 
         function moremarker() {
             var tex=document.getElementById('more').value;
-            var points=tex.split(";");
+            var points=tex.split(",");
             var html="";
             var pointArr = [];
-            for(var i=0;i<points.length;i++){
-                var point=points[i].split(",");
-                point = new BMap.Point(point[0], point[1]);
+            for(var i=0;i<points.length;i+=2){
+                point = new BMap.Point(points[i], points[i+1]);
                 pointArr.push(point);
                 var marker = new BMap.Marker(point);
                 map.addOverlay(marker);
@@ -115,27 +144,49 @@
 
             map.setViewport(pointArr);
         }
+        function morePolyline() {
+            var tex=document.getElementById('more').value;
+            var points=tex.split(",");
+            var pointArr = [];
+            for(var i=0;i<points.length;i+=2){
+                point = new BMap.Point(points[i], points[i+1]);
+                pointArr.push(point);
+            }
+            map.setViewport(pointArr);
+            var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            map.addOverlay(polyline);
+        };
+        function morePolygon() {
+            var tex=document.getElementById('more').value;
+            var points=tex.split(",");
+            var pointArr = [];
+            for(var i=0;i<points.length;i+=2){
+                point = new BMap.Point(points[i], points[i+1]);
+                pointArr.push(point);
+            }
+            map.setViewport(pointArr);
+            var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            map.addOverlay(polygon);
+        };
 
         function morePointToLngLat(){
             var tex=document.getElementById('more').value;
-            var points=tex.split(";");
+            var points=tex.split(",");
             var html="";
-            for(var i=0;i<points.length;i++){
-                var point=points[i].split(",");
-                var lnglat = project.pointToLngLat(new BMap.Pixel(point[0], point[1]));
-                html = html+lnglat.lng + ',' + lnglat.lat+";";
+            for(var i=0;i<points.length;i+=2){
+                var lnglat = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
+                html = html+lnglat.lng + ',' + lnglat.lat+",";
             }
             document.getElementById('result').innerHTML = html;
         }
 
         function moreLnglatToPoint(){
             var tex=document.getElementById('more').value;
-            var points=tex.split(";");
+            var points=tex.split(",");
             var html="";
-            for(var i=0;i<points.length;i++){
-                var point=points[i].split(",");
-                var lnglat = project.lngLatToPoint(new BMap.Point(point[0], point[1]));
-                html = html+lnglat.x + ',' + lnglat.y+";";
+            for(var i=0;i<points.length;i+=2){
+                var lnglat = project.lngLatToPoint(new BMap.Point(points[i], points[i+1]));
+                html = html+lnglat.x + ',' + lnglat.y+",";
             }
             document.getElementById('result').innerHTML = html;
         }
@@ -215,10 +266,10 @@ var overlaycomplete = function(e){
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
-    document.getElementById('result').innerHTML = "经纬度:左下角,右上角：" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat
-                                                 + "<br/>墨卡托坐标:左下角,右上角：" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y
-                                                 + "<br/>path:" + pathStr
-                                                 + "<br/>墨卡托path:" + pathmcStr;
+    document.getElementById('result').innerHTML = "<span>左下角,右上角(经纬度)：</span>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat
+                                                 + "<br/><span>左下角,右上角(墨卡托坐标)：</span>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y
+                                                 + "<br/><span>坐标集(经纬度)：</span>" + pathStr
+                                                 + "<br/><span>坐标集(墨卡托坐标)：</span>" + pathmcStr;
 };
 
 

@@ -37,12 +37,22 @@
         -moz-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
         box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
     }
+    #result div {
+    }
+    #result p {
+        width: 80%;
+        margin: 0;
+        display: inline-block;
+    }
     #result span {
         display: inline-block;
         width: 185px;
         background: #0c88e8;
         padding: 5px;
         color: #fff;
+    }
+    #result .btn {
+        margin: 0 5px;
     }
     #container {
         -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
@@ -56,6 +66,7 @@
     <div id="map"></div>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
     <script type="text/javascript" src="DrawingManager.js"></script>
+    <script type="text/javascript" src="clipboard.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
 
@@ -177,7 +188,7 @@
                 var lnglat = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
                 html = html+lnglat.lng + ',' + lnglat.lat+",";
             }
-            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + html + "</p></div>";
         }
 
         function moreLnglatToPoint(){
@@ -188,17 +199,27 @@
                 var lnglat = project.lngLatToPoint(new BMap.Point(points[i], points[i+1]));
                 html = html+lnglat.x + ',' + lnglat.y+",";
             }
-            document.getElementById('result').innerHTML = html;
+            document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + html + "</p></div>";
         }
 
-var overlays = [];
+        var trigger = document.getElementsByClassName('copyText');
+        var clipboard = new Clipboard('.btn', {
+            target: function(trigger) {
+                return trigger.nextElementSibling;
+            }
+        });
+        clipboard.on('success', function(e) {
+            console.log(this);
+        });
+
+        var overlays = [];
 var mercatorProjection = map.getMapType().getProjection();
 var overlaycomplete = function(e){
     overlays.push(e.overlay);
     var overlay = e.overlay;
     if (e.overlay.toString() == '[object Marker]') {
         var point  =e.overlay.getPosition();
-        document.getElementById('result').innerHTML = "经纬度:" + point.lng + "," + point.lat;
+        document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + point.lng + "," + point.lat + "</p></div>";
     }
 
     if (e.overlay.toString() == '[object Circle]') {
@@ -266,10 +287,10 @@ var overlaycomplete = function(e){
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
-    document.getElementById('result').innerHTML = "<span>左下角,右上角(经纬度)：</span>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat
-                                                 + "<br/><span>左下角,右上角(墨卡托坐标)：</span>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y
-                                                 + "<br/><span>坐标集(经纬度)：</span>" + pathStr
-                                                 + "<br/><span>坐标集(墨卡托坐标)：</span>" + pathmcStr;
+    document.getElementById('result').innerHTML = "<div><span>左下角,右上角(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat + "</p></div>"
+                                                 + "<div><span>左下角,右上角(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y + "</p></div>"
+                                                 + "<div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + pathStr + "</p></div>"
+                                                 + "<div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + pathmcStr + "</p></div>";
 };
 
 

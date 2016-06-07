@@ -157,15 +157,21 @@
         }
         function morePolyline() {
             var tex=document.getElementById('more').value;
-            var points=tex.split(",");
-            var pointArr = [];
-            for(var i=0;i<points.length;i+=2){
-                point = new BMap.Point(points[i], points[i+1]);
-                pointArr.push(point);
+            var pointArrs = [];
+            var lines = tex.split(";");
+            for (var j = 0; j < lines.length; j++) {
+                var points=lines[j].split(",");
+                var pointArr = [];
+                for(var i=0;i<points.length;i+=2){
+                    point = new BMap.Point(points[i], points[i+1]);
+                    pointArr.push(point);
+                    pointArrs.push(point);
+                }
+                var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                map.addOverlay(polyline);
             }
-            map.setViewport(pointArr);
-            var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-            map.addOverlay(polyline);
+
+            map.setViewport(pointArrs);
         };
         function morePolygon() {
             var tex=document.getElementById('more').value;

@@ -69,6 +69,7 @@
     <script type="text/javascript" src="clipboard.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+    <script type="text/javascript" src="mapv.js"></script>
 
     <div id="polylineLength" style="position:absolute;right:10px;top:50px;background:white;"></div>
     <div id="container" style="position:absolute;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
@@ -160,18 +161,40 @@
         function morePolyline() {
             var tex=document.getElementById('more').value;
             var pointArrs = [];
+            var data = [];
             var lines = tex.split(";");
             for (var j = 0; j < lines.length; j++) {
                 var points=lines[j].split(",");
                 var pointArr = [];
+                var coordinates = [];
                 for(var i=0;i<points.length;i+=2){
                     point = new BMap.Point(points[i], points[i+1]);
                     pointArr.push(point);
                     pointArrs.push(point);
+                    coordinates.push([points[i], points[i+1]]);
                 }
-                var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-                map.addOverlay(polyline);
+                data.push({
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: coordinates
+                    },
+                    count: 1
+                });
+                // var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                // map.addOverlay(polyline);
             }
+
+            var dataSet = new mapv.DataSet(data);
+
+            var options = {
+                strokeStyle: 'rgba(255, 50, 50, 1)',
+                shadowColor: 'rgba(255, 250, 50, 1)',
+                shadowBlur: 20,
+                lineWidth: 3,
+                draw: 'simple'
+            }
+
+            var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
 
             map.setViewport(pointArrs);
         };

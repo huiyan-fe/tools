@@ -90,10 +90,11 @@
     <div id="result" style="position:absolute;bottom:0px;left:0px; right:0px;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
     </div>
     <script type="text/javascript">
-        var map = new BMap.Map('map', {
-            enableMapClick: false,
-            drawer: BMAP_CANVAS_DRAWER
-        });
+        var mapOptions = {
+            enableMapClick: false
+        }
+
+        var map = new BMap.Map('map', mapOptions);
 
         // 鐧惧害鍦板浘API鍔熻兘
         var point = new BMap.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??

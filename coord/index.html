@@ -97,7 +97,7 @@
 
         var map = new BMap.Map('map', mapOptions);
 
-        var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT});
+        var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT, offset: new BMap.Size(330, 10)});
         map.addControl(mapType);
 
         // 鐧惧害鍦板浘API鍔熻兘

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+    <link rel="stylesheet" href="static/libs/materialize.css" />
+    <!--
+    <link rel="stylesheet" href="static/css/reset.css" />
+    -->
+    <link rel="stylesheet" href="static/css/style.css" />
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aONgqBx7eaWfv2X6RiMyGcWxp6HAwFWi"></script>
+    <script src="static/libs/vue.js"></script>
+    <script src="static/libs/materialize.min.js"></script>
+</head>
+<body>
+	
+<div id="app">
+    <div id="map"></div>
+    <nav>
+        <div class="nav-wrapper row">
+            <div class="col s12">
+                <a href="#" class="brand-logo">导航绘制工具</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="http://developer.baidu.com/map" target="_blank">百度地图开放平台</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <panel></panel>
+</div>
+
+<script type="text/x-template" id="luwang-form-template">
+
+<div class="row panel">
+    <div class="row">
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="addStart">增加起点</a>
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="addEnd">增加终点</a>
+    </div>
+    <div class="row" >
+        <form>
+        <input type="radio" id="driving" value="driving" v-model="mode">
+        <label for="driving">驾车</label>
+        <input type="radio" id="walking" value="walking" v-model="mode">
+        <label for="walking">步行</label>
+        <input type="radio" id="transit" value="transit" v-model="mode">
+        <label for="transit">公交</label>
+        <input type="radio" id="riding" value="riding" v-model="mode">
+        <label for="riding">骑行</label>
+        </form>
+    </div>
+    <div class="row" >
+        <form>
+        <input type="radio" id="tactics12" value="12" v-model="tactics">
+        <label for="tactics12">最短路径</label>
+        <input type="radio" id="tactics11" value="11" v-model="tactics">
+        <label for="tactics11">公交</label>
+        <input type="radio" id="tactics10" value="10" v-model="tactics">
+        <label for="tactics10">骑行</label>
+        </form>
+    </div>
+    <div class="input-field" v-for="start in starts">
+        <input id="didian" type="text" class="input_starts" value="{{start.name}}" v-model="start.name">
+        <label for="didian">起点</label>
+        <a href="javascript:void(0)" class="del" v-on:click="removeStart">删除</a>
+    </div>
+    <div class="input-field" v-for="end in ends">
+        <input id="didian" type="text" class="input_ends" value="{{end.name}}" v-model="end.name">
+        <label for="didian">终点</label>
+        <a href="javascript:void(0)" class="del" v-on:click="removeEnd">删除</a>
+    </div>
+    <div class="row">
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="search">开始导航搜索</a>
+    </div>
+</div>
+
+</script>
+
+<script type="text/javascript" src="static/script/components.js"></script>
+<script type="text/javascript" src="static/script/app.js"></script>
+
+</body>
+</html>

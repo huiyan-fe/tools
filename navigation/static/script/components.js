@@ -36,26 +36,51 @@ var Panel = Vue.extend({
             
         },
         request: function (data) {
+            var me = this;
             var url = 'http://api.map.baidu.com/direction/v1?callback=?';
             $.getJSON(url, data, function (rs) {
-                for (var i = 0; i< rs.result.routes.length; i++) {
-                    var route = rs.result.routes[i];
-                    var paths = [];
-                    var steps = route.steps;
-                    for (var j = 0; j < steps.length; j++) {
-                        paths.push(steps[j].path);
+                if (me.mode == 'transit') { //公交
+                    var routesLength = rs.result.routes.length;
+                    for (var i = 0; i< routesLength; i++) {
+                        var route = rs.result.routes[i];
+                        var steps = route.scheme[0].steps;
+                        var points = [];
+                        var paths = [];
+                        for (var j = 0; j < steps.length; j++) {
+                            paths.push(steps[j][0].path);
+                        }
+                        paths = paths.join(';');
+                        paths = paths.split(';');
+                        console.log(paths);
+                        for (var j = 0; j < paths.length; j++) {
+                            var lnglat = paths[j].split(',');
+                            points.push(new BMap.Point(lnglat[0], lnglat[1]));
+                        }
+                        addStart(points[0]);
+                        addEnd(points[points.length - 1]);
+                        var polyline = new BMap.Polyline(points);
+                        map.addOverlay(polyline);
                     }
-                    paths = paths.join(';');
-                    paths = paths.split(';');
-                    var points = [];
-                    for (var j = 0; j < paths.length; j++) {
-                        var lnglat = paths[j].split(',');
-                        points.push(new BMap.Point(lnglat[0], lnglat[1]));
+                } else { // 驾车
+                    for (var i = 0; i< rs.result.routes.length; i++) {
+                        var route = rs.result.routes[i];
+                        var paths = [];
+                        var steps = route.steps;
+                        for (var j = 0; j < steps.length; j++) {
+                            paths.push(steps[j].path);
+                        }
+                        paths = paths.join(';');
+                        paths = paths.split(';');
+                        var points = [];
+                        for (var j = 0; j < paths.length; j++) {
+                            var lnglat = paths[j].split(',');
+                            points.push(new BMap.Point(lnglat[0], lnglat[1]));
+                        }
+                        addStart(points[0]);
+                        addEnd(points[points.length - 1]);
+                        var polyline = new BMap.Polyline(points);
+                        map.addOverlay(polyline);
                     }
-                    addStart(points[0]);
-                    addEnd(points[points.length - 1]);
-                    var polyline = new BMap.Polyline(points);
-                    map.addOverlay(polyline);
                 }
             });
         },

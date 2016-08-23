@@ -69,6 +69,7 @@
     <script type="text/javascript" src="clipboard.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+    <script type="text/javascript" src="CanvasLayer.js"></script>
     <script type="text/javascript" src="mapv.js"></script>
 
     <div id="polylineLength" style="position:absolute;right:10px;top:50px;background:white;"></div>
@@ -363,7 +364,7 @@ var styleOptions = {
         local.search(text);
     }
 
-function boundarySearch(){
+    function boundarySearch(){
         var text = document.getElementById('boundaryText').value;
         var bdary = new BMap.Boundary();
         bdary.get(text , function(rs){       //获取行政区域
@@ -381,7 +382,59 @@ function boundarySearch(){
             }    
             map.setViewport(pointArray);    //调整视野                 
         });   
-}
+    }
+
+    var canvasLayer = new CanvasLayer({
+        map: map,
+        update: update
+    });
+
+    function update() {
+        var ctx = this.canvas.getContext("2d");
+
+        if (!ctx) {
+            return;
+        }
+
+
+        var zoomUnit = Math.pow(2, 18 - map.getZoom());
+        var projection = map.getMapType().getProjection();
+
+        var bounds = map.getBounds();
+        var sw = projection.lngLatToPoint(bounds.getSouthWest());
+        var startX = ~~(sw.x / 100) * 100;
+        var startY = ~~(sw.y / 100) * 100;
+        var ne = projection.lngLatToPoint(bounds.getNorthEast());
+
+        var mcCenter = projection.lngLatToPoint(map.getCenter());
+        var nwMc = new BMap.Pixel(mcCenter.x - (map.getSize().width / 2) * zoomUnit, mcCenter.y + (map.getSize().height / 2) * zoomUnit); //左上角墨卡托坐标
+
+        var mcCenter = projection.lngLatToPoint(map.getCenter());
+
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        var zoom = map.getZoom();
+        if (zoom < 16) {
+            return;
+        }
+
+        var temp = {};
+        ctx.fillStyle = "rgba(50, 50, 255, 0.1)";
+        ctx.strokeStyle = "rgba(250, 50, 55, 0.5)";
+        ctx.beginPath();
+
+        for (var i = 0; i < (ne.x - sw.x) / 100 + 2; i++) {
+            for (var j = 0; j < (ne.y - sw.y) / 100 + 2; j++) {
+                var x = ((startX + 100 * i) - nwMc.x) / zoomUnit;
+                var y = (nwMc.y - (startY + 100 * j)) / zoomUnit;
+                ctx.rect(x, y, 100 / zoomUnit, 100 / zoomUnit);
+            }
+        }
+
+        //ctx.fill();
+        ctx.stroke();
+    }
+
 
     </script>
     

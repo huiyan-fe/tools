@@ -39,3 +39,16 @@ html, body, #app{
     right: 10px;
     top: 10px;
 }
+
+.route-list {
+}
+
+.route-list li{
+    border: 1px solid #E4E6E7;
+    padding: 5px;
+    margin: 5px;
+}
+
+.route-list li.current{
+    border: 1px solid #E4E6E7;
+}

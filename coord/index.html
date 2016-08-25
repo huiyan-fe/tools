@@ -420,8 +420,9 @@ var styleOptions = {
 
         var temp = {};
         ctx.fillStyle = "rgba(50, 50, 255, 0.1)";
-        ctx.strokeStyle = "rgba(250, 50, 55, 0.5)";
+        ctx.strokeStyle = "rgba(250, 50, 55, 0.8)";
         ctx.beginPath();
+        ctx.lineWidth = 0.5;
 
         for (var i = 0; i < (ne.x - sw.x) / 100 + 2; i++) {
             for (var j = 0; j < (ne.y - sw.y) / 100 + 2; j++) {

@@ -79,6 +79,7 @@
         <a class="waves-effect btn" v-on:click="clear">清空此次结果</a>
     </div>
     <route-list v-bind:routes="tmpRoutes"></route-list>
+    <label-list></label-list>
 </div>
 
 </script>
@@ -104,122 +105,73 @@
     </ul>
 </script>
 
+<script type="text/x-template" id="label-list">
+    <div>文本标注编辑:</div>
+    <div>
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="showMarker">拖动</a>
+        <a class="waves-effect btn" v-on:click="hideMarker">不拖动</a>
+    </div>
+    <ul>
+        <li v-for="label in labels":index="$index">
+            <input type="text" v-model="label"/>
+        </li>
+    </ul>
+</script>
+
 <script type="text/javascript" src="static/script/components.js"></script>
 <script type="text/javascript" src="static/script/app.js"></script>
 
 <script type="text/javascript">
 
-    var overlays = [];
-    var overlaycomplete = function(e){
-        var overlay = e.overlay;
-
-        if (overlay instanceof BMap.Marker) {
-            var marker = overlay;
-            var tip = new Tips(marker.point, "银湖海岸城",mouseoverTxt);
-            map.addOverlay(tip);
-            marker.addEventListener('click', function () {
-            });
-            marker.addEventListener('dragging', function () {
-                tip._point = marker.point;
-                tip.draw();
-            });
-            marker.addEventListener('dragend', function () {
-                tip._point = marker.point;
-                tip.draw();
-            });
-            marker.enableDragging();
-            overlays.push(marker);
-            drawingManager.close();
-        }
-
-    };
-
-    var styleOptions = {
-        strokeColor:"red",    //边线颜色。
-        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
-        strokeWeight: 3,       //边线的宽度，以像素为单位。
-        strokeOpacity: 0.8,       //边线透明度，取值范围0 - 1。
-        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
-        strokeStyle: 'solid' //边线的样式，solid或dashed。
-    }
-
-    //实例化鼠标绘制工具
-    var drawingManager = new BMapLib.DrawingManager(map, {
-        isOpen: false, //是否开启绘制模式
-        enableDrawingTool: true, //是否显示工具栏
-        drawingToolOptions: {
-            anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
-            /*
-            drawingModes : [
-                BMAP_DRAWING_MARKER,
-                BMAP_DRAWING_POLYLINE,
-            ],
-            */
-            offset: new BMap.Size(5, 5), //偏离值
-        },
-        circleOptions: styleOptions, //圆的样式
-        polylineOptions: styleOptions, //线的样式
-        polygonOptions: styleOptions, //多边形的样式
-        rectangleOptions: styleOptions //矩形的样式
-    });  
-
-    //添加鼠标绘制工具监听事件，用于获取绘制结果
-    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
-    function clearAll() {
-        for(var i = 0; i < overlays.length; i++){
-            map.removeOverlay(overlays[i]);
-        }
-        overlays.length = 0   
-    }
-
-    // 复杂的自定义覆盖物
     function Tips(point, text, mouseoverText){
-      this._point = point;
-      this._text = text;
-      this._overText = mouseoverText;
+        this._point = point;
+        this._text = text;
+        this._overText = mouseoverText;
     }
-    Tips.prototype = new BMap.Overlay();
-    Tips.prototype.initialize = function(map){
-      this._map = map;
-      var div = this._div = document.createElement("div");
-      div.style.position = "absolute";
-      div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-      div.style.backgroundColor = "#EE5D5B";
-      div.style.border = "1px solid #BC3B3A";
-      div.style.color = "white";
-      div.style.height = "28px";
-      div.style.padding = "5px";
-      div.style.whiteSpace = "nowrap";
-      div.style.MozUserSelect = "none";
-      div.style.fontSize = "12px"
-      var span = this._span = document.createElement("span");
-      div.appendChild(span);
-      span.appendChild(document.createTextNode(this._text));      
-      var that = this;
 
-      var arrow = this._arrow = document.createElement("div");
-      arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
-      arrow.style.position = "absolute";
-      arrow.style.width = "11px";
-      arrow.style.height = "10px";
-      arrow.style.top = "26px";
-      arrow.style.left = "10px";
-      arrow.style.overflow = "hidden";
-      div.appendChild(arrow);
-     
-      map.getPanes().labelPane.appendChild(div);
-      
-      return div;
+    Tips.prototype = new BMap.Overlay();
+
+    Tips.prototype.initialize = function(map){
+        this._map = map;
+        var div = this._div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+        div.style.backgroundColor = "#EE5D5B";
+        div.style.border = "1px solid #BC3B3A";
+        div.style.color = "white";
+        div.style.height = "28px";
+        div.style.padding = "5px";
+        div.style.whiteSpace = "nowrap";
+        div.style.MozUserSelect = "none";
+        div.style.fontSize = "12px"
+        var span = this._span = document.createElement("span");
+        div.appendChild(span);
+        span.appendChild(document.createTextNode(this._text));      
+        var that = this;
+
+        var arrow = this._arrow = document.createElement("div");
+        arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+        arrow.style.position = "absolute";
+        arrow.style.width = "11px";
+        arrow.style.height = "10px";
+        arrow.style.top = "26px";
+        arrow.style.left = "10px";
+        arrow.style.overflow = "hidden";
+        div.appendChild(arrow);
+
+        map.getPanes().labelPane.appendChild(div);
+
+        return div;
     }
 
     Tips.prototype.draw = function(){
-      var map = this._map;
-      var pixel = map.pointToOverlayPixel(this._point);
-      this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
-      this._div.style.top  = pixel.y - 40 + "px";
+        var map = this._map;
+        this._span.innerHTML = this._text;
+        var pixel = map.pointToOverlayPixel(this._point);
+        this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+        this._div.style.top  = pixel.y - 40 + "px";
     }
-    var txt = "银湖海岸城", mouseoverTxt = txt + " " + parseInt(Math.random() * 1000,10) + "套" ;
-        
+
 
 </script>
 

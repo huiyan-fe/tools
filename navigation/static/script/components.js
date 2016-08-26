@@ -190,6 +190,101 @@ var SelectedList = Vue.extend({
     }
 });
 
+var LabelList = Vue.extend({
+    template: '#label-list',
+    data: function () {
+        return {
+            labels: [],
+            markers: [],
+            tips: []
+        }
+    },
+    watch: {
+        labels: function () {
+            for (var i = 0; i < this.tips.length; i++) {
+                this.tips[i]._text = this.labels[i];
+                this.tips[i].draw();
+            }
+        }
+    },
+    init: function () {
+        var me = this;
+
+        var overlays = [];
+        var overlaycomplete = function(e){
+            var overlay = e.overlay;
+
+            if (overlay instanceof BMap.Marker) {
+                var marker = overlay;
+                me.markers.push(marker);
+                var tip = new Tips(marker.point, "标注名称");
+                me.tips.push(tip);
+                map.addOverlay(tip);
+                marker.addEventListener('click', function () {
+                });
+                marker.addEventListener('dragging', function () {
+                    tip._point = marker.point;
+                    tip.draw();
+                });
+                marker.addEventListener('dragend', function () {
+                    tip._point = marker.point;
+                    tip.draw();
+                });
+                marker.enableDragging();
+                overlays.push(marker);
+                drawingManager.close();
+                me.labels.push('标注名称' + (me.labels.length + 1));
+            }
+
+        };
+
+        var styleOptions = {
+            strokeColor:"red",    //边线颜色。
+            fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+            strokeWeight: 3,       //边线的宽度，以像素为单位。
+            strokeOpacity: 0.8,       //边线透明度，取值范围0 - 1。
+            fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+            strokeStyle: 'solid' //边线的样式，solid或dashed。
+        }
+
+        //实例化鼠标绘制工具
+        var drawingManager = new BMapLib.DrawingManager(map, {
+            isOpen: false, //是否开启绘制模式
+            enableDrawingTool: true, //是否显示工具栏
+            drawingToolOptions: {
+                anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                /*
+                drawingModes : [
+                    BMAP_DRAWING_MARKER,
+                    BMAP_DRAWING_POLYLINE,
+                ],
+                */
+                offset: new BMap.Size(5, 5), //偏离值
+            },
+            circleOptions: styleOptions, //圆的样式
+            polylineOptions: styleOptions, //线的样式
+            polygonOptions: styleOptions, //多边形的样式
+            rectangleOptions: styleOptions //矩形的样式
+        });  
+
+        //添加鼠标绘制工具监听事件，用于获取绘制结果
+        drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+    },
+    methods: {
+        showMarker: function () {
+            this.markers.forEach(function (item) {
+                map.addOverlay(item);
+            });
+        },
+        hideMarker: function () {
+            this.markers.forEach(function (item) {
+                map.removeOverlay(item);
+            });
+        }
+    }
+});
+
 Vue.component('panel', Panel)
 Vue.component('route-list', RouteList)
 Vue.component('selected-list', SelectedList)
+Vue.component('label-list', LabelList)

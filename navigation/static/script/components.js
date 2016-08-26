@@ -78,12 +78,20 @@ var Panel = Vue.extend({
         return {   
             mode: 'driving',
             tactics: 12,
-            starts: [{
-                name: '颐和园'
-            }],
-            ends: [{
-                name: '西单'
-            }],
+            starts: [
+                /*
+                {
+                    name: '颐和园'
+                }
+                */
+            ],
+            ends: [
+                /*
+                {
+                    name: '西单'
+                }
+                */
+            ],
             tmpRoutes: [],
             polylines: [],
             markers: [],

@@ -21,17 +21,20 @@ html, body, #app{
     color: #fff;
 }
 
+.commonBox {
+    position:absolute;
+    background: #fff;
+    box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+    border-radius: 3px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
 .panel {
     left: 15px;
     top: 75px;
     bottom: 15px;
     width: 350px;
-    position:absolute;
-    padding: 10px;
-    background: #fff;
-    box-shadow: 1px 2px 1px rgba(0,0,0,.15);
-    border-radius: 3px;
-    overflow-y: auto;
 }
 
 .del{
@@ -60,3 +63,12 @@ html, body, #app{
     float:right;
 }
 
+.tools {
+    right: 5px;
+    top: 130px;
+    width: 385px;
+}
+
+.tools .input-field {
+    margin-top: 0;
+}

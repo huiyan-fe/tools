@@ -22,6 +22,7 @@
 	
 <div id="app">
     <div id="map"></div>
+    <tools></tools>
     <nav>
         <div class="nav-wrapper row">
             <div class="col s12">
@@ -37,7 +38,7 @@
 
 <script type="text/x-template" id="form-template">
 
-<div class="row panel">
+<div class="row panel commonBox">
     <div class="row">
         <a class="waves-effect light-blue darken-1 btn" v-on:click="addStart">增加起点</a>
         <a class="waves-effect light-blue darken-1 btn" v-on:click="addEnd">增加终点</a>
@@ -116,6 +117,27 @@
             <input type="text" v-model="label"/>
         </li>
     </ul>
+</script>
+
+<script type="text/x-template" id="tools">
+    <div class="tools commonBox">
+        <div class="input-field">
+            <select class="browser-default" v-model="style">
+                <option value="normal">默认</option>
+                <option value="light">清新蓝风格</option>
+                <option value="dark">黑夜风格</option>
+                <option value="redalert">红色警戒风格</option>
+                <option value="googlelite">精简风格</option>
+                <option value="grassgreen">自然绿风格</option>
+                <option value="midnight">午夜蓝风格</option>
+                <option value="pink">浪漫粉风格</option>
+                <option value="darkgreen">青春绿风格</option>
+                <option value="bluish">清新蓝绿风格</option>
+                <option value="grayscale" selected>高端灰风格</option>
+                <option value="hardedge">强边界风格</option>
+            </select>
+        </div>
+    </div>
 </script>
 
 <script type="text/javascript" src="static/script/components.js"></script>

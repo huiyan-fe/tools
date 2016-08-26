@@ -48,7 +48,8 @@ Route.prototype.render = function () {
 
         this.startMarker = addStart(points[0]);
         this.endMarker = addEnd(points[points.length - 1]);
-        this.polyline = new BMap.Polyline(points);
+        this.polyline = new BMap.Polyline(points, {
+        });
         map.addOverlay(this.polyline);
     } else { // 驾车
         var route = this.result;
@@ -67,7 +68,11 @@ Route.prototype.render = function () {
        
         this.startMarker = addStart(points[0]);
         this.endMarker = addEnd(points[points.length - 1]);
-        this.polyline = new BMap.Polyline(points);
+        this.polyline = new BMap.Polyline(points, {
+            strokeColor: '#65b320',
+            strokeOpacity: 1,
+            strokeWeight: 5,
+        });
         map.addOverlay(this.polyline);
     }
 }
@@ -80,12 +85,12 @@ var Panel = Vue.extend({
             tactics: 12,
             starts: [
                 {
-                    name: ''
+                    name: '颐和园'
                 }
             ],
             ends: [
                 {
-                    name: ''
+                    name: '西单'
                 }
             ],
             tmpRoutes: [],
@@ -189,7 +194,7 @@ var SelectedList = Vue.extend({
         deleteOne: function (index) {
             this.routes[index].selected = false;
             this.routes[index].clear();
-            this.routes.splice(index);
+            this.routes.splice(index, 1);
         }
     }
 });
@@ -288,7 +293,22 @@ var LabelList = Vue.extend({
     }
 });
 
+var Tools = Vue.extend({
+    template: '#tools',
+    data: function () {
+        return {
+            style: 'grayscale'
+        }
+    },
+    watch: {
+        style: function (style) {
+            map.setMapStyle({style: style});
+        }
+    }
+});
+
 Vue.component('panel', Panel)
 Vue.component('route-list', RouteList)
 Vue.component('selected-list', SelectedList)
 Vue.component('label-list', LabelList)
+Vue.component('tools', Tools)

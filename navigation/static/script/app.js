@@ -39,6 +39,7 @@ function addStart(point) {
     });
     var marker2 = new BMap.Marker(point,{icon:myIcon});  // 创建标注
     map.addOverlay(marker2);              // 将标注添加到地图中
+    return marker2;
 }
 
 function addEnd(point) {
@@ -48,5 +49,6 @@ function addEnd(point) {
     });
     var marker2 = new BMap.Marker(point,{icon:myIcon});  // 创建标注
     map.addOverlay(marker2);              // 将标注添加到地图中
+    return marker2;
 }
 

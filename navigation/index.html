@@ -25,7 +25,7 @@
     <nav>
         <div class="nav-wrapper row">
             <div class="col s12">
-                <a href="#" class="brand-logo">导航绘制工具</a>
+                <a href="#" class="brand-logo">导航路径绘制工具</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a href="http://developer.baidu.com/map" target="_blank">百度地图开放平台</a></li>
                 </ul>
@@ -76,8 +76,9 @@
     </div>
     <div class="row">
         <a class="waves-effect light-blue darken-1 btn" v-on:click="search">开始导航搜索</a>
+        <a class="waves-effect btn" v-on:click="clear">清空此次结果</a>
     </div>
-    <route-list  v-bind:routes="routes"></route-list>
+    <route-list v-bind:routes="tmpRoutes"></route-list>
 </div>
 
 </script>
@@ -85,7 +86,21 @@
 
 <script type="text/x-template" id="route-list">
     <ul class="route-list">
-        <li v-for="route in routes":index="$index">方案{{$index + 1}}</li>
+        <li v-for="route in routes":index="$index" v-on:click="showOne($index)">
+            <span>方案{{$index + 1}}</span>
+            <a href="javascript: void(0)" class="waves-light btn" v-on:click="selectOne($index)">选择此方案</a>
+        </li>
+    </ul>
+    <selected-list v-bind:routes="selectedRoutes"></selected-list>
+</script>
+
+<script type="text/x-template" id="selected-list">
+    <div>选定的方案:</div>
+    <ul class="route-list">
+        <li v-for="route in routes":index="$index">
+            <span>方案{{$index + 1}}</span>
+            <a href="javascript: void(0)" class="waves-light btn" v-on:click="deleteOne($index)">删除此方案</a>
+        </li>
     </ul>
 </script>
 
@@ -96,23 +111,27 @@
 
     var overlays = [];
     var overlaycomplete = function(e){
-        var marker = e.overlay;
+        var overlay = e.overlay;
 
-        var tip = new Tips(marker.point, "银湖海岸城",mouseoverTxt);
-        map.addOverlay(tip);
-        marker.addEventListener('click', function () {
-        });
-        marker.addEventListener('dragging', function () {
-            tip._point = marker.point;
-            tip.draw();
-        });
-        marker.addEventListener('dragend', function () {
-            tip._point = marker.point;
-            tip.draw();
-        });
-        marker.enableDragging();
-        overlays.push(marker);
-        drawingManager.close();
+        if (overlay instanceof BMap.Marker) {
+            var marker = overlay;
+            var tip = new Tips(marker.point, "银湖海岸城",mouseoverTxt);
+            map.addOverlay(tip);
+            marker.addEventListener('click', function () {
+            });
+            marker.addEventListener('dragging', function () {
+                tip._point = marker.point;
+                tip.draw();
+            });
+            marker.addEventListener('dragend', function () {
+                tip._point = marker.point;
+                tip.draw();
+            });
+            marker.enableDragging();
+            overlays.push(marker);
+            drawingManager.close();
+        }
+
     };
 
     var styleOptions = {
@@ -130,9 +149,12 @@
         enableDrawingTool: true, //是否显示工具栏
         drawingToolOptions: {
             anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+            /*
             drawingModes : [
-                BMAP_DRAWING_MARKER
+                BMAP_DRAWING_MARKER,
+                BMAP_DRAWING_POLYLINE,
             ],
+            */
             offset: new BMap.Size(5, 5), //偏离值
         },
         circleOptions: styleOptions, //圆的样式

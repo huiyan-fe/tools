@@ -72,3 +72,7 @@ html, body, #app{
 .tools .input-field {
     margin-top: 0;
 }
+
+.label-list li{
+    position:relative;
+}

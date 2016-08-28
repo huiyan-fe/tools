@@ -112,9 +112,10 @@
         <a class="waves-effect light-blue darken-1 btn" v-on:click="showMarker">拖动</a>
         <a class="waves-effect btn" v-on:click="hideMarker">不拖动</a>
     </div>
-    <ul>
+    <ul class="label-list">
         <li v-for="label in labels":index="$index">
             <input type="text" v-model="label"/>
+            <a href="javascript:void(0)" class="del" v-on:click="remove($index)">删除</a>
         </li>
     </ul>
 </script>

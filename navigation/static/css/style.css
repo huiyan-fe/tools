@@ -85,6 +85,12 @@ html, body, #app{
     position:relative;
 }
 
+.label-list li .color-list{
+    position:absolute;
+    right: 40px;
+    top: 10px;
+}
+
 .color-list {
     overflow:hidden;
 }

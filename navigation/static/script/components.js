@@ -274,6 +274,11 @@ var LabelList = Vue.extend({
         return {
             labels: [],
             markers: [],
+            colors: [
+                '#ee5d5b',
+                '#ff9625',
+                '#6caeca'
+            ],
             tips: []
         }
     },
@@ -353,6 +358,9 @@ var LabelList = Vue.extend({
         drawingManager.addEventListener('overlaycomplete', overlaycomplete);
     },
     methods: {
+        changeColor: function (index, color) {
+            this.tips[index].changeColor(color);
+        },
         showMarker: function () {
             this.markers.forEach(function (item) {
                 map.addOverlay(item);

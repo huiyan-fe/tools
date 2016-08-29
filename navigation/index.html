@@ -126,13 +126,16 @@
 <script type="text/x-template" id="label-list">
     <div>文本标注编辑:</div>
     <div>
-        <a class="waves-effect light-blue darken-1 btn" v-on:click="showMarker">拖动</a>
-        <a class="waves-effect btn" v-on:click="hideMarker">不拖动</a>
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="showMarker">显示拖动标</a>
+        <a class="waves-effect btn" v-on:click="hideMarker">隐藏拖动标</a>
     </div>
     <ul class="label-list">
-        <li v-for="label in labels":index="$index">
+        <li v-for="(i, label) in labels":index="$index">
             <input type="text" v-model="label"/>
             <a href="javascript:void(0)" class="del" v-on:click="remove($index)">删除</a>
+            <ul class="color-list">
+                <li v-for="color in colors" :style="{ background: color }" v-on:click="changeColor(i, color)"></li>
+            </ul>
         </li>
     </ul>
 </script>
@@ -171,6 +174,16 @@
 
     Tips.prototype = new BMap.Overlay();
 
+    Tips.prototype.changeColor = function(color){
+        var positions = {
+            '#ee5d5b': '0 0',
+            '#ff9625': '0 -10px',
+            '#6caeca': '0 -20px'
+        }
+        this._div.style.backgroundColor = color;
+        this._arrow.style.backgroundPosition = positions[color];
+    }
+
     Tips.prototype.initialize = function(map){
         this._map = map;
         var div = this._div = document.createElement("div");
@@ -190,7 +203,7 @@
         var that = this;
 
         var arrow = this._arrow = document.createElement("div");
-        arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+        arrow.style.background = "url(static/images/label.png) no-repeat";
         arrow.style.position = "absolute";
         arrow.style.width = "11px";
         arrow.style.height = "10px";

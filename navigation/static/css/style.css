@@ -14,10 +14,10 @@ html, body, #app{
 
 #waterfall {
     position: absolute;
-    left: 300px;
+    left: 280px;
     top: 0px;
-    width: 200px;
-    height: 80px;
+    width: 80px;
+    height: 90px;
 }
 
 .header {

@@ -88,8 +88,8 @@
 
 <script type="text/x-template" id="route-list">
     <ul class="route-list">
-        <li v-for="route in routes":index="$index" v-on:click="showOne($index)">
-            <div>方案{{$index + 1}}</div>
+        <li v-for="route in routes":index="$index">
+            <div>方案{{$index + 1}}-<a href="javascript:void(0)" v-on:click="showOne($index)">more</a></div>
             <ul class="step-list" v-show="route._show" nk='nk{{route._show}}'>
                 <li v-for="step in route.result.steps">
                 {{{step.instructions}}}
@@ -104,8 +104,8 @@
 <script type="text/x-template" id="selected-list">
     <div>选定的方案:</div>
     <ul class="route-list">
-        <li v-for="route in routes":index="$index" v-on:click="showOne($index)">
-            <div>方案{{$index + 1}}</div>
+        <li v-for="route in routes":index="$index">
+            <div>方案{{$index + 1}}-<a href="javascript:void(0)" v-on:click="showOne($index)">more</a></div>
             <ul class="step-list" v-show="route._show" nk='nk{{route._show}}'>
                 <li v-for="step in route.result.steps">
                 {{{step.instructions}}}

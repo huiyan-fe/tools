@@ -190,7 +190,9 @@ var RouteList = Vue.extend({
                 route.polyline.setStrokeColor('#65b320');
             });
             this.route._show = !oldValue;
-            this.route.polyline.setStrokeColor('blue');
+            if (this.route._show) {
+                this.route.polyline.setStrokeColor('blue');
+            }
         }
     }
 });

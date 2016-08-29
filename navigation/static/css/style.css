@@ -51,7 +51,6 @@ html, body, #app{
     padding: 5px;
     margin: 5px;
     line-height: 38px;
-    cursor: pointer;
     overflow:hidden;
     position:relative;
 }

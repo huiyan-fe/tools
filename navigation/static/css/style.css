@@ -63,7 +63,7 @@ html, body, #app{
 .route-list > li .btn{
     position: absolute;
     right: 10px;
-    top: 15px;
+    top: 5px;
 }
 .step-list > li {
     line-height: 18px;

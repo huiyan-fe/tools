@@ -203,6 +203,16 @@ var SelectedList = Vue.extend({
             this.routes[index].selected = false;
             this.routes[index].clear();
             this.routes.splice(index, 1);
+        },
+        showOne: function (index) {
+            this.route = this.routes[index];
+            var oldValue = this.route._show;
+            this.routes.forEach(function (route) {
+                route._show = false;
+                route.polyline.setStrokeColor('#65b320');
+            });
+            this.route._show = !oldValue;
+            this.route.polyline.setStrokeColor('blue');
         }
     }
 });

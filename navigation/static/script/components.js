@@ -213,6 +213,10 @@ var RouteList = Vue.extend({
         }
     },
     methods: {
+        changeColor: function (index, color) {
+            console.log(index);
+            this.routes[index].changeColor(color);
+        },
         selectOne: function (index) {
             for (var i = 0; i < this.selectedRoutes.length; i++) {
                 if (this.routes[index] == this.selectedRoutes[i]) {

@@ -294,8 +294,12 @@ var LabelList = Vue.extend({
 
             if (overlay instanceof BMap.Marker) {
                 var marker = overlay;
+                var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(25, 25), {
+                    imageSize: new BMap.Size(25, 25)
+                });
+                marker.setIcon(icon);
                 me.markers.push(marker);
-                var tip = new Tips(marker.point, "标注名称");
+                var tip = new Tips(marker.point, "标注名称可在左侧修改");
                 me.tips.push(tip);
                 map.addOverlay(tip);
                 marker.addEventListener('click', function () {
@@ -311,7 +315,7 @@ var LabelList = Vue.extend({
                 marker.enableDragging();
                 overlays.push(marker);
                 drawingManager.close();
-                me.labels.push('标注名称' + (me.labels.length + 1));
+                me.labels.push('标注名称可在左侧修改' + (me.labels.length + 1));
             }
 
         };

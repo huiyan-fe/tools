@@ -90,7 +90,7 @@
     <ul class="route-list">
         <li v-for="route in routes":index="$index">
             <div>方案{{$index + 1}}-<a href="javascript:void(0)" v-on:click="showOne($index)">详情</a></div>
-            <ul class="step-list" v-show="route._show" nk='nk{{route._show}}'>
+            <ul class="step-list" v-show="route._show">
                 <li v-for="step in route.result.steps">
                 {{{step.instructions}}}
                 <li>
@@ -104,14 +104,17 @@
 <script type="text/x-template" id="selected-list">
     <div>选定的方案:</div>
     <ul class="route-list">
-        <li v-for="route in routes":index="$index">
-            <div>方案{{$index + 1}}-<a href="javascript:void(0)" v-on:click="showOne($index)">详情</a></div>
-            <ul class="step-list" v-show="route._show" nk='nk{{route._show}}'>
+        <li v-for="(i, route) in routes">
+            <div>方案{{i + 1}}-<a href="javascript:void(0)" v-on:click="showOne(i)">详情</a></div>
+            <ul class="color-list">
+                <li v-for="(j, color) in route.colors" :style="{ background: color }" v-on:click="changeColor(i, color)"></li>
+            </ul>
+            <ul class="step-list" v-show="route._show">
                 <li v-for="step in route.result.steps">
                 {{{step.instructions}}}
                 <li>
             </ul>
-            <a href="javascript: void(0)" class="waves-light btn" v-on:click="deleteOne($index)">删除此方案</a>
+            <a href="javascript: void(0)" class="waves-light btn" v-on:click="deleteOne(i)">删除此方案</a>
         </li>
     </ul>
 </script>

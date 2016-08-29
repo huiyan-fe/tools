@@ -84,3 +84,17 @@ html, body, #app{
 .label-list li{
     position:relative;
 }
+
+.color-list {
+    overflow:hidden;
+}
+
+.color-list li{
+    float: left;
+    width: 15px;
+    height: 15px;
+    background: black;
+    margin-right:5px;
+    margin-top:5px;
+    cursor: pointer;
+}

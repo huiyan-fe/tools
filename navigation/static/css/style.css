@@ -46,21 +46,30 @@ html, body, #app{
 .route-list {
 }
 
-.route-list li{
+.route-list > li{
     border: 1px solid #E4E6E7;
     padding: 5px;
     margin: 5px;
     line-height: 38px;
     cursor: pointer;
     overflow:hidden;
+    position:relative;
 }
 
-.route-list li.current{
+.route-list > li.current{
     border: 1px solid #E4E6E7;
 }
 
-.route-list li .btn{
-    float:right;
+.route-list > li .btn{
+    position: absolute;
+    right: 10px;
+    top: 15px;
+}
+.step-list > li {
+    line-height: 18px;
+    font-size: 12px;
+    padding: 5px;
+    border-top: 1px dashed blue;
 }
 
 .tools {

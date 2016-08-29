@@ -1,6 +1,7 @@
 function Route(options) {
     options = options || {};
     this.mode = options.mode;
+    this._show = false;
     this.result = options.result;
     this.render();
 }
@@ -19,9 +20,6 @@ Route.prototype.show = function () {
         map.addOverlay(this.endMarker);
         map.addOverlay(this.polyline);
     }
-}
-
-Route.prototype.highlight = function () {
 }
 
 Route.prototype.render = function () {
@@ -49,6 +47,9 @@ Route.prototype.render = function () {
         this.startMarker = addStart(points[0]);
         this.endMarker = addEnd(points[points.length - 1]);
         this.polyline = new BMap.Polyline(points, {
+            strokeColor: '#65b320',
+            strokeOpacity: 0.8,
+            strokeWeight: 5,
         });
         map.addOverlay(this.polyline);
     } else { // 驾车
@@ -70,7 +71,7 @@ Route.prototype.render = function () {
         this.endMarker = addEnd(points[points.length - 1]);
         this.polyline = new BMap.Polyline(points, {
             strokeColor: '#65b320',
-            strokeOpacity: 1,
+            strokeOpacity: 0.8,
             strokeWeight: 5,
         });
         map.addOverlay(this.polyline);
@@ -183,6 +184,13 @@ var RouteList = Vue.extend({
         },
         showOne: function (index) {
             this.route = this.routes[index];
+            var oldValue = this.route._show;
+            this.routes.forEach(function (route) {
+                route._show = false;
+                route.polyline.setStrokeColor('#65b320');
+            });
+            this.route._show = !oldValue;
+            this.route.polyline.setStrokeColor('blue');
         }
     }
 });

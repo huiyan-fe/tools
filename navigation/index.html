@@ -89,7 +89,12 @@
 <script type="text/x-template" id="route-list">
     <ul class="route-list">
         <li v-for="route in routes":index="$index" v-on:click="showOne($index)">
-            <span>方案{{$index + 1}}</span>
+            <p>方案{{$index + 1}}</p>
+            <ul class="step-list" v-show="route._show" nk='nk{{route._show}}'>
+                <li v-for="step in route.result.steps">
+                {{{step.instructions}}}
+                <li>
+            </ul>
             <a href="javascript: void(0)" class="waves-light btn" v-on:click="selectOne($index)">选择此方案</a>
         </li>
     </ul>

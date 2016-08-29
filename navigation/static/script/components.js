@@ -290,6 +290,28 @@ var LabelList = Vue.extend({
             }
         }
     },
+    created: function () {
+        var marker = new BMap.Marker(new BMap.Point(116.404, 39.915));
+        this.labels.push('标注名称可在左侧修改1');
+        marker.enableDragging();
+        marker.addEventListener('dragging', function () {
+            tip._point = marker.point;
+            tip.draw();
+        });
+        marker.addEventListener('dragend', function () {
+            tip._point = marker.point;
+            tip.draw();
+        });
+        this.markers.push(marker);
+        var tip = new Tips(new BMap.Point(116.404, 39.915), "标注名称可在左侧修改");
+        this.tips.push(tip);
+        map.addOverlay(marker);
+        map.addOverlay(tip);
+        var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(25, 25), {
+            imageSize: new BMap.Size(25, 25)
+        });
+        marker.setIcon(icon);
+    },
     init: function () {
         var me = this;
 
@@ -394,6 +416,65 @@ var Tools = Vue.extend({
         }
     }
 });
+
+function Tips(point, text, mouseoverText){
+        this._point = point;
+        this._text = text;
+        this._overText = mouseoverText;
+    }
+
+    Tips.prototype = new BMap.Overlay();
+
+    Tips.prototype.changeColor = function(color){
+        var positions = {
+            '#ee5d5b': '0 0',
+            '#ff9625': '0 -10px',
+            '#6caeca': '0 -20px'
+        }
+        this._div.style.backgroundColor = color;
+        this._arrow.style.backgroundPosition = positions[color];
+    }
+
+    Tips.prototype.initialize = function(map){
+        this._map = map;
+        var div = this._div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+        div.style.backgroundColor = "#EE5D5B";
+        div.style.border = "1px solid #BC3B3A";
+        div.style.color = "white";
+        div.style.height = "28px";
+        div.style.padding = "5px";
+        div.style.whiteSpace = "nowrap";
+        div.style.MozUserSelect = "none";
+        div.style.fontSize = "12px"
+        var span = this._span = document.createElement("span");
+        div.appendChild(span);
+        span.appendChild(document.createTextNode(this._text));      
+        var that = this;
+
+        var arrow = this._arrow = document.createElement("div");
+        arrow.style.background = "url(static/images/label.png) no-repeat";
+        arrow.style.position = "absolute";
+        arrow.style.width = "11px";
+        arrow.style.height = "10px";
+        arrow.style.top = "26px";
+        arrow.style.left = "10px";
+        arrow.style.overflow = "hidden";
+        div.appendChild(arrow);
+
+        map.getPanes().labelPane.appendChild(div);
+
+        return div;
+    }
+
+    Tips.prototype.draw = function(){
+        var map = this._map;
+        this._span.innerHTML = this._text;
+        var pixel = map.pointToOverlayPixel(this._point);
+        this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+        this._div.style.top  = pixel.y - 40 + "px";
+    }
 
 Vue.component('panel', Panel)
 Vue.component('route-list', RouteList)

@@ -43,6 +43,7 @@ html, body, #app{
     top: 75px;
     bottom: 15px;
     width: 350px;
+    overflow-y: auto;
 }
 
 .del{

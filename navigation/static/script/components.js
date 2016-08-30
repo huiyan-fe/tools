@@ -431,7 +431,13 @@ function Tips(point, text, mouseoverText){
             '#ff9625': '0 -10px',
             '#6caeca': '0 -20px'
         }
+        var borderColors = {
+            '#ee5d5b': '#BC3B3A',
+            '#ff9625': '#c57f1d',
+            '#6caeca': '#5188a5'
+        }
         this._div.style.backgroundColor = color;
+        this._div.style.borderColor = borderColors[color];
         this._arrow.style.backgroundPosition = positions[color];
     }
 

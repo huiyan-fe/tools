@@ -122,9 +122,8 @@ Route.prototype.render = function () {
     this.polyline = new BMap.Polyline(points, this.lineStyle);
     map.addOverlay(this.polyline);
 
-    this.directions.push(addDirection(points, ~~(points.length / 4)));
-    this.directions.push(addDirection(points, ~~(points.length / 4 * 2)));
-    this.directions.push(addDirection(points, ~~(points.length / 4 * 3)));
+    this.directions.push(addDirection(points, ~~(points.length / 3)));
+    this.directions.push(addDirection(points, ~~(points.length / 3 * 2)));
     
 }
 

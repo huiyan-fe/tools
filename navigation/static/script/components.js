@@ -183,12 +183,16 @@ var Panel = Vue.extend({
             var me = this;
             var url = 'http://api.map.baidu.com/direction/v1?callback=?';
             $.getJSON(url, data, function (rs) {
+                var points = [];
                 for (var i = 0; i < rs.result.routes.length; i++) {
-                    me.tmpRoutes.push(new Route({
+                    var route = new Route({
                         mode: me.mode,
                         result: rs.result.routes[i]
-                    }));
+                    });
+                    me.tmpRoutes.push(route);
+                    points = points.concat(route.polyline.getPath());
                 }
+                map.setViewport(points);
             });
         },
         addStart: function () {

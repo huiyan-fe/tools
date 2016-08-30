@@ -2,7 +2,7 @@
 
 [工具地址](http://huiyan-fe.github.io/tools/navigation/)
 
-<img style="vertical-align: top;" src="./static/images.png" alt="preview">
+<img style="vertical-align: top;" src="./static/images/preview.jpg" alt="preview">
 
 ## 功能
 * 路径规划

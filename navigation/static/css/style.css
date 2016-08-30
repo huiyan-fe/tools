@@ -82,12 +82,18 @@ html, body, #app{
 
 .tools {
     right: 10px;
-    top: 0px;
+    top: 120px;
     width: 385px;
 }
 
 .tools .input-field {
     margin-top: 0;
+}
+
+.toolBtn {
+    position:absolute;
+    right: 400px;
+    top: 70px;
 }
 
 .label-list li{

@@ -407,12 +407,18 @@ var Tools = Vue.extend({
     template: '#tools',
     data: function () {
         return {
-            style: 'grayscale'
+            style: 'grayscale',
+            show: false
         }
     },
     watch: {
         style: function (style) {
             map.setMapStyle({style: style});
+        }
+    },
+    methods: {
+        toggle: function () {
+            this.show = !this.show;
         }
     }
 });

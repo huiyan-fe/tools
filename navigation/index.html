@@ -144,7 +144,8 @@
 </script>
 
 <script type="text/x-template" id="tools">
-    <div class="tools commonBox">
+    <div class="waves-effect light-blue darken-1 btn toolBtn" v-on:click="toggle">个性化底图配置</div>
+    <div class="tools commonBox" v-show="show">
         <div class="input-field">
             <select class="browser-default" v-model="style">
                 <option value="normal">默认</option>

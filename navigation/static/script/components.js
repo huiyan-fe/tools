@@ -6,6 +6,7 @@ function Route(options) {
         strokeOpacity: 0.8,
         strokeWeight: 5,
     }
+    this.directions = [];
     this.colors = [
         '#b71c1c',
         '#880e4f',
@@ -60,6 +61,9 @@ Route.prototype.clear = function () {
         map.removeOverlay(this.startMarker);
         map.removeOverlay(this.endMarker);
         map.removeOverlay(this.polyline);
+        this.directions.forEach(function (item) {
+            map.removeOverlay(item);
+        });
     }
 }
 
@@ -68,6 +72,9 @@ Route.prototype.show = function () {
         map.addOverlay(this.startMarker);
         map.addOverlay(this.endMarker);
         map.addOverlay(this.polyline);
+        this.directions.forEach(function (item) {
+            map.addOverlay(item);
+        });
     }
 }
 
@@ -93,10 +100,6 @@ Route.prototype.render = function () {
             points.push(new BMap.Point(lnglat[0], lnglat[1]));
         }
 
-        this.startMarker = addStart(points[0]);
-        this.endMarker = addEnd(points[points.length - 1]);
-        this.polyline = new BMap.Polyline(points, this.lineStyle);
-        map.addOverlay(this.polyline);
     } else { // 驾车
         var route = this.result;
         var paths = [];
@@ -112,11 +115,17 @@ Route.prototype.render = function () {
             points.push(new BMap.Point(lnglat[0], lnglat[1]));
         }
        
-        this.startMarker = addStart(points[0]);
-        this.endMarker = addEnd(points[points.length - 1]);
-        this.polyline = new BMap.Polyline(points, this.lineStyle);
-        map.addOverlay(this.polyline);
     }
+
+    this.startMarker = addStart(points[0]);
+    this.endMarker = addEnd(points[points.length - 1]);
+    this.polyline = new BMap.Polyline(points, this.lineStyle);
+    map.addOverlay(this.polyline);
+
+    this.directions.push(addDirection(points, ~~(points.length / 4)));
+    this.directions.push(addDirection(points, ~~(points.length / 4 * 2)));
+    this.directions.push(addDirection(points, ~~(points.length / 4 * 3)));
+    
 }
 
 var Panel = Vue.extend({

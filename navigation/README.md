@@ -2,6 +2,8 @@
 
 [工具地址](http://huiyan-fe.github.io/tools/navigation/)
 
+<img style="vertical-align: top;" src="./static/images.png" alt="preview">
+
 ## 功能
 * 路径规划
 * 添加文本标注

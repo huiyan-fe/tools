@@ -36,6 +36,7 @@ html, body, #app{
     border-radius: 3px;
     padding: 10px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .panel {
@@ -80,8 +81,8 @@ html, body, #app{
 }
 
 .tools {
-    right: 5px;
-    top: 130px;
+    right: 10px;
+    top: 0px;
     width: 385px;
 }
 
@@ -116,7 +117,7 @@ html, body, #app{
 .tip{
     position:absolute;
     top: 20px;
-    right: 220px;
+    right: 200px;
     background:rgba(255, 255, 255, 1);
     border: 1px dashed red;
     padding: 8px;

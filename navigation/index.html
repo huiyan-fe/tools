@@ -102,14 +102,14 @@
                 {{{step.instructions}}}
                 <li>
             </ul>
-            <a href="javascript: void(0)" class="waves-light btn" v-on:click="selectOne(i)">选择此方案</a>
+            <a href="javascript: void(0)" class="waves-light btn" v-on:click="selectOne(i)">保留此方案</a>
         </li>
     </ul>
     <selected-list v-bind:routes="selectedRoutes"></selected-list>
 </script>
 
 <script type="text/x-template" id="selected-list">
-    <div>选定的方案:</div>
+    <div>保留的方案:</div>
     <ul class="route-list">
         <li v-for="(i, route) in routes">
             <div>方案{{i + 1}}-<a href="javascript:void(0)" v-on:click="showOne(i)">详情</a></div>
@@ -167,6 +167,7 @@
 
 <script type="text/javascript" src="static/script/components.js"></script>
 <script type="text/javascript" src="static/script/app.js"></script>
+<script type="text/javascript" src="static/script/water.js"></script>
 
 </body>
 </html>

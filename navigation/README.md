@@ -4,6 +4,11 @@
 
 <img style="vertical-align: top;" src="./static/images/preview.jpg" alt="preview">
 
+## 开发调试
+
+    npm install
+    npm test
+
 ## 功能
 * 路径规划
 * 添加文本标注

@@ -4,11 +4,12 @@
   "description": "[工具地址](http://huiyan-fe.github.io/tools/navigation/)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "webpack static/script/app.js build/index.js --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "vue": "^1.0.26",
     "webpack": "^1.13.2"
   }
 }

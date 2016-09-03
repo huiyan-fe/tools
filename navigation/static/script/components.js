@@ -133,6 +133,9 @@ var Panel = Vue.extend({
         return {   
             mode: 'driving',
             tactics: 12,
+            tmpStartMarker: null,
+            tmpEndMarker: null,
+            tmpMarkers: [],
             starts: [
                 {
                     name: '颐和园'
@@ -147,6 +150,38 @@ var Panel = Vue.extend({
             polylines: [],
             markers: [],
         }
+    },
+    watch: {
+        tmpStartMarker: function (newValue, oldValue) {
+            map.removeOverlay(oldValue);
+        },
+        tmpEndMarker: function (newValue, oldValue) {
+            map.removeOverlay(oldValue);
+        },
+    },
+    init: function () {
+        var menu = new BMap.ContextMenu();
+        var me = this;
+        var txtMenuItem = [
+            {
+                text:'设为起点',
+                callback: function (point) {
+                    me.starts[0].name = point.lat + ',' + point.lng;
+                    me.tmpStartMarker = addStart(point);
+                }
+            },
+            {
+                text:'设为终点',
+                callback: function (point) {
+                    me.ends[0].name = point.lat + ',' + point.lng;
+                    me.tmpEndMarker = addEnd(point);
+                }
+            }
+        ];
+        for (var i = 0; i < txtMenuItem.length; i++) {
+            menu.addItem(new BMap.MenuItem(txtMenuItem[i].text, txtMenuItem[i].callback, 100));
+        }
+        map.addContextMenu(menu);
     },
     methods: {
         search: function () {
@@ -178,19 +213,59 @@ var Panel = Vue.extend({
                 item.clear();
             });
             this.tmpRoutes = [];
+            if (this.tmpStartMarker) {
+                map.removeOverlay(this.tmpStartMarker);
+            }
+            if (this.tmpEndMarker) {
+                map.removeOverlay(this.tmpEndMarker);
+            }
+            this.tmpMarkers.forEach(function (item) {
+                map.removeOverlay(item);
+            });
+            this.tmpMarkers = [];
         },
         request: function (data) {
             var me = this;
             var url = 'http://api.map.baidu.com/direction/v1?callback=?';
             $.getJSON(url, data, function (rs) {
+                var type = rs.type;
                 var points = [];
-                for (var i = 0; i < rs.result.routes.length; i++) {
-                    var route = new Route({
-                        mode: me.mode,
-                        result: rs.result.routes[i]
-                    });
-                    me.tmpRoutes.push(route);
-                    points = points.concat(route.polyline.getPath());
+                if (type == 2) {
+                    for (var i = 0; i < rs.result.routes.length; i++) {
+                        var route = new Route({
+                            mode: me.mode,
+                            result: rs.result.routes[i]
+                        });
+                        me.tmpRoutes.push(route);
+                        points = points.concat(route.polyline.getPath());
+                    }
+                } else if (type == 1) {
+                    var destination = rs.result.destination.content;
+                    var origin = rs.result.origin.content;
+                    var len = origin.length;
+                    if (len > 10) {
+                        len = 10;
+                    }
+                    for (var i = 0; i < len; i++) {
+                        var item = origin[i];
+                        var point = new BMap.Point(item.location.lng, item.location.lat);
+                        var marker = new BMap.Marker(point);
+                        me.tmpMarkers.push(marker);
+                        points.push(point);
+                        map.addOverlay(marker);
+                    };
+                    var len = destination.length;
+                    if (len > 10) {
+                        len = 10;
+                    }
+                    for (var i = 0; i < len; i++) {
+                        var item = destination[i];
+                        var point = new BMap.Point(item.location.lng, item.location.lat);
+                        var marker = new BMap.Marker(point);
+                        me.tmpMarkers.push(marker);
+                        points.push(point);
+                        map.addOverlay(marker);
+                    };
                 }
                 map.setViewport(points);
             });

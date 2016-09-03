@@ -137,9 +137,13 @@
             <input type="text" v-model="label"/>
             <a href="javascript:void(0)" class="del" v-on:click="remove($index)">删除</a>
             <ul class="color-list">
-                <li v-for="color in colors" :style="{ background: color }" v-on:click="changeColor(i, color)"></li>
+                <li v-for="color in colors" :style="{ background: color }" v-on:click="changeLabelColor(i, color)"></li>
             </ul>
         </li>
+    </ul>
+    <div>绘线样式:</div>
+    <ul class="color-list">
+        <li v-for="color in polylineColors" :style="{ background: color }" v-on:click="changeLineColor(color)"></li>
     </ul>
 </script>
 

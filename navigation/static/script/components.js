@@ -285,11 +285,51 @@ var LabelList = Vue.extend({
     data: function () {
         return {
             labels: [],
+            polylines: [],
             markers: [],
             colors: [
                 '#ee5d5b',
                 '#ff9625',
                 '#6caeca'
+            ],
+            polylineColors: [
+                '#b71c1c',
+                '#880e4f',
+                '#4a148c',
+                '#d50000',
+                '#c51162',
+                '#aa00ff',
+                '#311b92',
+                '#1a237e',
+                '#0d47a1',
+                '#6200ea',
+                '#304ffe',
+                '#2962ff',
+                '#01579b',
+                '#006064',
+                '#004d40',
+                '#0091ea',
+                '#00b8d4',
+                '#00bfa5',
+                '#1b5e20',
+                '#33691e',
+                '#827717',
+                '#00c853',
+                '#64dd17',
+                '#aeea00',
+                '#f57f17',
+                '#ff6f00',
+                '#e65100',
+                '#ffd600',
+                '#ffab00',
+                '#ff6d00',
+                '#bf360c',
+                '#3e2723',
+                '#212121',
+                '#dd2c00',
+                '#263238',
+                '#000',
+                '#fff',
             ],
             tips: []
         }
@@ -355,6 +395,8 @@ var LabelList = Vue.extend({
                 overlays.push(marker);
                 drawingManager.close();
                 me.labels.push('标注名称可在左侧修改' + (me.labels.length + 1));
+            } else if (overlay instanceof BMap.Polyline) {
+                me.polylines.push(overlay);
             }
 
         };
@@ -392,8 +434,13 @@ var LabelList = Vue.extend({
         drawingManager.addEventListener('overlaycomplete', overlaycomplete);
     },
     methods: {
-        changeColor: function (index, color) {
+        changeLabelColor: function (index, color) {
             this.tips[index].changeColor(color);
+        },
+        changeLineColor: function (color) {
+            this.polylines.forEach(function (polyline) {
+                polyline.setStrokeColor(color);
+            });
         },
         showMarker: function () {
             this.markers.forEach(function (item) {

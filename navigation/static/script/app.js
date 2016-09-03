@@ -18,7 +18,6 @@ map.addControl(new BMap.CityListControl({
     offset: new BMap.Size(380, 10),
 }));
 
-
 var local = new BMap.LocalSearch(map, {
     renderOptions:{
         map: map

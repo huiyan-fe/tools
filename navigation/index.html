@@ -14,6 +14,7 @@
     <!--加载鼠标绘制工具-->
     <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DistanceTool/1.2/src/DistanceTool_min.js"></script>
 
     <script src="static/libs/vue.min.js"></script>
     <script src="static/libs/materialize.min.js"></script>
@@ -84,11 +85,17 @@
         </div>
         <route-list v-bind:routes="tmpRoutes"></route-list>
         <label-list></label-list>
+        <distance-tool></distance-tool>
     </div>
 </div>
 
 </script>
 
+<script type="text/x-template" id="distance-tool">
+        <div>测距工具</div>
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="open">开启</a>
+        <a class="waves-effect light-blue darken-1 btn" v-on:click="close">关闭</a>
+</script>
 
 <script type="text/x-template" id="route-list">
     <ul class="route-list">

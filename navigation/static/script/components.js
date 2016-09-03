@@ -247,6 +247,9 @@ var LabelList = Vue.extend({
                 '#ff9625',
                 '#6caeca'
             ],
+            polylineWeights: [
+                3, 5, 8, 10, 12
+            ],
             polylineColors: [
                 '#b71c1c',
                 '#880e4f',
@@ -395,6 +398,11 @@ var LabelList = Vue.extend({
         changeLineColor: function (color) {
             this.polylines.forEach(function (polyline) {
                 polyline.setStrokeColor(color);
+            });
+        },
+        changeLineWeight: function (color) {
+            this.polylines.forEach(function (polyline) {
+                polyline.setStrokeWeight(color);
             });
         },
         showMarker: function () {

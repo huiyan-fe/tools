@@ -160,6 +160,10 @@
     <ul class="color-list">
         <li v-for="color in polylineColors" :style="{ background: color }" v-on:click="changeLineColor(color)"></li>
     </ul>
+    <ul class="weight-list">
+        <li>线宽:</li>
+        <li v-for="(j, weight) in polylineWeights" v-on:click="changeLineWeight(weight)">{{weight}}</li>
+    </ul>
 </script>
 
 <script type="text/x-template" id="tools">

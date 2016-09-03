@@ -452,6 +452,10 @@ var LabelList = Vue.extend({
                 map.removeOverlay(item);
             });
         },
+        deleteLastPolyline: function () {
+            var polyline = this.polylines.pop();
+            map.removeOverlay(polyline);
+        },
         remove: function (index) {
             map.removeOverlay(this.markers[index]);
             map.removeOverlay(this.tips[index]);

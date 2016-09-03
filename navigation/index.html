@@ -142,6 +142,7 @@
         </li>
     </ul>
     <div>绘线样式:</div>
+    <a class="waves-effect light-blue darken-1 btn" v-on:click="deleteLastPolyline">删除最后绘的线</a>
     <ul class="color-list">
         <li v-for="color in polylineColors" :style="{ background: color }" v-on:click="changeLineColor(color)"></li>
     </ul>

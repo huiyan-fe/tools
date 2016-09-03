@@ -106,6 +106,7 @@ html, body, #app{
     top: 10px;
 }
 
+.weight-list,
 .color-list {
     overflow:hidden;
 }
@@ -118,6 +119,12 @@ html, body, #app{
     margin-right:5px;
     margin-top:5px;
     cursor: pointer;
+}
+
+.weight-list li{
+    float: left;
+    margin-right: 5px;
+    cursor:pointer;
 }
 
 .tip{

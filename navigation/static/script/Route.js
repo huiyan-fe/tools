@@ -49,6 +49,9 @@ function Route(options) {
         '#000',
         '#fff',
     ];
+    this.weights = [
+        3, 5, 8, 10, 12
+    ];
     this.mode = options.mode;
     this._show = false;
     this.result = options.result;
@@ -57,6 +60,10 @@ function Route(options) {
 
 Route.prototype.changeColor = function (color) {
     this.polyline.setStrokeColor(color);
+}
+
+Route.prototype.changeWeight = function (color) {
+    this.polyline.setStrokeWeight(color);
 }
 
 Route.prototype.clear = function () {

@@ -10532,8 +10532,10 @@
 	    },
 	    methods: {
 	        changeColor: function (index, color) {
-	            console.log(index);
 	            this.routes[index].changeColor(color);
+	        },
+	        changeWeight: function (index, color) {
+	            this.routes[index].changeWeight(color);
 	        },
 	        selectOne: function (index) {
 	            for (var i = 0; i < this.selectedRoutes.length; i++) {
@@ -10565,8 +10567,10 @@
 	    props: ['routes'],
 	    methods: {
 	        changeColor: function (index, color) {
-	            console.log(index);
 	            this.routes[index].changeColor(color);
+	        },
+	        changeWeight: function (index, color) {
+	            this.routes[index].changeWeight(color);
 	        },
 	        deleteOne: function (index) {
 	            this.routes[index].selected = false;
@@ -10948,6 +10952,9 @@
 	        '#000',
 	        '#fff',
 	    ];
+	    this.weights = [
+	        3, 5, 8, 10, 12
+	    ];
 	    this.mode = options.mode;
 	    this._show = false;
 	    this.result = options.result;
@@ -10956,6 +10963,10 @@
 
 	Route.prototype.changeColor = function (color) {
 	    this.polyline.setStrokeColor(color);
+	}
+
+	Route.prototype.changeWeight = function (color) {
+	    this.polyline.setStrokeWeight(color);
 	}
 
 	Route.prototype.clear = function () {

@@ -103,6 +103,10 @@
             <ul class="color-list">
                 <li v-for="(j, color) in route.colors" :style="{ background: color }" v-on:click="changeColor(i, color)"></li>
             </ul>
+            <ul class="weight-list">
+                <li>线宽:</li>
+                <li v-for="(j, weight) in route.weights" v-on:click="changeWeight(i, weight)">{{weight}}</li>
+            </ul>
             <ul class="step-list" v-show="route._show">
                 <li v-for="step in route.result.steps">
                 {{{step.instructions}}}
@@ -121,6 +125,10 @@
             <div>方案{{i + 1}}-<a href="javascript:void(0)" v-on:click="showOne(i)">详情</a></div>
             <ul class="color-list">
                 <li v-for="(j, color) in route.colors" :style="{ background: color }" v-on:click="changeColor(i, color)"></li>
+            </ul>
+            <ul class="weight-list">
+                <li>线宽:</li>
+                <li v-for="(j, weight) in route.weights" v-on:click="changeWeight(i, weight)">{{weight}}</li>
             </ul>
             <ul class="step-list" v-show="route._show">
                 <li v-for="step in route.result.steps">

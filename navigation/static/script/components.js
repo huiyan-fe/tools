@@ -177,8 +177,10 @@ var RouteList = Vue.extend({
     },
     methods: {
         changeColor: function (index, color) {
-            console.log(index);
             this.routes[index].changeColor(color);
+        },
+        changeWeight: function (index, color) {
+            this.routes[index].changeWeight(color);
         },
         selectOne: function (index) {
             for (var i = 0; i < this.selectedRoutes.length; i++) {
@@ -210,8 +212,10 @@ var SelectedList = Vue.extend({
     props: ['routes'],
     methods: {
         changeColor: function (index, color) {
-            console.log(index);
             this.routes[index].changeColor(color);
+        },
+        changeWeight: function (index, color) {
+            this.routes[index].changeWeight(color);
         },
         deleteOne: function (index) {
             this.routes[index].selected = false;

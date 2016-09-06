@@ -10940,6 +10940,7 @@
 	        strokeWeight: 5,
 	    }
 	    this.directions = [];
+	    this.isShowStartEndMarker = true;
 	    this.colors = [
 	        '#b71c1c',
 	        '#880e4f',
@@ -11008,19 +11009,23 @@
 	}
 
 	Route.prototype.showStartEndMarker = function () {
+	    this.isShowStartEndMarker = true;
 	    map.addOverlay(this.startMarker);
 	    map.addOverlay(this.endMarker);
 	}
 
 	Route.prototype.hideStartEndMarker = function () {
+	    this.isShowStartEndMarker = false;
 	    map.removeOverlay(this.startMarker);
 	    map.removeOverlay(this.endMarker);
 	}
 
 	Route.prototype.show = function () {
 	    if (this.selected) {
-	        map.addOverlay(this.startMarker);
-	        map.addOverlay(this.endMarker);
+	        if (this.isShowStartEndMarker) {
+	            map.addOverlay(this.startMarker);
+	            map.addOverlay(this.endMarker);
+	        }
 	        map.addOverlay(this.polyline);
 	        this.directions.forEach(function (item) {
 	            map.addOverlay(item);

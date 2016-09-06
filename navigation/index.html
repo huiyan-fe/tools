@@ -82,7 +82,7 @@
             <a class="waves-effect light-blue darken-1 btn" v-on:click="search">导航搜索</a>
             <a class="waves-effect btn" v-on:click="clear">清空搜索结果</a>
         </div>
-        <route-list v-bind:routes="tmpRoutes"></route-list>
+        <route-list v-bind:routes="tmpRoutes" v-bind:showstartend="isShowStartEnd"></route-list>
         <label-list></label-list>
         <distance-tool></distance-tool>
         <div class="row">

@@ -10528,7 +10528,7 @@
 
 	var RouteList = Vue.extend({
 	    template: '#route-list',
-	    props: ['routes'],
+	    props: ['routes', 'showstartend'],
 	    data: function () {
 	        return {
 	            route: null,
@@ -10538,6 +10538,15 @@
 	    watch: {
 	        route: function (value) {
 	            console.log(value);
+	        },
+	        showstartend: function (newValue) {
+	            this.selectedRoutes.forEach(function (item) {
+	                if (newValue == '1') {
+	                    item.showStartEndMarker();
+	                } else {
+	                    item.hideStartEndMarker();
+	                }
+	            });
 	        }
 	    },
 	    methods: {

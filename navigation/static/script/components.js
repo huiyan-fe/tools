@@ -22,6 +22,7 @@ var Panel = Vue.extend({
                     name: '西单'
                 }
             ],
+            isShowStartEnd: '1',
             tmpRoutes: [],
             polylines: [],
             markers: [],
@@ -34,6 +35,15 @@ var Panel = Vue.extend({
         tmpEndMarker: function (newValue, oldValue) {
             map.removeOverlay(oldValue);
         },
+        isShowStartEnd: function (newValue) {
+            this.tmpRoutes.forEach(function (item) {
+                if (newValue == '1') {
+                    item.showStartEndMarker();
+                } else {
+                    item.hideStartEndMarker();
+                }
+            });
+        }
     },
     init: function () {
         var menu = new BMap.ContextMenu();
@@ -157,7 +167,7 @@ var Panel = Vue.extend({
         },
         removeEnd: function (index) {
             this.ends.splice(index, 1);
-        },
+        }
     }
 });
 

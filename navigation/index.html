@@ -85,6 +85,13 @@
         <route-list v-bind:routes="tmpRoutes"></route-list>
         <label-list></label-list>
         <distance-tool></distance-tool>
+        <div class="row">
+            显示起终点:
+            <input type="radio" id="showStartEnd" value="1" v-model="isShowStartEnd">
+            <label for="showStartEnd">显示</label>
+            <input type="radio" id="hideStartEnd" value="0" v-model="isShowStartEnd">
+            <label for="hideStartEnd">隐藏</label>
+        </div>
     </div>
 </div>
 

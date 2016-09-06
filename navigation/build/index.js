@@ -10377,6 +10377,7 @@
 	                    name: '西单'
 	                }
 	            ],
+	            isShowStartEnd: '1',
 	            tmpRoutes: [],
 	            polylines: [],
 	            markers: [],
@@ -10389,6 +10390,15 @@
 	        tmpEndMarker: function (newValue, oldValue) {
 	            map.removeOverlay(oldValue);
 	        },
+	        isShowStartEnd: function (newValue) {
+	            this.tmpRoutes.forEach(function (item) {
+	                if (newValue == '1') {
+	                    item.showStartEndMarker();
+	                } else {
+	                    item.hideStartEndMarker();
+	                }
+	            });
+	        }
 	    },
 	    init: function () {
 	        var menu = new BMap.ContextMenu();
@@ -10512,7 +10522,7 @@
 	        },
 	        removeEnd: function (index) {
 	            this.ends.splice(index, 1);
-	        },
+	        }
 	    }
 	});
 
@@ -10986,6 +10996,16 @@
 	            map.removeOverlay(item);
 	        });
 	    }
+	}
+
+	Route.prototype.showStartEndMarker = function () {
+	    map.addOverlay(this.startMarker);
+	    map.addOverlay(this.endMarker);
+	}
+
+	Route.prototype.hideStartEndMarker = function () {
+	    map.removeOverlay(this.startMarker);
+	    map.removeOverlay(this.endMarker);
 	}
 
 	Route.prototype.show = function () {

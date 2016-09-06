@@ -77,6 +77,16 @@ Route.prototype.clear = function () {
     }
 }
 
+Route.prototype.showStartEndMarker = function () {
+    map.addOverlay(this.startMarker);
+    map.addOverlay(this.endMarker);
+}
+
+Route.prototype.hideStartEndMarker = function () {
+    map.removeOverlay(this.startMarker);
+    map.removeOverlay(this.endMarker);
+}
+
 Route.prototype.show = function () {
     if (this.selected) {
         map.addOverlay(this.startMarker);

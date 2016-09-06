@@ -11077,8 +11077,8 @@
 	    this.polyline = new BMap.Polyline(points, this.lineStyle);
 	    map.addOverlay(this.polyline);
 
-	    this.directions.push(utils.addDirection(points, ~~(points.length / 3)));
-	    this.directions.push(utils.addDirection(points, ~~(points.length / 3 * 2)));
+	    //this.directions.push(utils.addDirection(points, ~~(points.length / 3)));
+	    //this.directions.push(utils.addDirection(points, ~~(points.length / 3 * 2)));
 	    
 	}
 

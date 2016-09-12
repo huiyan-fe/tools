@@ -67,6 +67,7 @@
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
     <script type="text/javascript" src="DrawingManager.js"></script>
     <script type="text/javascript" src="clipboard.min.js"></script>
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
     <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
     <script type="text/javascript" src="CanvasLayer.js"></script>
@@ -79,6 +80,8 @@
         </br>
         <input id="boundaryText" placeholder="行政区划"/>
         <button onclick="boundarySearch()">搜索</button>
+        </br>
+        <label><input id="showGrid" type="checkbox"/>显示网格</label>
         </br>
         <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="more" placeholder="需要转换的数据格式示例：116.391639,39.915941,116.391639,39.910849"></textarea>
         <div style="margin-top:10px;">
@@ -384,6 +387,14 @@ var styleOptions = {
         });   
     }
 
+
+    var showGrid = false;
+
+    $('#showGrid').bind('change', function() {
+        showGrid = $(this).is(':checked');
+        canvasLayer.draw();
+    });
+
     var canvasLayer = new CanvasLayer({
         map: map,
         update: update
@@ -412,6 +423,10 @@ var styleOptions = {
         var mcCenter = projection.lngLatToPoint(map.getCenter());
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        if (!showGrid) {
+            return;
+        }
 
         var zoom = map.getZoom();
         if (zoom < 16) {

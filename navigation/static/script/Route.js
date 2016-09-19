@@ -135,6 +135,7 @@ Route.prototype.render = function () {
         paths = paths.join(';');
         paths = paths.split(';');
         var points = [];
+        var lineStr = paths.join(',');
         for (var j = 0; j < paths.length; j++) {
             var lnglat = paths[j].split(',');
             points.push(new BMap.Point(lnglat[0], lnglat[1]));

@@ -11,11 +11,18 @@ map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
 map.panBy(180, 0);
 
 var style = 'grayscale';
-map.setMapStyle({style:style});
+
+//map.setMapStyle({style:style});
 
 map.addControl(new BMap.CityListControl({
     anchor: BMAP_ANCHOR_TOP_LEFT,
     offset: new BMap.Size(380, 10),
 }));
+
+var ctrl = new BMapLib.TrafficControl({
+    showPanel: false //是否显示路况提示面板
+});      
+map.addControl(ctrl);
+ctrl.setAnchor(BMAP_ANCHOR_BOTTOM_RIGHT); 
 
 module.exports = map;

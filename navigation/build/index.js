@@ -73,12 +73,19 @@
 	map.panBy(180, 0);
 
 	var style = 'grayscale';
-	map.setMapStyle({style:style});
+
+	//map.setMapStyle({style:style});
 
 	map.addControl(new BMap.CityListControl({
 	    anchor: BMAP_ANCHOR_TOP_LEFT,
 	    offset: new BMap.Size(380, 10),
 	}));
+
+	var ctrl = new BMapLib.TrafficControl({
+	    showPanel: false //是否显示路况提示面板
+	});      
+	map.addControl(ctrl);
+	ctrl.setAnchor(BMAP_ANCHOR_BOTTOM_RIGHT); 
 
 	module.exports = map;
 
@@ -11065,6 +11072,7 @@
 	        paths = paths.join(';');
 	        paths = paths.split(';');
 	        var points = [];
+	        var lineStr = paths.join(',');
 	        for (var j = 0; j < paths.length; j++) {
 	            var lnglat = paths[j].split(',');
 	            points.push(new BMap.Point(lnglat[0], lnglat[1]));

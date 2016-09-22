@@ -149,7 +149,11 @@
             var html="";
             var pointArr = [];
             for(var i=0;i<points.length;i+=2){
-                point = new BMap.Point(points[i], points[i+1]);
+                if (points[i] > 10000) {
+                    point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
+                } else {
+                    point = new BMap.Point(points[i], points[i+1]);
+                }
                 pointArr.push(point);
                 var marker = new BMap.Marker(point);
                 map.addOverlay(marker);
@@ -175,7 +179,11 @@
                 var pointArr = [];
                 var coordinates = [];
                 for(var i=0;i<points.length;i+=2){
-                    point = new BMap.Point(points[i], points[i+1]);
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMap.Point(points[i], points[i+1]);
+                    }
                     pointArr.push(point);
                     pointArrs.push(point);
                     coordinates.push([points[i], points[i+1]]);

@@ -93,6 +93,7 @@
 	    },
 	    methods: {
 	        addLine: function () {
+	            this.routes.length = 0;
 	            map.clearOverlays();
 	            var inputText = this.inputText;
 	            inputText = inputText.split("|");

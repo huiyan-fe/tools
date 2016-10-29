@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+    <link rel="stylesheet" href="static/libs/materialize.css" />
+    <!--
+    <link rel="stylesheet" href="static/css/reset.css" />
+    -->
+    <link rel="stylesheet" href="static/css/style.css" />
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aONgqBx7eaWfv2X6RiMyGcWxp6HAwFWi"></script>
+
+    <script src="static/libs/materialize.min.js"></script>
+</head>
+<body>
+	
+<div id="map"></div>
+
+<div id="app">
+    <nav>
+        <div class="nav-wrapper row">
+            <div class="col s12">
+                <canvas id="waterfall"></canvas>
+                <a href="#" class="brand-logo">道路路径绘制工具</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="http://developer.baidu.com/map" target="_blank">百度地图开放平台</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <panel></panel>
+</div>
+
+<script type="text/x-template" id="form-template">
+
+<div class="row panel commonBox">
+    <div class="inner">
+        <textarea class="materialize-textarea" placeholder="输入路段文本,格式116.536617,39.813379,116.536685,39.813465,116.536685,39.813465,116.536557,39.813457,116.536557,39.813457,116.535962,39.813179,116.535876,39.813086,116.535876,39.813086,116.536017,39.813098,116.536617,39.813379,116.533516,39.811901,116.533613,39.811949,116.533613,39.811949,116.534089,39.812192,116.534134,39.812268,116.534134,39.812268,116.53447,39.812426,116.53447,39.812426,116.535731,39.813018,116.535731,39.813018,116.535876,39.813086;116.534134,39.812268,116.534024,39.812264,116.533535,39.812012,116.533535,39.812012,116.533445,39.811966" v-model="inputText"></textarea>
+        <a class="waves-effect waves-light btn" v-on:click="addLine">绘制道路</a>
+    </div>
+    <route-list v-bind:routes="routes"></route-list>
+</div>
+
+</script>
+
+<script type="text/x-template" id="route-list">
+    <ul class="route-list">
+        <li v-for="(route, index) in routes">
+            <div><span :style="{ color: route.color }">路段{{index}}</span>-<a href="javascript:void(0)" v-on:click="toggle(route)">显示/隐藏</a></div>
+        </li>
+    </ul>
+</script>
+
+
+<script type="text/javascript" src="static/libs/vue.js"></script>
+<script type="text/javascript" src="build/index.js"></script>
+
+<!--
+<script type="text/javascript" src="static/script/water.js"></script>
+-->
+
+</body>
+</html>

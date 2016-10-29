@@ -1,0 +1,14 @@
+{
+  "name": "navigation",
+  "version": "1.0.0",
+  "description": "[工具地址](http://huiyan-fe.github.io/tools/navigation/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "webpack static/script/app.js build/index.js --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^1.13.3"
+  }
+}

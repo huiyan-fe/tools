@@ -228,6 +228,21 @@
             map.setViewport(pointArr);
             var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
             map.addOverlay(polygon);
+
+            var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
+            var opts = {
+              position : polygon.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+              offset   : new BMap.Size(30, -30)    //设置文本偏移量
+            }
+            var label = new BMap.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+                label.setStyle({
+                     color : "red",
+                     fontSize : "12px",
+                     height : "20px",
+                     lineHeight : "20px",
+                     fontFamily:"微软雅黑"
+                 });
+            map.addOverlay(label); 
         };
 
         function morePointToLngLat(){

@@ -104,6 +104,10 @@
         var mapType = new BMap.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT, offset: new BMap.Size(330, 10)});
         map.addControl(mapType);
 
+        var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT});// 左上角，添加比例尺
+        map.addControl(scaleControl);
+
+
         // 鐧惧害鍦板浘API鍔熻兘
         var point = new BMap.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??
         map.centerAndZoom(point,15);                     // 鍒濆??嬪寲鍦板浘,璁剧疆涓??蹇冪偣鍧愭爣鍜屽湴鍥剧骇鍒??銆??

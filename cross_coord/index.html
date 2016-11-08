@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GeoUtils示例</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.2"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+    
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    
+    <style type="text/css">
+        table {
+            font-size: 14px;
+        }
+        body,html{margin: 0; padding: 0;}
+        .mapWarp{width: 100%; height: 100%;}
+
+        #panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background:#fff;
+            width: 300px;
+            word-break: break-all;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="mapWarp" class="mapWarp"></div>
+    <div id="panel">
+        <p>最后一个面坐标：</p>
+        <div id="result"></div>
+    </div>
+</body>
+<!--<script type="text/javascript" src="../dest/gpc.js"></script>
+<script type="text/javascript" src="../dest/index.main.js"></script>-->
+<script type="text/javascript" src="./colorblock.min.js"></script>
+<script type="text/javascript" src="./test.js"></script>
+</html>

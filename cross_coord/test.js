@@ -27,18 +27,12 @@ var colorBlock = new BMapLib.ColorBlock(map, {
 });
 
 
-colorBlock.addEventListener('overlaycomplete', overlaycomplete);
-
-function overlaycomplete(name, e) {
+function polygonCallback(result) {
+    var rs = result[result.length - 1];
+    var path = rs.polygons[0];
     var mercatorProjection = map.getMapType().getProjection();
-    var bounds = e.overlay.getBounds();
-    var ne = bounds.getNorthEast();
-    var sw = bounds.getSouthWest();
-    var neMc = mercatorProjection.lngLatToPoint(ne);
-    var swMc = mercatorProjection.lngLatToPoint(sw);
     var pathStr = "";
     var pathmcStr = "";
-    var path = e.overlay.getPath();
     for (var i = 0; i < path.length; i++) {
         pathStr += path[i].lng + "," + path[i].lat + ",";
         var mc = mercatorProjection.lngLatToPoint(path[i]);
@@ -46,8 +40,6 @@ function overlaycomplete(name, e) {
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
-    document.getElementById('result').innerHTML = "<div><span>左下角,右上角(经纬度)：</span><p class='copyText'>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat + "</p></div>"
-                                                 + "<div><span>左下角,右上角(墨卡托坐标)：</span><p class='copyText'>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y + "</p></div>"
-                                                 + "<div><span>坐标集(经纬度)：</span><p class='copyText'>" + pathStr + "</p></div>"
+    document.getElementById('result').innerHTML = "<div><span>坐标集(经纬度)：</span><p class='copyText'>" + pathStr + "</p></div>"
                                                  + "<div><span>坐标集(墨卡托坐标)：</span><p class='copyText'>" + pathmcStr + "</p></div>";
 }

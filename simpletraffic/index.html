@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+        #allmap{width:100%;height:100%;}
+        p{margin-left:5px; font-size:14px;}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aONgqBx7eaWfv2X6RiMyGcWxp6HAwFWi"></script>
+    <title>简版路况</title>
+</head>
+<body>
+    <div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var map = new BMap.Map('allmap', {
+        enableMapClick: false
+    });
+    map.centerAndZoom(new BMap.Point(116.404269,39.916042), 12);
+      
+    map.enableScrollWheelZoom();                         //启用滚轮放大缩小
+    map.disable3DBuilding();
+
+    //个性化在线编辑器地址：http://developer.baidu.com/map/custom/
+    var styleJson = [
+          {
+                    "featureType": "all",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#ffffff",
+                              "lightness": 10,
+                              "saturation": -100
+                    }
+          },
+          {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "administrative",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          }
+    ];
+    map.setMapStyle({styleJson:styleJson});
+
+    var tileLayer = new BMap.TileLayer({ isTransparentPng: true });
+    var scaler = window.devicePixelRatio || 1;
+    tileLayer.getTilesUrl = function (tileCoord, zoom) {
+        var x = tileCoord.x;
+        var y = tileCoord.y;
+        var time = new Date().getTime();
+        return 'http://its.map.baidu.com:8002/traffic/TrafficTileService?level=' + zoom + '&x=' + x + '&y=' + y + '&time=' + time + '&v=081&scaler=' + scaler;  //根据当前坐标，选取合适的瓦片图
+    }
+
+    map.addTileLayer(this.tileLayer);
+</script>
+
+

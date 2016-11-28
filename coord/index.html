@@ -347,19 +347,34 @@ var overlaycomplete = function(e){
     var neMc = mercatorProjection.lngLatToPoint(ne);
     var swMc = mercatorProjection.lngLatToPoint(sw);
     var pathStr = "";
+    var geojsonStr = "";
     var pathmcStr = "";
     var path = e.overlay.getPath();
+    var coordinates = [];
     for (var i = 0; i < path.length; i++) {
         pathStr += path[i].lng + "," + path[i].lat + ",";
         var mc = mercatorProjection.lngLatToPoint(path[i]);
         pathmcStr += mc.x + "," + mc.y + ",";
+        coordinates.push([path[i].lng, path[i].lat]);
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
+    if (e.overlay.toString() == '[object Polyline]') {
+        geojsonStr = {
+            "type": "LineString",
+            "coordinates": coordinates
+        };
+    } else if (e.overlay.toString() == '[object Polygon]') {
+        geojsonStr = {
+            "type": "Polygon",
+            "coordinates": [coordinates]
+        };
+    }
     document.getElementById('result').innerHTML = "<div><span>左下角,右上角(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat + "</p></div>"
                                                  + "<div><span>左下角,右上角(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y + "</p></div>"
                                                  + "<div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + pathStr + "</p></div>"
-                                                 + "<div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + pathmcStr + "</p></div>";
+                                                 + "<div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + pathmcStr + "</p></div>"
+                                                 + "<div><span>geojson：</span><button class='btn'>复制</button><p class='copyText'>" + JSON.stringify(geojsonStr) + "</p></div>";
 };
 
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="materialize.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="materialize.min.js"></script>
+</head>
+<body>
+
+    <h1><a href="http://geojson.org/" target="_blank">GEOJSON</a>转换工具</h1>
+<div class="row">
+    <form class="col s12">
+    <p>坐标类型</p>
+    <p>
+      <input name="type" type="radio" id="test1" value="Point"/>
+      <label for="test1">点</label>
+    </p>
+    <p>
+      <input name="type" type="radio" id="test2" value="LineString"/>
+      <label for="test2">线</label>
+    </p>
+    <p>
+      <input class="with-gap" name="type" type="radio" id="test3"  value="Polygon"/>
+      <label for="test3">面</label>
+    </p>
+      <div class="row">
+        <div class="input-field col s12">
+          <textarea id="textFormat" class="materialize-textarea"></textarea>
+          <label for="textFormat">逗号分割数据格式转换：116.391639,39.915941,116.391639,39.910849</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+          <textarea class="materialize-textarea" id="result"></textarea>
+          <label for="result">GEOJSON结果</label>
+        </div>
+      </div>
+      <div class="row">
+      <a class="waves-effect waves-light btn" id="btn">转换</a>
+      </div>
+    </form>
+  </div>
+
+<script type="text/javascript">
+$('#btn').bind('click', function () {
+    var geojsonStr = {};
+    var textFormat = $('#textFormat').val();
+    var type = $('input[name="type"]:checked').val();
+    switch(type) {
+        case 'Point':
+            var points = textFormat.split(",");
+            var coordinates = [points[0], points[1]];
+            for (var i = 0; i < points.length; i += 2) {
+                coordinates = [points[0], points[1]];
+            }
+            geojsonStr = {
+                "type": "Point",
+                "coordinates": coordinates
+            };
+            break;
+        case 'LineString':
+            var coordinates = [];
+            var points = textFormat.split(",");
+            for (var i = 0; i < points.length; i += 2) {
+                coordinates.push([points[i], points[i + 1]]);
+            }
+            geojsonStr = {
+                "type": "LineString",
+                "coordinates": coordinates
+            };
+            break;
+        case 'Polygon':
+            var coordinates = [];
+            var points = textFormat.split(",");
+            for (var i = 0; i < points.length; i += 2) {
+                coordinates.push([points[i], points[i + 1]]);
+            }
+            geojsonStr = {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+            };
+            break;
+        default:
+            alert('请先选择坐标类型');
+            break;
+    }
+    $('#result').val(JSON.stringify(geojsonStr));
+    $('#result').focus();
+})
+</script>
+	
+</body>
+</html>

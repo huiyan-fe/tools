@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+        #allmap{height:100%;width:100%;}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=aONgqBx7eaWfv2X6RiMyGcWxp6HAwFWi"></script>
+</head>
+<body>
+    <div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+
+// 百度地图API功能
+var map = new BMap.Map("allmap", {
+    enableMapClick: false
+});
+var point = new BMap.Point(116.404, 39.915);
+map.centerAndZoom(point, 15);
+
+var marker = new BMap.Marker(new BMap.Point(116.404, 39.915), {
+    enableDragging: true
+}); // 创建点
+
+var markerMatch = new BMap.Marker(new BMap.Point(116.394, 39.915)); // 创建点
+
+marker.addEventListener('dragging', function (e) {
+    map.addOverlay(markerMatch);
+    var match = getMatch(e.point, polylines);
+    if (match && match.length > 0) {
+        markerMatch.setPosition(match[0].point);
+    } else {
+        map.removeOverlay(markerMatch);
+    }
+});
+
+marker.addEventListener('dragstart', function (e) {
+    map.addOverlay(markerMatch);
+});
+
+marker.addEventListener('dragend', function (e) {
+    map.removeOverlay(markerMatch);
+    var match = getMatch(e.point, polylines);
+    if (match && match.length > 0) {
+        marker.setPosition(match[0].point);
+    }
+});
+
+function getMatch(point, roads) {
+    var P = map.pointToPixel(point); // point.pixel;
+
+    var match = [];
+
+    for (var j = 0; j < roads.length; j++) {
+        var pixels = roads[j].getPath();
+        for (var i = 1; i < pixels.length; i++) {
+            var A = map.pointToPixel(pixels[i - 1]);
+            var B = map.pointToPixel(pixels[i]);
+            var vAP = [P.x - A.x, P.y - A.y];
+            var vAB = [B.x - A.x, B.y - A.y];
+            var vPB = [B.x - P.x, B.y - P.y];
+
+            var cAPAB = vAP[0] * vAB[0] + vAP[1] * vAB[1];
+            var lAPAB = Math.sqrt(Math.pow(vAP[0], 2) + Math.pow(vAP[1], 2)) * Math.sqrt(Math.pow(vAB[0], 2) + Math.pow(vAB[1], 2));
+            var rPAB = Math.acos(cAPAB / lAPAB);
+
+            var cABPB = vAB[0] * vPB[0] + vAB[1] * vPB[1];
+            var lABPB = Math.sqrt(Math.pow(vAB[0], 2) + Math.pow(vAB[1], 2)) * Math.sqrt(Math.pow(vPB[0], 2) + Math.pow(vPB[1], 2));
+            var rPBA = Math.acos(cABPB / lABPB);
+
+            if (rPAB < Math.PI / 2 && rPBA < Math.PI / 2) {
+                var lAP = Math.sqrt(Math.pow(vAP[0], 2) + Math.pow(vAP[1], 2));
+                var lAB = Math.sqrt(Math.pow(vAB[0], 2) + Math.pow(vAB[1], 2));
+                var lAO = Math.cos(rPAB) * lAP;
+                var pAOAB = lAO / lAB;
+                var lPO = Math.sin(rPAB) * lAP;
+                var O = [A.x + vAB[0] * pAOAB, A.y + vAB[1] * pAOAB];
+                if (lPO < 50) {
+                    match.push({
+                        point: map.pixelToPoint({
+                            x: O[0],
+                            y: O[1]
+                        }),
+                        length: lPO
+                    });
+                }
+            }
+        }
+    }
+
+    match.sort(function (a, b) {
+        return a.length - b.length;
+    });
+
+    var ret = match.length > 0 ? match : null;
+    console.log(ret);
+    return ret;
+}
+
+var polylines = [
+    new BMap.Polyline([
+        new BMap.Point(116.399, 39.910),
+        new BMap.Point(116.405, 39.920),
+        new BMap.Point(116.425, 39.900)
+    ]),
+    new BMap.Polyline([
+        new BMap.Point(116.369, 39.910),
+        new BMap.Point(116.385, 39.920),
+        new BMap.Point(116.395, 39.900)
+    ])
+];
+
+for (var i = 0; i < polylines.length; i++) {
+    map.addOverlay(polylines[i]);
+}
+
+map.addOverlay(marker);
+
+</script>
+

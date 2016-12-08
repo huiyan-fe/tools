@@ -91,6 +91,22 @@
             <button onclick="morePolyline()">画线</button>
             <button onclick="morePolygon()">画面</button>
         </div>
+        <div style="font-size: 12px;margin-top: 5px;">个性化底图配置：
+        <select class="browser-default" id="select">
+            <option value="normal" selected>默认</option>
+            <option value="light">清新蓝风格</option>
+            <option value="dark">黑夜风格</option>
+            <option value="redalert">红色警戒风格</option>
+            <option value="googlelite">精简风格</option>
+            <option value="grassgreen">自然绿风格</option>
+            <option value="midnight">午夜蓝风格</option>
+            <option value="pink">浪漫粉风格</option>
+            <option value="darkgreen">青春绿风格</option>
+            <option value="bluish">清新蓝绿风格</option>
+            <option value="grayscale">高端灰风格</option>
+            <option value="hardedge">强边界风格</option>
+        </select>
+        </div>
     </div>
     <div id="result" style="position:absolute;bottom:0px;left:0px; right:0px;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
     </div>
@@ -496,6 +512,11 @@ var styleOptions = {
         //ctx.fill();
         ctx.stroke();
     }
+
+    $('#select').bind('change', function () {
+        var style = $(this).val();
+        map.setMapStyle({style: style});
+    });
 
 
     </script>

@@ -12,7 +12,7 @@ map.panBy(180, 0);
 
 var style = 'grayscale';
 
-//map.setMapStyle({style:style});
+map.setMapStyle({style:style});
 
 map.addControl(new BMap.CityListControl({
     anchor: BMAP_ANCHOR_TOP_LEFT,

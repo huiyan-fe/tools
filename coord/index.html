@@ -179,15 +179,20 @@
                     }
                     pointArr.push(point);
                     var marker = new BMap.Marker(point);
+                    marker.enableDragging();
                     map.addOverlay(marker);
 
                     var opts = {
                       position : point,    // 指定文本标注所在的地理位置
-                      offset   : new BMap.Size(-item[0].length * 12 / 2, 0)    //设置文本偏移量
+                      offset   : new BMap.Size(-item[0].length * 12 / 2 - 5, 3)    //设置文本偏移量
                     }
+
                     var label = new BMap.Label(item[0], opts);  // 创建文本标注对象
                         label.setStyle({
-                             color : "red",
+                             color : "#fff",
+                             padding: '3px 5px',
+                             border: 0,
+                             background: '#ee5d5b',
                              fontSize : "12px",
                              height : "20px",
                              lineHeight : "20px",

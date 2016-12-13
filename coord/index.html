@@ -164,29 +164,58 @@
         }
 
         function moremarker() {
-            var tex=document.getElementById('more').value;
-            var points=tex.split(",");
+            var tex = document.getElementById('more').value;
             var html="";
             var pointArr = [];
-            for(var i=0;i<points.length;i+=2){
-                if (points[i] > 10000) {
-                    point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
-                } else {
-                    point = new BMap.Point(points[i], points[i+1]);
+
+            if (tex.indexOf(';') > 0) {
+                var points=tex.split(";");
+                for (var i=0; i < points.length; i++) {
+                    var item = points[i].split(",");
+                    if (item[1] > 10000) {
+                        point = project.pointToLngLat(new BMap.Pixel(item[1], item[2]));
+                    } else {
+                        point = new BMap.Point(item[1], item[2]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMap.Marker(point);
+                    map.addOverlay(marker);
+
+                    var opts = {
+                      position : point,    // 指定文本标注所在的地理位置
+                      offset   : new BMap.Size(-item[0].length * 12 / 2, 0)    //设置文本偏移量
+                    }
+                    var label = new BMap.Label(item[0], opts);  // 创建文本标注对象
+                        label.setStyle({
+                             color : "red",
+                             fontSize : "12px",
+                             height : "20px",
+                             lineHeight : "20px",
+                             fontFamily:"微软雅黑"
+                         });
+                    map.addOverlay(label); 
                 }
-                pointArr.push(point);
-                var marker = new BMap.Marker(point);
-                map.addOverlay(marker);
+            } else {
+                var points=tex.split(",");
+                for (var i = 0; i < points.length; i += 2) {
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMap.Point(points[i], points[i+1]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMap.Marker(point);
+                    map.addOverlay(marker);
 
-                (function(marker, point){
-                var opts = {};
-                var infoWindow = new BMap.InfoWindow(point.lng + ',' + point.lat, opts);  // 创建信息窗口对象 
-                marker.addEventListener("click", function(){          
-                    map.openInfoWindow(infoWindow, point); //开启信息窗口
-                });
-                })(marker, point);
+                    (function(marker, point){
+                    var opts = {};
+                    var infoWindow = new BMap.InfoWindow(point.lng + ',' + point.lat, opts);  // 创建信息窗口对象 
+                    marker.addEventListener("click", function(){          
+                        map.openInfoWindow(infoWindow, point); //开启信息窗口
+                    });
+                    })(marker, point);
+                }
             }
-
             map.setViewport(pointArr);
         }
         function morePolyline() {

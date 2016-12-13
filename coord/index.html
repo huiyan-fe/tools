@@ -112,7 +112,7 @@
     </div>
     <script type="text/javascript">
         var mapOptions = {
-            enableMapClick: false
+            enableMapClick: true
         }
 
         var map = new BMap.Map('map', mapOptions);
@@ -193,9 +193,15 @@
             var tex=document.getElementById('more').value;
             var pointArrs = [];
             var data = [];
+            var textData = [];
             var lines = tex.split(";");
             for (var j = 0; j < lines.length; j++) {
-                var points=lines[j].split(",");
+                var item = lines[j].split("|");
+                var list = item[0];
+                if (item.length > 1) {
+                    list = item[1];
+                }
+                var points = list.split(",");
                 var pointArr = [];
                 var coordinates = [];
                 for(var i=0;i<points.length;i+=2){
@@ -215,6 +221,15 @@
                     },
                     count: 1
                 });
+                if (item.length > 1) {
+                    textData.push({
+                        geometry: {
+                            type: 'Point',
+                            coordinates: coordinates[~~(coordinates.length / 2)]
+                        },
+                        text: item[0]
+                    });
+                }
                 // var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
                 // map.addOverlay(polyline);
             }
@@ -230,6 +245,15 @@
             }
 
             var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+            if (item.length > 1) {
+                var mapvLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
+                    fillStyle: 'blue',
+                    font: "bold 22px Arial",
+                    shadowBlur: 20,
+                    shadowColor: 'yellow',
+                    draw: 'text',
+                });
+            }
 
             map.setViewport(pointArrs);
         };

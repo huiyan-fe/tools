@@ -106,11 +106,14 @@
             <option value="grayscale">高端灰风格</option>
             <option value="hardedge">强边界风格</option>
         </select>
+        <label><input id="showText" type="checkbox" checked/>隐藏文本</label>
         </div>
     </div>
     <div id="result" style="position:absolute;bottom:0px;left:0px; right:0px;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
     </div>
     <script type="text/javascript">
+        var textLayer;
+
         var mapOptions = {
             enableMapClick: true
         }
@@ -198,6 +201,7 @@
                              lineHeight : "20px",
                              fontFamily:"微软雅黑"
                          });
+                    labels.push(label);
                     map.addOverlay(label); 
                 }
             } else {
@@ -280,7 +284,7 @@
 
             var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
             if (item.length > 1) {
-                var mapvLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
+                textLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
                     fillStyle: 'blue',
                     font: "bold 22px Arial",
                     shadowBlur: 20,
@@ -513,6 +517,24 @@ var styleOptions = {
     $('#showGrid').bind('change', function() {
         showGrid = $(this).is(':checked');
         canvasLayer.draw();
+    });
+
+    var showText = true;
+    var labels = [];
+    $('#showText').bind('change', function() {
+        showText = $(this).is(':checked');
+        if (showText) {
+            textLayer.show();
+        } else {
+            textLayer.hide();
+        }
+        for(var i = 0; i < labels.length; i++) {
+            if (showText) {
+                map.addOverlay(labels[i]);
+            } else {
+                map.removeOverlay(labels[i]);
+            }
+        }
     });
 
     var canvasLayer = new CanvasLayer({

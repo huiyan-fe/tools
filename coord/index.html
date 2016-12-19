@@ -252,6 +252,8 @@
                     pointArrs.push(point);
                     coordinates.push([points[i], points[i+1]]);
                 }
+                map.addOverlay(getDirection(pointArr, ~~(pointArr.length / 3)));
+                map.addOverlay(getDirection(pointArr, ~~(pointArr.length / 3 * 2)));
                 data.push({
                     geometry: {
                         type: 'LineString',
@@ -597,6 +599,48 @@ var styleOptions = {
         var style = $(this).val();
         map.setMapStyle({style: style});
     });
+
+function getDirection(points, i) {
+    var icon = new BMap.Icon("direction.png", new BMap.Size(20, 20), {
+        imageSize: new BMap.Size(20, 20)
+    });
+
+    var curIndex = i;
+    var curPos = points[curIndex];
+    var marker = new BMap.Marker(curPos);
+    map.addOverlay(marker);
+    marker.setIcon(icon);
+    marker.setShadow(icon);
+    var targetPos = points[curIndex + 1]; 
+    var curPos =  map.pointToPixel(curPos);
+    var targetPos =  map.pointToPixel(targetPos);   
+
+
+    if(targetPos.x != curPos.x){
+        var tan = (targetPos.y - curPos.y)/(targetPos.x - curPos.x),
+        atan  = Math.atan(tan);
+        deg = atan*360/(2*Math.PI);
+        //degree  correction;
+        if(targetPos.x < curPos.x){
+            deg = -deg + 90 + 90;
+
+        } else {
+            deg = -deg;
+        }
+
+        marker.setRotation(-deg);   
+
+    }else {
+        var disy = targetPos.y- curPos.y ;
+        var bias = 0;
+        if(disy > 0)
+            bias=-1
+        else
+            bias = 1
+        marker.setRotation(-bias * 90);  
+    }
+    return marker;
+}
 
 
     </script>

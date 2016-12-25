@@ -41,6 +41,7 @@ class App extends React.Component {
             }
             data.push({
                 points: pointArr,
+                strokeColor: 'red',
                 textPoint: pointArr[0],
                 isShowArrow: true,
                 isShowText: true,
@@ -64,7 +65,7 @@ class App extends React.Component {
         var data = this.state.data;
         for (var i = 0; i < data.length; i++) {
             map.addOverlay(new BMap.Polyline(data[i].points, {
-                strokeColor: 'red',
+                strokeColor: data[i].strokeColor,
                 strokeWeight: 5
             }));
 

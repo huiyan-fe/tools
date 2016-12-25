@@ -1,9 +1,13 @@
 import React from 'react';
+import ColorList from './colorlist.jsx';
 
 class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {}
+        this.changeArrow = this.changeArrow.bind(this);
+        this.changeText = this.changeText.bind(this);
+        this.changeColor = this.changeColor.bind(this);
     }
 
     componentDidMount() {
@@ -25,6 +29,12 @@ class App extends React.Component {
     changeText(index, flag) {
         this.props.updateDataByIndex(index, {
             isShowText: flag
+        });
+    }
+
+    changeColor(index, color) {
+        this.props.updateDataByIndex(index, {
+            strokeColor: color
         });
     }
 
@@ -50,6 +60,7 @@ class App extends React.Component {
                       显示文本
                     </label>
                   </div>
+                    <ColorList changeColor={self.changeColor.bind(self, index)}/>
                 </div>
             </div>;
         });

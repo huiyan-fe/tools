@@ -41,6 +41,13 @@ class App extends React.Component {
         });
     }
 
+    changeStrokeWeight(index, aa) {
+        var value = this.refs['range' + index].value;
+        this.props.updateDataByIndex(index, {
+            strokeWeight: value
+        });
+    }
+
     render() {
         var self = this;
         var list = this.props.data.map(function (item, index) {
@@ -64,10 +71,13 @@ class App extends React.Component {
                     </label>
                   </div>
                     标注颜色
-                    
                     <ColorList colors={['#ee5d5b', '#ff9625', '#6caeca']} changeColor={self.changeTipColor.bind(self, index)}/>
                     线颜色
-                    <ColorList changeColor={self.changeTipColor.bind(self, index)}/>
+                    <ColorList changeColor={self.changeColor.bind(self, index)}/>
+                    线宽
+                    <p className="range-field">
+                        <input ref={'range' + index} type="range" min="0" max="25" onChange={self.changeStrokeWeight.bind(self, index)} defaultValue='5'/>
+                    </p>
                 </div>
             </div>;
         });

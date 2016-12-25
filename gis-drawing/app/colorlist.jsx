@@ -55,8 +55,8 @@ class App extends React.Component {
 
     render() {
         var self = this;
-        var module = this.state.colors.map(function (item) {
-            return <li style={{background: item}} onClick={self.changeColor.bind(self, item)}></li>
+        var module = this.state.colors.map(function (item, index) {
+            return <li key={index} style={{background: item}} onClick={self.changeColor.bind(self, item)}></li>
         });
 
         return (

@@ -20,14 +20,15 @@ class App extends React.Component {
     }
 
   render () {
-    var zIndex = "0";
+    var className = "container";
     if (this.state.isFullMap) {
-        zIndex = 999;
+        className  = "full-map";
     }
     return (
-    <div className="container">
-        <Map zIndex={zIndex}/>
+    <div className={className}>
+
         <Panel />
+        <Map/>
         
         <div className="switch is-full-map-btn">
             <label>

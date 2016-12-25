@@ -4,14 +4,25 @@ html, body, .container, .map{
     overflow:hidden;
 }
 
-.container,
-.map{
+.container {
     position:absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow:hidden;
+}
+
+.map{
+    position:absolute;
+    left: 350px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.full-map .map{
+    left: 0;
 }
 
 .commonBox {
@@ -25,10 +36,13 @@ html, body, .container, .map{
 }
 
 .panel {
-    left: 15px;
-    top: 5px;
-    bottom: 15px;
     width: 350px;
+    padding: 10px;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    overflow-y: auto;
+    position: absolute;
 }
 
 .is-full-map-btn {

@@ -16,6 +16,7 @@ class App extends React.Component {
         var map = window.map = new BMap.Map(this.refs.map, {
             enableMapClick: false
         });    // 创建Map实例
+        map.getContainer().style.zIndex = 1;
         map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5);  // 初始化地图,设置中心点坐标和地图级别
         map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
 
@@ -42,7 +43,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="map" ref="map" style={{zIndex: this.props.zIndex}}></div>
+            <div className="map" ref="map"></div>
         )
     }
 }

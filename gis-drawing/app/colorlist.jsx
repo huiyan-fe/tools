@@ -4,7 +4,7 @@ class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {
-            colors: [
+            colors: this.props.colors || [
                 '#b71c1c',
                 '#880e4f',
                 '#4a148c',

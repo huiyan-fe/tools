@@ -5,9 +5,6 @@ class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {}
-        this.changeArrow = this.changeArrow.bind(this);
-        this.changeText = this.changeText.bind(this);
-        this.changeColor = this.changeColor.bind(this);
     }
 
     componentDidMount() {
@@ -38,6 +35,12 @@ class App extends React.Component {
         });
     }
 
+    changeTipColor(index, color) {
+        this.props.updateDataByIndex(index, {
+            tipColor: color
+        });
+    }
+
     render() {
         var self = this;
         var list = this.props.data.map(function (item, index) {
@@ -60,7 +63,11 @@ class App extends React.Component {
                       显示文本
                     </label>
                   </div>
-                    <ColorList changeColor={self.changeColor.bind(self, index)}/>
+                    标注颜色
+                    
+                    <ColorList colors={['#ee5d5b', '#ff9625', '#6caeca']} changeColor={self.changeTipColor.bind(self, index)}/>
+                    线颜色
+                    <ColorList changeColor={self.changeTipColor.bind(self, index)}/>
                 </div>
             </div>;
         });

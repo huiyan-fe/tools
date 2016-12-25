@@ -15,10 +15,10 @@ function DraggingTip(options) {
          height : "20px",
          border: '0',
          background: 'none',
-         textShadow: '0px 0px 1px red',
+         textShadow: '0px 0px 1px #fff',
          color: 'black',
          lineHeight : "20px",
-         fontFamily:"微软雅黑"
+         fontFamily:"宋体"
     });
     var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(name.length * 13 || 25, 25), {
         anchor:new BMap.Size(0, 20),

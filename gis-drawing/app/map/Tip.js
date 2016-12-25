@@ -1,33 +1,39 @@
-function Tip(point, text){
+var positions = {
+    '#ee5d5b': '0 0',
+    '#ff9625': '0 -10px',
+    '#6caeca': '0 -20px'
+}
+var borderColors = {
+    '#ee5d5b': '#BC3B3A',
+    '#ff9625': '#c57f1d',
+    '#6caeca': '#5188a5'
+}
+
+function Tip(point, text, color){
     this._point = point;
     this._text = text;
+    this.color = color || '#ee5d5b';
 }
 
 Tip.prototype = new BMap.Overlay();
 
 Tip.prototype.changeColor = function(color){
-    var positions = {
-        '#ee5d5b': '0 0',
-        '#ff9625': '0 -10px',
-        '#6caeca': '0 -20px'
+    
+    if (this._div) {
+        this._div.style.backgroundColor = color;
+        this._div.style.borderColor = borderColors[color];
+        this._arrow.style.backgroundPosition = positions[color];
     }
-    var borderColors = {
-        '#ee5d5b': '#BC3B3A',
-        '#ff9625': '#c57f1d',
-        '#6caeca': '#5188a5'
-    }
-    this._div.style.backgroundColor = color;
-    this._div.style.borderColor = borderColors[color];
-    this._arrow.style.backgroundPosition = positions[color];
 }
+
 
 Tip.prototype.initialize = function(map){
     this._map = map;
     var div = this._div = document.createElement("div");
     div.style.position = "absolute";
     div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-    div.style.backgroundColor = "#EE5D5B";
-    div.style.border = "1px solid #BC3B3A";
+    div.style.backgroundColor = this.color;
+    div.style.border = "1px solid " + borderColors[this.color];
     div.style.color = "white";
     div.style.height = "28px";
     div.style.padding = "5px";
@@ -41,6 +47,7 @@ Tip.prototype.initialize = function(map){
 
     var arrow = this._arrow = document.createElement("div");
     arrow.style.background = "url(static/images/label.png) no-repeat";
+    arrow.style.backgroundPosition = positions[this.color];
     arrow.style.position = "absolute";
     arrow.style.width = "11px";
     arrow.style.height = "10px";

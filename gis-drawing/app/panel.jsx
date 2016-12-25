@@ -41,6 +41,7 @@ class App extends React.Component {
             data.push({
                 points: pointArr,
                 strokeColor: 'red',
+                tipColor: '#ee5d5b',
                 textPoint: pointArr[~~(pointArr.length / 2)],
                 startPoint: pointArr[0],
                 endPoint: pointArr[pointArr.length - 1],
@@ -84,6 +85,7 @@ class App extends React.Component {
                             map: map,
                             point: data[i].textPoint,
                             name: data[i].name,
+                            color: data[i].tipColor,
                             change: function() {
                                 data[i].textPoint = tip.point;
                             }

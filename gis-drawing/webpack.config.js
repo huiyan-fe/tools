@@ -13,7 +13,7 @@ module.exports= {
   },
 
   //enable dev source map
-  devtool: 'eval-source-map',
+  // devtool: 'eval-source-map',
   //enable dev server
   devServer: {
     historyApiFallback: true,

@@ -4,6 +4,7 @@ html, body, .container, .map{
     overflow:hidden;
 }
 
+.container,
 .map{
     position:absolute;
     left: 0;
@@ -30,6 +31,13 @@ html, body, .container, .map{
     width: 350px;
 }
 
+.is-full-map-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 999;
+}
+
 .route-list {
 }
 
@@ -51,3 +59,27 @@ html, body, .container, .map{
     right: 10px;
     top: 5px;
 }
+
+.weight-list,
+.color-list {
+    overflow:hidden;
+}
+
+.color-list li{
+    float: left;
+    width: 15px;
+    height: 15px;
+    background: black;
+    margin-right:5px;
+    margin-top:5px;
+    cursor: pointer;
+}
+
+.weight-list li{
+    float: left;
+    margin-right: 5px;
+    cursor:pointer;
+}
+
+
+

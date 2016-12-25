@@ -42,7 +42,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="map" ref="map"></div>
+            <div className="map" ref="map" style={{zIndex: this.props.zIndex}}></div>
         )
     }
 }

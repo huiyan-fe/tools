@@ -14,7 +14,7 @@ class App extends React.Component {
 
         // 百度地图API功能
         var map = window.map = new BMap.Map(this.refs.map, {
-            enableMapClick: false
+            enableMapClick: true
         });    // 创建Map实例
         map.getContainer().style.zIndex = 1;
         map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5);  // 初始化地图,设置中心点坐标和地图级别

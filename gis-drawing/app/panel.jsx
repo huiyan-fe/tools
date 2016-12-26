@@ -8,6 +8,7 @@ class App extends React.Component {
         super(args);
         this.state = {
             isShowTipArrow: true,
+            isShowText: true,
             data: []
         }
         this.updateDataByIndex = this.updateDataByIndex.bind(this);
@@ -150,6 +151,21 @@ class App extends React.Component {
         });
     }
 
+    changeText(flag) {
+        var self = this;
+        var data = this.state.data;
+        for (var i = 0; i < data.length; i++) {
+            data[i].isShowText = flag;
+        }
+
+        this.setState({
+            data: data,
+            isShowText: flag
+        }, function() {
+            this.renderRoads();
+        });
+    }
+
     render() {
         return (
             <div className="panel">
@@ -163,6 +179,14 @@ class App extends React.Component {
                       <input type="checkbox" defaultChecked='true' onClick={this.changeTipArrow.bind(this, !this.state.isShowTipArrow)}/>
                       <span className="lever"></span>
                       显示tip箭头
+                    </label>
+                </div>
+                <div className="switch">
+                    <label>
+                      隐藏所有文本
+                      <input type="checkbox" defaultChecked='true' onClick={this.changeText.bind(this, !this.state.isShowText)}/>
+                      <span className="lever"></span>
+                      显示所有文本
                     </label>
                 </div>
                 <RouteList data={this.state.data} updateDataByIndex={this.updateDataByIndex}/>

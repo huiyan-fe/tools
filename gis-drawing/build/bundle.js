@@ -21959,6 +21959,7 @@
 
 	        _this.state = {
 	            isShowTipArrow: true,
+	            isShowText: true,
 	            data: []
 	        };
 	        _this.updateDataByIndex = _this.updateDataByIndex.bind(_this);
@@ -22106,6 +22107,22 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeText',
+	        value: function changeText(flag) {
+	            var self = this;
+	            var data = this.state.data;
+	            for (var i = 0; i < data.length; i++) {
+	                data[i].isShowText = flag;
+	            }
+
+	            this.setState({
+	                data: data,
+	                isShowText: flag
+	            }, function () {
+	                this.renderRoads();
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -22131,6 +22148,18 @@
 	                        _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: this.changeTipArrow.bind(this, !this.state.isShowTipArrow) }),
 	                        _react2.default.createElement('span', { className: 'lever' }),
 	                        '\u663E\u793Atip\u7BAD\u5934'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'switch' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '\u9690\u85CF\u6240\u6709\u6587\u672C',
+	                        _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: this.changeText.bind(this, !this.state.isShowText) }),
+	                        _react2.default.createElement('span', { className: 'lever' }),
+	                        '\u663E\u793A\u6240\u6709\u6587\u672C'
 	                    )
 	                ),
 	                _react2.default.createElement(_routelist2.default, { data: this.state.data, updateDataByIndex: this.updateDataByIndex })

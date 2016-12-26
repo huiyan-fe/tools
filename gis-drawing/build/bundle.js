@@ -22034,8 +22034,9 @@
 	                }));
 
 	                if (data[i].isShowArrow) {
-	                    getDirection(data[i].points, ~~(data[i].points.length / 3));
-	                    getDirection(data[i].points, ~~(data[i].points.length / 3 * 2));
+	                    //getDirection(data[i].points, ~~(data[i].points.length / 3));
+	                    //getDirection(data[i].points, ~~(data[i].points.length / 3 * 2));
+	                    getDirection(data[i].points, ~~(data[i].points.length / 2));
 	                }
 
 	                if (data[i].isShowText) {

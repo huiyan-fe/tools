@@ -236,9 +236,6 @@
             for (var j = 0; j < lines.length; j++) {
                 var item = lines[j].split("|");
                 var list = item[0];
-                if (item.length > 1) {
-                    list = item[1];
-                }
                 var points = list.split(",");
                 var pointArr = [];
                 var coordinates = [];
@@ -267,7 +264,7 @@
                             type: 'Point',
                             coordinates: coordinates[~~(coordinates.length / 2)]
                         },
-                        text: item[0]
+                        text: item[1]
                     });
                 }
                 // var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});

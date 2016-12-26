@@ -176,7 +176,7 @@ class App extends React.Component {
                 <div className="switch">
                     <label>
                       隐藏tip箭头
-                      <input type="checkbox" defaultChecked='true' onClick={this.changeTipArrow.bind(this, !this.state.isShowTipArrow)}/>
+                      <input type="checkbox" checked={this.state.isShowTipArrow} onClick={this.changeTipArrow.bind(this, !this.state.isShowTipArrow)}/>
                       <span className="lever"></span>
                       显示tip箭头
                     </label>
@@ -184,7 +184,7 @@ class App extends React.Component {
                 <div className="switch">
                     <label>
                       隐藏所有文本
-                      <input type="checkbox" defaultChecked='true' onClick={this.changeText.bind(this, !this.state.isShowText)}/>
+                      <input type="checkbox" checked={this.state.isShowText} onClick={this.changeText.bind(this, !this.state.isShowText)}/>
                       <span className="lever"></span>
                       显示所有文本
                     </label>

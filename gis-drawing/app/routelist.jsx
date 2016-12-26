@@ -57,7 +57,7 @@ class App extends React.Component {
                   <div className="switch">
                     <label>
                       隐藏箭头
-                      <input type="checkbox" defaultChecked='true' onClick={self.changeArrow.bind(self, index, !item.isShowArrow)}/>
+                      <input type="checkbox" checked={item.isShowArrow} onClick={self.changeArrow.bind(self, index, !item.isShowArrow)}/>
                       <span className="lever"></span>
                       显示箭头
                     </label>
@@ -65,7 +65,7 @@ class App extends React.Component {
                   <div className="switch">
                     <label>
                       隐藏文本
-                      <input type="checkbox" defaultChecked='true' onClick={self.changeText.bind(self, index, !item.isShowText)}/>
+                      <input type="checkbox" checked={item.isShowText} onClick={self.changeText.bind(self, index, !item.isShowText)}/>
                       <span className="lever"></span>
                       显示文本
                     </label>

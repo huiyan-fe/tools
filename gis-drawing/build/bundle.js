@@ -22145,7 +22145,7 @@
 	                        'label',
 	                        null,
 	                        '\u9690\u85CFtip\u7BAD\u5934',
-	                        _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: this.changeTipArrow.bind(this, !this.state.isShowTipArrow) }),
+	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowTipArrow, onClick: this.changeTipArrow.bind(this, !this.state.isShowTipArrow) }),
 	                        _react2.default.createElement('span', { className: 'lever' }),
 	                        '\u663E\u793Atip\u7BAD\u5934'
 	                    )
@@ -22157,7 +22157,7 @@
 	                        'label',
 	                        null,
 	                        '\u9690\u85CF\u6240\u6709\u6587\u672C',
-	                        _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: this.changeText.bind(this, !this.state.isShowText) }),
+	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowText, onClick: this.changeText.bind(this, !this.state.isShowText) }),
 	                        _react2.default.createElement('span', { className: 'lever' }),
 	                        '\u663E\u793A\u6240\u6709\u6587\u672C'
 	                    )
@@ -22319,7 +22319,7 @@
 	                                'label',
 	                                null,
 	                                '\u9690\u85CF\u7BAD\u5934',
-	                                _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: self.changeArrow.bind(self, index, !item.isShowArrow) }),
+	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isShowArrow, onClick: self.changeArrow.bind(self, index, !item.isShowArrow) }),
 	                                _react2.default.createElement('span', { className: 'lever' }),
 	                                '\u663E\u793A\u7BAD\u5934'
 	                            )
@@ -22331,7 +22331,7 @@
 	                                'label',
 	                                null,
 	                                '\u9690\u85CF\u6587\u672C',
-	                                _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: self.changeText.bind(self, index, !item.isShowText) }),
+	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isShowText, onClick: self.changeText.bind(self, index, !item.isShowText) }),
 	                                _react2.default.createElement('span', { className: 'lever' }),
 	                                '\u663E\u793A\u6587\u672C'
 	                            )

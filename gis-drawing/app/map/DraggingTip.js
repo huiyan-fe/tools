@@ -1,6 +1,7 @@
 import Tip from './Tip.js';
 
 function DraggingTip(options) {
+    this.options = options;
     var map = options.map;
     var point = options.point;
     this.point = point;
@@ -26,6 +27,9 @@ function DraggingTip(options) {
 DraggingTip.prototype.show = function () {
     this.map.addOverlay(this.marker);
     this.map.addOverlay(this.tip);
+    if (this.options.isShowTipArrow === false) {
+        this.tip.hideArrow();
+    }
 }
 
 export default DraggingTip;

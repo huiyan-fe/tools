@@ -21958,6 +21958,7 @@
 	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
 
 	        _this.state = {
+	            isShowTipArrow: true,
 	            data: []
 	        };
 	        _this.updateDataByIndex = _this.updateDataByIndex.bind(_this);
@@ -22022,6 +22023,7 @@
 	    }, {
 	        key: 'renderRoads',
 	        value: function renderRoads() {
+	            var self = this;
 	            this.clearRoads();
 	            var data = this.state.data;
 	            for (var i = 0; i < data.length; i++) {
@@ -22039,6 +22041,7 @@
 	                    (function (i) {
 	                        if (data[i].name) {
 	                            var tip = new _DraggingTip2.default({
+	                                isShowTipArrow: self.state.isShowTipArrow,
 	                                map: map,
 	                                point: data[i].textPoint,
 	                                name: data[i].name,
@@ -22094,6 +22097,15 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeTipArrow',
+	        value: function changeTipArrow(flag) {
+	            this.setState({
+	                isShowTipArrow: flag
+	            }, function () {
+	                this.renderRoads();
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -22107,6 +22119,18 @@
 	                        'a',
 	                        { className: 'waves-effect waves-light btn', onClick: this.addData.bind(this) },
 	                        '\u6DFB\u52A0\u9053\u8DEF'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'switch' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '\u9690\u85CFtip\u7BAD\u5934',
+	                        _react2.default.createElement('input', { type: 'checkbox', defaultChecked: 'true', onClick: this.changeTipArrow.bind(this, !this.state.isShowTipArrow) }),
+	                        _react2.default.createElement('span', { className: 'lever' }),
+	                        '\u663E\u793Atip\u7BAD\u5934'
 	                    )
 	                ),
 	                _react2.default.createElement(_routelist2.default, { data: this.state.data, updateDataByIndex: this.updateDataByIndex })
@@ -22394,6 +22418,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function DraggingTip(options) {
+	    this.options = options;
 	    var map = options.map;
 	    var point = options.point;
 	    this.point = point;
@@ -22419,6 +22444,9 @@
 	DraggingTip.prototype.show = function () {
 	    this.map.addOverlay(this.marker);
 	    this.map.addOverlay(this.tip);
+	    if (this.options.isShowTipArrow === false) {
+	        this.tip.hideArrow();
+	    }
 	};
 
 	exports.default = DraggingTip;
@@ -22443,7 +22471,7 @@
 	    '#6caeca': '#5188a5'
 	};
 
-	function Tip(point, text, color) {
+	function Tip(point, text, color, hide) {
 	    this._point = point;
 	    this._text = text;
 	    this.color = color || '#ee5d5b';
@@ -22497,6 +22525,10 @@
 	Tip.prototype.setPosition = function (point) {
 	    this._point = point;
 	    this.draw();
+	};
+
+	Tip.prototype.hideArrow = function () {
+	    this._arrow.style.display = 'none';
 	};
 
 	Tip.prototype.draw = function () {

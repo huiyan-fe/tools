@@ -7,6 +7,7 @@ class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {
+            isShowTipArrow: true,
             data: []
         }
         this.updateDataByIndex = this.updateDataByIndex.bind(this);
@@ -66,6 +67,7 @@ class App extends React.Component {
     }
 
     renderRoads() {
+        var self = this;
         this.clearRoads();
         var data = this.state.data;
         for (var i = 0; i < data.length; i++) {
@@ -83,6 +85,7 @@ class App extends React.Component {
                 (function(i){
                     if (data[i].name) {
                         var tip = new DraggingTip({
+                            isShowTipArrow: self.state.isShowTipArrow,
                             map: map,
                             point: data[i].textPoint,
                             name: data[i].name,
@@ -137,7 +140,15 @@ class App extends React.Component {
         }, function() {
             this.renderRoads();
         });
-    };
+    }
+
+    changeTipArrow(flag) {
+        this.setState({
+            isShowTipArrow: flag
+        }, function() {
+            this.renderRoads();
+        });
+    }
 
     render() {
         return (
@@ -145,6 +156,14 @@ class App extends React.Component {
                 <div className="inner">
                     <textarea ref="textarea" style={{height: '100px',width:'100%',border:'1px solid #999'}} className="" placeholder="高速公路|116.330484,40.031406,116.33124,40.029496,116.33124,40.029496,116.331391,40.029105,116.331391,40.029105,116.331471,40.028934,116.331522,40.028853,116.331572,40.028762,116.331622,40.028692,116.331693,40.028611,116.331833,40.028459,116.332024,40.028267,116.332215,40.028065,116.332326,40.027943,116.332406,40.027852,116.332477,40.027761,116.332547,40.027661,116.332608,40.02756,116.332658,40.027449,116.332688,40.027339,116.332708,40.027219,116.332708,40.027099,116.332688,40.026979,116.332688,40.026959,116.332668,40.026859,116.332618,40.02674,116.332548,40.026621,116.332498,40.026552,116.332458,40.026502,116.332348,40.026403,116.332247,40.026335,116.332127,40.026266,116.332056,40.026217,116.332056,40.026217,116.331966,40.026188,116.331836,40.02615,116.331615,40.026073,116.331474,40.026035,116.330751,40.025814,116.329716,40.025519,116.328551,40.025235,116.327727,40.025048,116.327345,40.024954,116.327114,40.024907"></textarea>
                     <a className="waves-effect waves-light btn" onClick={this.addData.bind(this)}>添加道路</a>
+                </div>
+                <div className="switch">
+                    <label>
+                      隐藏tip箭头
+                      <input type="checkbox" defaultChecked='true' onClick={this.changeTipArrow.bind(this, !this.state.isShowTipArrow)}/>
+                      <span className="lever"></span>
+                      显示tip箭头
+                    </label>
                 </div>
                 <RouteList data={this.state.data} updateDataByIndex={this.updateDataByIndex}/>
             </div>

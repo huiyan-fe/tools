@@ -9,7 +9,7 @@ var borderColors = {
     '#6caeca': '#5188a5'
 }
 
-function Tip(point, text, color){
+function Tip(point, text, color, hide){
     this._point = point;
     this._text = text;
     this.color = color || '#ee5d5b';
@@ -64,6 +64,10 @@ Tip.prototype.initialize = function(map){
 Tip.prototype.setPosition = function(point){
     this._point = point;
     this.draw();
+}
+
+Tip.prototype.hideArrow = function(){
+    this._arrow.style.display = 'none';
 }
 
 Tip.prototype.draw = function(){

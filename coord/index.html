@@ -105,6 +105,7 @@
             <option value="bluish">清新蓝绿风格</option>
             <option value="grayscale">高端灰风格</option>
             <option value="hardedge">强边界风格</option>
+            <option value="custom">自定义</option>
         </select>
         <label><input id="showText" type="checkbox" checked/>隐藏文本</label>
         </div>
@@ -171,6 +172,8 @@
             var html="";
             var pointArr = [];
 
+            var myIcon = new BMap.Icon("http://api.map.baidu.com/library/CurveLine/1.5/src/circle.png", new BMap.Size(16,16));
+
             if (tex.indexOf(';') > 0) {
                 var points=tex.split(";");
                 for (var i=0; i < points.length; i++) {
@@ -181,7 +184,9 @@
                         point = new BMap.Point(item[1], item[2]);
                     }
                     pointArr.push(point);
-                    var marker = new BMap.Marker(point);
+                    var marker = new BMap.Marker(point, {
+                        icon: myIcon
+                    });
                     marker.enableDragging();
                     map.addOverlay(marker);
 
@@ -594,7 +599,22 @@ var styleOptions = {
 
     $('#select').bind('change', function () {
         var style = $(this).val();
-        map.setMapStyle({style: style});
+        if (style !== 'custom') {
+            map.setMapStyle({style: style});
+        } else {
+            map.setMapStyle({
+                styleJson: [
+                    {
+                        "featureType": "all",
+                        "elementType": "all",
+                        "stylers": {
+                            "lightness": 61,
+                            "saturation": -70
+                        }
+                    }
+                ]
+            });
+        }
     });
 
 function getDirection(points, i) {

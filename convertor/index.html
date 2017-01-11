@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+#panel {
+position: absolute;
+top:0;
+left: 0;
+width: 300px;
+height: 300px;
+background: white;
+}
+    </style>
+    <title>批量转换</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <div id="allmap"></div>
+    <div id="panel">
+<textarea id="textarea" name="" rows="10" cols="30"></textarea>
+<button id="btn">转换</button>
+<textarea id="output" name="" rows="10" cols="30"></textarea>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    var points = [];
+
+    $('#btn').bind('click', function() {
+        var text = $("#textarea").val();
+        text = text.split(',');
+        for (var i = 0; i < text.length; i += 2){
+            points.push(new BMap.Point(text[i], text[i + 1]));
+        }
+        
+      for (var i = 0; i < Math.ceil(points.length / 10); i++) {
+            var convertor = new BMap.Convertor();
+            convertor.translate(points.slice(i * 10, i * 10 + 10), 1, 5, translateCallback)
+      }
+    });
+
+    //地图初始化
+    var bm = new BMap.Map("allmap");
+    bm.centerAndZoom(new BMap.Point(116.378688937,39.9076296510), 15);
+
+    //坐标转换完之后的回调函数
+  var result = [];
+    translateCallback = function (data){
+      if(data.status === 0) {
+        result = result.concat(data.points);
+      }
+      if (result.length == points.length) {
+        points = [];
+        var str = [];
+        for (var i = 0; i < result.length; i ++){
+            str.push(result[i].lng + ',' + result[i].lat);
+        }
+        $('#output').html(str.join(','));
+      }
+    }
+</script>
+

@@ -7,7 +7,7 @@ class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {
-            isShowTipArrow: true,
+            isShowTipArrow: false,
             isShowText: true,
             data: []
         }
@@ -48,7 +48,7 @@ class App extends React.Component {
                 textPoint: pointArr[~~(pointArr.length / 2)],
                 startPoint: pointArr[0],
                 endPoint: pointArr[pointArr.length - 1],
-                isShowArrow: true,
+                isShowArrow: false,
                 isShowText: true,
                 name: item[1],
                 startName: item[2],

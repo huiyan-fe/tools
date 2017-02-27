@@ -21958,7 +21958,7 @@
 	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
 
 	        _this.state = {
-	            isShowTipArrow: true,
+	            isShowTipArrow: false,
 	            isShowText: true,
 	            data: []
 	        };
@@ -22002,7 +22002,7 @@
 	                    textPoint: pointArr[~~(pointArr.length / 2)],
 	                    startPoint: pointArr[0],
 	                    endPoint: pointArr[pointArr.length - 1],
-	                    isShowArrow: true,
+	                    isShowArrow: false,
 	                    isShowText: true,
 	                    name: item[1],
 	                    startName: item[2],

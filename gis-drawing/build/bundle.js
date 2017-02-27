@@ -22101,7 +22101,14 @@
 	    }, {
 	        key: 'changeTipArrow',
 	        value: function changeTipArrow(flag) {
+	            var self = this;
+	            var data = this.state.data;
+	            for (var i = 0; i < data.length; i++) {
+	                data[i].isShowArrow = flag;
+	            }
+
 	            this.setState({
+	                data: data,
 	                isShowTipArrow: flag
 	            }, function () {
 	                this.renderRoads();

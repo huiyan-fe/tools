@@ -28,15 +28,22 @@ class App extends React.Component {
 
         map.setMapStyle({
             styleJson: [
-                {
+          {
                     "featureType": "all",
                     "elementType": "all",
                     "stylers": {
-                        "lightness": 61,
-                        "saturation": -70
+                              "lightness": 61,
+                              "saturation": -70
                     }
-                }
-            ]
+          },
+          {
+                    "featureType": "road",
+                    "elementType": "labels",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          }
+        ]
         });
 
     }

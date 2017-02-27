@@ -21898,6 +21898,12 @@
 	                        "lightness": 61,
 	                        "saturation": -70
 	                    }
+	                }, {
+	                    "featureType": "road",
+	                    "elementType": "labels",
+	                    "stylers": {
+	                        "visibility": "off"
+	                    }
 	                }]
 	            });
 	        }

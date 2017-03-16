@@ -48,7 +48,16 @@
         map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
 
         map.setMapStyle({
-            style: 'light'
+            styleJson: [
+                {
+                    "featureType": "all",
+                    "elementType": "all",
+                    "stylers": {
+                        "lightness": 61,
+                        "saturation": -100
+                    }
+                }
+            ]
         });
 
         var randomCount = 300;

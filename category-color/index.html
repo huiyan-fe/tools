@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+    <div id="container" style="position:absolute;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
+        <div>
+        <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="dataInput" placeholder="需要显示的数据格式示例：北京,18,red;天津,15,blue">北京,18,red;天津,15,blue</textarea>
+        </div>
+        <div>
+        <button onclick="show()">显示</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.0.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script type="text/javascript" src="mapv.js"></script>
+    <script type="text/javascript" src="dat.gui.js"></script>
+
+    <script type="text/javascript">
+
+        // 百度地图API功能
+        var map = new BMap.Map("map", {
+            enableMapClick: false
+        });    // 创建Map实例
+        map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5);  // 初始化地图,设置中心点坐标和地图级别
+        map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+
+        map.setMapStyle({
+            style: 'light'
+        });
+
+        var randomCount = 300;
+
+        var data = [];
+
+        var citys = ["北京","天津","上海","重庆","石家庄","太原","呼和浩特","哈尔滨","长春","沈阳","济南","南京","合肥","杭州","南昌","福州","郑州","武汉","长沙","广州","南宁","西安","银川","兰州","西宁","乌鲁木齐","成都","贵阳","昆明","拉萨","海口"];
+
+        // 构造数据
+        while (randomCount--) {
+            var cityCenter = mapv.utilCityCenter.getCenterByCityName(citys[parseInt(Math.random() * citys.length)]);
+            data.push({
+                geometry: {
+                    type: 'Point',
+                    coordinates: [cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4]
+                },
+                count: 30 * Math.random()
+            });
+        }
+        console.log(data)
+        var dataSet = new mapv.DataSet(data);
+
+        var options = {
+            draw: 'simple',
+            max: 100,
+            size: 5,
+            symbol: 'circle',
+            maxSize: 50,
+            maxOpacity: 0.8,
+            globalAlpha: 1,
+            lineWidth: 0,
+            unit: 'px',
+            fillStyle: 'rgba(55, 50, 250, 0.6)',
+            strokeStyle: 'rgba(55, 50, 250, 0.6)',
+            // shadowColor: 'rgba(55, 50, 250, 0.5)',
+            // shadowBlur: 10
+        }
+
+        var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+
+
+        function finished() {
+            mapvLayer.update({
+                options: options 
+            });
+        };
+
+        window.onload = function() {
+            initGui();
+        };
+
+        var gui;
+
+        function initGui() {
+            gui && gui.destroy();
+
+            gui = new dat.GUI({
+                nameMap: {
+                    draw: '绘制方法',
+                    unit: '单位',
+                    size: '大小',
+                    fillStyle: '颜色',
+                    symbol: '形状',
+                    globalAlpha: '图层透明度',
+                    maxOpacity: '图层透明度',
+                    // shadowColor: '阴影颜色',
+                    // shadowBlur: '阴影大小',
+                    lineWidth: '线宽',
+                    strokeStyle: '线颜色',
+                    maxSize: '最大半径值',
+                    max: '最大阈值',
+                }
+            });
+
+            gui.add(options, 'draw', {
+                '普通': 'simple', 
+                '热力图': 'heatmap',
+                '气泡': 'bubble',
+                '颜色分类': 'category',
+                '蜂窝状聚类': 'honeycomb',
+                '网格聚类': 'grid',
+                '值区间分类': 'choropleth',
+                '颜色渐变': 'intensity'
+            }).onFinishChange(function () {
+                initGui();
+                finished();
+            });
+
+            gui.add(options, 'unit', {
+                '像素': 'px',
+                '米': 'm'
+            }).onFinishChange(function () {
+                initGui();
+                finished();
+            });
+
+            if (options.draw !== 'bubble') {
+
+                if (options.unit == 'm') {
+                    gui.add(options, 'size', 1, 200000).onFinishChange(finished);
+                } else {
+                    gui.add(options, 'size', 1, 100).onFinishChange(finished);
+                }
+
+            }
+
+            if (options.draw !== 'heatmap') {
+                gui.add(options, 'globalAlpha', 0, 1).onFinishChange(finished);
+            }
+
+            switch (options.draw) {
+                case 'simple':
+                    gui.addColor(options, 'fillStyle').onChange(finished);
+                    // gui.addColor(options, 'shadowColor').onChange(finished);
+                    // gui.add(options, 'shadowBlur', 1, 100).onFinishChange(finished);
+                    gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
+                    gui.addColor(options, 'strokeStyle').onChange(finished);
+                    gui.add(options, 'symbol', {
+                        '圆形': 'circle',
+                        '矩形': 'rect',
+                    }).onFinishChange(finished);
+                    break;
+                case 'bubble':
+                    gui.addColor(options, 'fillStyle').onChange(finished);
+                    // gui.addColor(options, 'shadowColor').onChange(finished);
+                    // gui.add(options, 'shadowBlur', 1, 100).onFinishChange(finished);
+                    gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
+                    gui.addColor(options, 'strokeStyle').onChange(finished);
+                    gui.add(options, 'max', 1, 300).onFinishChange(finished);
+                    gui.add(options, 'maxSize', 35, 100).onFinishChange(finished);
+                    break;
+                case 'heatmap':
+                    // gui.add(options, 'shadowBlur', 1, 100).onFinishChange(finished);
+                    gui.add(options, 'max', 1, 300).onFinishChange(finished);
+                    gui.add(options, 'maxOpacity', 0, 1).onFinishChange(finished);
+                    break;
+                case 'grid':
+                case 'honeycomb':
+                    gui.add(options, 'max', 1, 300).onFinishChange(finished);
+                    gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
+                    gui.addColor(options, 'strokeStyle').onChange(finished);
+                    break;
+            }
+            
+        }
+
+        var intensity = new mapv.utilDataRangeIntensity({
+            max: 100,
+            maxSize: 25
+        });
+
+        function show () {
+            var dataInput = $('#dataInput').val();
+            dataInput = dataInput.split(';');
+            data = [];
+            var max = 0;
+            for (var i = 0; i < dataInput.length; i++) {
+                var line = dataInput[i].split(',');
+                if (line[1] > max) {
+                    max = line[1]
+                }
+            }
+            intensity.setMax(max);
+            for (var i = 0; i < dataInput.length; i++) {
+                var line = dataInput[i].split(',');
+                var cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0]);
+                data.push({
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [cityCenter.lng, cityCenter.lat]
+                    },
+                    fillStyle: line[2],
+                    size: intensity.getSize(line[1]),
+                    count: line[1]
+                });
+                console.log(line);
+            }
+            dataSet.set(data);
+        }
+
+    </script>
+	
+</body>
+</html>

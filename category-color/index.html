@@ -26,7 +26,7 @@
     <div id="map"></div>
     <div id="container" style="position:absolute;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
         <div>
-        <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="dataInput" placeholder="需要显示的数据格式示例：北京,18,red;天津,15,blue">北京,18,red;天津,15,blue</textarea>
+        <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="dataInput" placeholder="需要显示的数据格式示例：北京,red,18;天津,blue,15">北京,red,18;天津,blue,15</textarea>
         </div>
         <div>
         <button onclick="show()">显示</button>
@@ -216,24 +216,26 @@
             var max = 0;
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
-                if (line[1] > max) {
-                    max = line[1]
+                if (line[2] > max) {
+                    max = line[2]
                 }
             }
             intensity.setMax(max);
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
                 var cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0]);
-                data.push({
+                var item = {
                     geometry: {
                         type: 'Point',
                         coordinates: [cityCenter.lng, cityCenter.lat]
                     },
-                    fillStyle: line[2],
-                    size: intensity.getSize(line[1]),
-                    count: line[1]
-                });
-                console.log(line);
+                    fillStyle: line[1]
+                }
+                if (line[2]) {
+                    item.size = intensity.getSize(line[2]);
+                    item.count = line[2];
+                }
+                data.push(item);
             }
             dataSet.set(data);
         }

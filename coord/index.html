@@ -69,7 +69,7 @@
     <script type="text/javascript" src="clipboard.min.js"></script>
     <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
-    <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils_min.js"></script>
+    <script type="text/javascript" src="GeoUtils.js"></script>
     <script type="text/javascript" src="CanvasLayer.js"></script>
     <script type="text/javascript" src="mapv.js"></script>
 
@@ -315,7 +315,14 @@
             var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
             map.addOverlay(polygon);
 
+            polygon.enableEditing();
+            polygon.addEventListener('lineupdate', function () {
+                showResult(polygon);
+            });
+
+        console.log(pointArr);
             var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
+            console.log(area);
             var opts = {
               position : polygon.getBounds().getCenter(),    // 指定文本标注所在的地理位置
               offset   : new BMap.Size(30, -30)    //设置文本偏移量
@@ -392,6 +399,10 @@ var overlaycomplete = function(e){
     }
 
     if (e.overlay.toString() == '[object Polygon]') {
+        e.overlay.enableEditing();
+        e.overlay.addEventListener('lineupdate', function () {
+            showResult(e.overlay);
+        });
         var area = parseInt(BMapLib.GeoUtils.getPolygonArea(overlay));
         var opts = {
           position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
@@ -423,7 +434,12 @@ var overlaycomplete = function(e){
         map.addOverlay(label); 
     }
 
-    var bounds = e.overlay.getBounds();
+    showResult(e.overlay);
+};
+
+
+function showResult (overlay) {
+    var bounds = overlay.getBounds();
     var ne = bounds.getNorthEast();
     var sw = bounds.getSouthWest();
     var neMc = mercatorProjection.lngLatToPoint(ne);
@@ -431,7 +447,7 @@ var overlaycomplete = function(e){
     var pathStr = "";
     var geojsonStr = "";
     var pathmcStr = "";
-    var path = e.overlay.getPath();
+    var path = overlay.getPath();
     var coordinates = [];
     for (var i = 0; i < path.length; i++) {
         pathStr += path[i].lng + "," + path[i].lat + ",";
@@ -441,12 +457,12 @@ var overlaycomplete = function(e){
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
-    if (e.overlay.toString() == '[object Polyline]') {
+    if (overlay.toString() == '[object Polyline]') {
         geojsonStr = {
             "type": "LineString",
             "coordinates": coordinates
         };
-    } else if (e.overlay.toString() == '[object Polygon]') {
+    } else if (overlay.toString() == '[object Polygon]') {
         geojsonStr = {
             "type": "Polygon",
             "coordinates": [coordinates]
@@ -457,8 +473,7 @@ var overlaycomplete = function(e){
                                                  + "<div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + pathStr + "</p></div>"
                                                  + "<div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + pathmcStr + "</p></div>"
                                                  + "<div><span>geojson：</span><button class='btn'>复制</button><p class='copyText'>" + JSON.stringify(geojsonStr) + "</p></div>";
-};
-
+}
 
 var styleOptions = {
         strokeColor:"red",    //边线颜色。
@@ -543,6 +558,8 @@ var styleOptions = {
 
     var canvasLayer = new CanvasLayer({
         map: map,
+        zIndex: 0,
+        paneName: 'mapPane',
         update: update
     });
 

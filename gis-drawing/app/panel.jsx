@@ -8,6 +8,7 @@ class App extends React.Component {
         super(args);
         this.state = {
             isShowTipArrow: false,
+            isShowRoadLabel: true,
             isShowText: true,
             data: []
         }
@@ -160,6 +161,58 @@ class App extends React.Component {
         });
     }
 
+    showRoadLabel(flag) {
+        var self = this;
+
+        this.setState({
+            isShowRoadLabel: flag
+        }, this.changeMapStyle.bind(this));
+    }
+
+    changeMapStyle() {
+        if (this.state.isShowRoadLabel) {
+            map.setMapStyle({
+                styleJson: [
+              {
+                        "featureType": "all",
+                        "elementType": "all",
+                        "stylers": {
+                                  "lightness": 61,
+                                  "saturation": -70
+                        }
+              },
+              {
+                        "featureType": "road",
+                        "elementType": "labels",
+                        "stylers": {
+                                  "visibility": "on"
+                        }
+              }
+            ]
+            });
+        } else {
+            map.setMapStyle({
+                styleJson: [
+              {
+                        "featureType": "all",
+                        "elementType": "all",
+                        "stylers": {
+                                  "lightness": 61,
+                                  "saturation": -70
+                        }
+              },
+              {
+                        "featureType": "road",
+                        "elementType": "labels",
+                        "stylers": {
+                                  "visibility": "off"
+                        }
+              }
+            ]
+            });
+        }
+    }
+
     changeText(flag) {
         var self = this;
         var data = this.state.data;
@@ -181,6 +234,14 @@ class App extends React.Component {
                 <div className="inner">
                     <textarea ref="textarea" style={{height: '100px',width:'100%',border:'1px solid #999'}} className="" placeholder="116.330484,40.031406,116.33124,40.029496,116.33124,40.029496|高速公路"></textarea>
                     <a className="waves-effect waves-light btn" onClick={this.addData.bind(this)}>添加道路</a>
+                </div>
+                <div className="switch">
+                    <label>
+                      隐藏底图道路名
+                      <input type="checkbox" checked={this.state.isShowRoadLabel} onClick={this.showRoadLabel.bind(this, !this.state.isShowRoadLabel)}/>
+                      <span className="lever"></span>
+                      显示底图道路名
+                    </label>
                 </div>
                 <div className="switch">
                     <label>

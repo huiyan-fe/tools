@@ -21965,6 +21965,7 @@
 
 	        _this.state = {
 	            isShowTipArrow: false,
+	            isShowRoadLabel: true,
 	            isShowText: true,
 	            data: []
 	        };
@@ -22122,6 +22123,54 @@
 	            });
 	        }
 	    }, {
+	        key: 'showRoadLabel',
+	        value: function showRoadLabel(flag) {
+	            var self = this;
+
+	            this.setState({
+	                isShowRoadLabel: flag
+	            }, this.changeMapStyle.bind(this));
+	        }
+	    }, {
+	        key: 'changeMapStyle',
+	        value: function changeMapStyle() {
+	            if (this.state.isShowRoadLabel) {
+	                map.setMapStyle({
+	                    styleJson: [{
+	                        "featureType": "all",
+	                        "elementType": "all",
+	                        "stylers": {
+	                            "lightness": 61,
+	                            "saturation": -70
+	                        }
+	                    }, {
+	                        "featureType": "road",
+	                        "elementType": "labels",
+	                        "stylers": {
+	                            "visibility": "on"
+	                        }
+	                    }]
+	                });
+	            } else {
+	                map.setMapStyle({
+	                    styleJson: [{
+	                        "featureType": "all",
+	                        "elementType": "all",
+	                        "stylers": {
+	                            "lightness": 61,
+	                            "saturation": -70
+	                        }
+	                    }, {
+	                        "featureType": "road",
+	                        "elementType": "labels",
+	                        "stylers": {
+	                            "visibility": "off"
+	                        }
+	                    }]
+	                });
+	            }
+	        }
+	    }, {
 	        key: 'changeText',
 	        value: function changeText(flag) {
 	            var self = this;
@@ -22151,6 +22200,18 @@
 	                        'a',
 	                        { className: 'waves-effect waves-light btn', onClick: this.addData.bind(this) },
 	                        '\u6DFB\u52A0\u9053\u8DEF'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'switch' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '\u9690\u85CF\u5E95\u56FE\u9053\u8DEF\u540D',
+	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowRoadLabel, onClick: this.showRoadLabel.bind(this, !this.state.isShowRoadLabel) }),
+	                        _react2.default.createElement('span', { className: 'lever' }),
+	                        '\u663E\u793A\u5E95\u56FE\u9053\u8DEF\u540D'
 	                    )
 	                ),
 	                _react2.default.createElement(

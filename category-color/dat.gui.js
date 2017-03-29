@@ -2614,11 +2614,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _ColorController2 = _interopRequireDefault(_ColorController);
 	
-	var _requestAnimationFrame = __webpack_require__(21);
+	var _GradientController = __webpack_require__(21);
+	
+	var _GradientController2 = _interopRequireDefault(_GradientController);
+	
+	var _requestAnimationFrame = __webpack_require__(22);
 	
 	var _requestAnimationFrame2 = _interopRequireDefault(_requestAnimationFrame);
 	
-	var _CenteredDiv = __webpack_require__(22);
+	var _CenteredDiv = __webpack_require__(23);
 	
 	var _CenteredDiv2 = _interopRequireDefault(_CenteredDiv);
 	
@@ -2630,7 +2634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _common2 = _interopRequireDefault(_common);
 	
-	var _style = __webpack_require__(23);
+	var _style = __webpack_require__(24);
 	
 	var _style2 = _interopRequireDefault(_style);
 	
@@ -3094,6 +3098,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	
 	  /**
+	   * @param object
+	   * @param property
+	   * @returns {dat.controllers.ColorController} The new controller that was added.
+	   * @instance
+	   */
+	  addGradient: function addGradient(object, property) {
+	    return _add(this, object, property, {
+	      gradient: true,
+	      factoryArgs: Array.prototype.slice.call(arguments, 2)
+	    });
+	  },
+	
+	  /**
 	   * @param controller
 	   * @instance
 	   */
@@ -3492,6 +3509,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, controller.updateDisplay);
 	
 	    controller.updateDisplay();
+	  } else if (controller instanceof _GradientController2.default) {
+	    li.style.borderLeft = "3px solid #2FA1D6";
 	  }
 	
 	  controller.setValue = _common2.default.compose(function (val) {
@@ -3565,6 +3584,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  if (params.color) {
 	    controller = new _ColorController2.default(object, property);
+	  } else if (params.gradient) {
+	    controller = new _GradientController2.default(object, property, params.factoryArgs[0]);
 	  } else {
 	    var factoryArgs = [object, property].concat(params.factoryArgs);
 	    controller = _ControllerFactory2.default.apply(gui, factoryArgs);
@@ -3979,6 +4000,172 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	
+	var _Controller2 = __webpack_require__(7);
+	
+	var _Controller3 = _interopRequireDefault(_Controller2);
+	
+	var _dom = __webpack_require__(9);
+	
+	var _dom2 = _interopRequireDefault(_dom);
+	
+	var _common = __webpack_require__(5);
+	
+	var _common2 = _interopRequireDefault(_common);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * dat-gui JavaScript Controller Library
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * http://code.google.com/p/dat-gui
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2011 Data Arts Team, Google Creative Lab
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Licensed under the Apache License, Version 2.0 (the "License");
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * you may not use this file except in compliance with the License.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * You may obtain a copy of the License at
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * http://www.apache.org/licenses/LICENSE-2.0
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	var GradientController = function (_Controller) {
+	  _inherits(GradientController, _Controller);
+	
+	  function GradientController(object, property, params) {
+	    _classCallCheck(this, GradientController);
+	
+	    var _this2 = _possibleConstructorReturn(this, _Controller.call(this, object, property));
+	
+	    var _this = _this2;
+	
+	    _this2.domElement = document.createElement('div');
+	
+	    _dom2.default.makeSelectable(_this2.domElement, false);
+	
+	    _this2.__selector = document.createElement('div');
+	    _this2.__selector.className = 'selector';
+	
+	    _this2.__saturation_field = document.createElement('div');
+	    _this2.__saturation_field.className = 'saturation-field';
+	
+	    _this2.__input = document.createElement('input');
+	    _this2.__input.type = 'text';
+	    _this2.__input_textShadow = '0 1px 1px ';
+	
+	    _dom2.default.bind(_this2.__input, 'keydown', function (e) {
+	      if (e.keyCode === 13) {
+	        // on enter
+	        onBlur.call(this);
+	      }
+	    });
+	
+	    _dom2.default.bind(_this2.__input, 'blur', onBlur);
+	
+	    function onBlur() {
+	      var value = JSON.parse(this.value);
+	      _this.setValue(value);
+	    }
+	
+	    _dom2.default.bind(_this2.__selector, 'mousedown', function () /* e */{
+	      _dom2.default.addClass(this, 'drag').bind(window, 'mouseup', function () /* e */{
+	        _dom2.default.removeClass(_this.__selector, 'drag');
+	      });
+	    });
+	
+	    var valueField = document.createElement('div');
+	
+	    _common2.default.extend(_this2.__selector.style, {
+	      width: '150px',
+	      padding: '0px',
+	      lineHeight: '18px',
+	      backgroundColor: '#222',
+	      boxShadow: '0px 1px 3px rgba(0,0,0,0.3)'
+	    });
+	
+	    for (var i = 0; i < params.length; i++) {
+	      var item = document.createElement('canvas');
+	      item.value = params[i];
+	      item.width = 150;
+	      item.height = 18;
+	      var context = item.getContext('2d');
+	
+	      var grd = context.createLinearGradient(0, 0, 150, 0);
+	      for (var key in params[i]) {
+	        grd.addColorStop(key, params[i][key]);
+	      }
+	
+	      _dom2.default.bind(item, 'click', function () {
+	        _this.setValue(this.value);
+	        _this.updateDisplay();
+	        onFinish();
+	      });
+	
+	      context.fillStyle = grd;
+	      context.fillRect(0, 0, item.width, item.height);
+	      _common2.default.extend(item.style, {
+	        width: '150px'
+	      });
+	      _this2.__saturation_field.appendChild(item);
+	    }
+	
+	    _this2.__selector.appendChild(_this2.__saturation_field);
+	
+	    _this2.domElement.appendChild(_this2.__input);
+	    _this2.domElement.appendChild(_this2.__selector);
+	
+	    function onFinish() {
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.getValue());
+	      }
+	    }
+	
+	    _this2.updateDisplay();
+	
+	    return _this2;
+	  }
+	
+	  GradientController.prototype.updateDisplay = function updateDisplay() {
+	    var value = this.getValue();
+	    var arr = [];
+	    for (var key in value) {
+	      arr.push({
+	        percent: key,
+	        color: value[key]
+	      });
+	    }
+	    arr.sort(function (a, b) {
+	      return a.percent - b.percent;
+	    });
+	
+	    this.__input.value = JSON.stringify(value);
+	    var backgroundColor = '-webkit-linear-gradient(left';
+	    for (var i = 0; i < arr.length; i++) {
+	      backgroundColor += ', ' + arr[i]['color'] + ' ' + arr[i]['percent'] * 100 + '%';
+	    }
+	    backgroundColor += ')';
+	    _common2.default.extend(this.__input.style, {
+	      background: backgroundColor,
+	      color: '#fff',
+	      textShadow: this.__input_textShadow + ' #fff'
+	    });
+	  };
+	
+	  return GradientController;
+	}(_Controller3.default);
+	
+	exports.default = GradientController;
+
+/***/ },
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4004,7 +4191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || requestAnimationFrame;
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4129,10 +4316,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CenteredDiv;
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(24)();
+	exports = module.exports = __webpack_require__(25)();
 	// imports
 	
 	
@@ -4143,7 +4330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	/*

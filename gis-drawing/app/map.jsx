@@ -40,7 +40,7 @@ class App extends React.Component {
                     "featureType": "road",
                     "elementType": "labels",
                     "stylers": {
-                              "visibility": "off"
+                              "visibility": "on"
                     }
           }
         ]

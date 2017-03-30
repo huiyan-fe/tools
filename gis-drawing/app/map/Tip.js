@@ -45,8 +45,8 @@ Tip.prototype.initialize = function(map){
     div.style.border = "1px solid #a67972";
     div.style.color = "#494947";
     div.style.background = "#fff";
-    div.style.borderRadius = '3px';
-    div.style.paddingLeft = '15px';
+    div.style.borderRadius = '15px';
+    div.style.paddingLeft = '30px';
 
     var span = this._span = document.createElement("span");
     div.appendChild(span);
@@ -68,14 +68,16 @@ Tip.prototype.initialize = function(map){
     number.style.background = "#f15e5c";
     number.style.color = "#fff";
     number.style.position = "absolute";
-    number.style.left = "-14px";
-    number.style.top = "-1px";
+    number.style.left = "5px";
+    number.style.top = "3px";
     number.style.position = "absolute";
     number.style.textAlign = "center";
-    number.style.height = "28px";
-    number.style.lineHeight = "28px";
-    number.style.width = "28px";
-    number.style.borderRadius = "28px";
+    number.style.height = "20px";
+    number.style.width = "20px";
+    number.style.lineHeight = "20px";
+    number.style.borderRadius = "20px";
+
+
     number.innerHTML = this._index;
     div.appendChild(number);
 

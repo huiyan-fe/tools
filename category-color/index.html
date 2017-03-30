@@ -329,6 +329,7 @@
                 }
             }
             intensity.setMax(max);
+            options.max = max;
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
                 var cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0]);
@@ -346,6 +347,7 @@
                 data.push(item);
             }
             dataSet.set(data);
+            finished();
         }
 
     </script>

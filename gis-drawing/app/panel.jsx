@@ -177,7 +177,7 @@ class App extends React.Component {
                         "featureType": "all",
                         "elementType": "all",
                         "stylers": {
-                                  "lightness": 61,
+                                  "lightness": 70,
                                   "saturation": -70
                         }
               },
@@ -186,6 +186,13 @@ class App extends React.Component {
                         "elementType": "labels",
                         "stylers": {
                                   "visibility": "on"
+                        }
+              },
+              {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": {
+                                  "visibility": "off"
                         }
               }
             ]
@@ -197,13 +204,20 @@ class App extends React.Component {
                         "featureType": "all",
                         "elementType": "all",
                         "stylers": {
-                                  "lightness": 61,
+                                  "lightness": 70,
                                   "saturation": -70
                         }
               },
               {
                         "featureType": "road",
                         "elementType": "labels",
+                        "stylers": {
+                                  "visibility": "off"
+                        }
+              },
+              {
+                        "featureType": "poi",
+                        "elementType": "all",
                         "stylers": {
                                   "visibility": "off"
                         }

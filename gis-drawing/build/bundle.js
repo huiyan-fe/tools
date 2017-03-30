@@ -22140,7 +22140,7 @@
 	                        "featureType": "all",
 	                        "elementType": "all",
 	                        "stylers": {
-	                            "lightness": 61,
+	                            "lightness": 70,
 	                            "saturation": -70
 	                        }
 	                    }, {
@@ -22148,6 +22148,12 @@
 	                        "elementType": "labels",
 	                        "stylers": {
 	                            "visibility": "on"
+	                        }
+	                    }, {
+	                        "featureType": "poi",
+	                        "elementType": "all",
+	                        "stylers": {
+	                            "visibility": "off"
 	                        }
 	                    }]
 	                });
@@ -22157,12 +22163,18 @@
 	                        "featureType": "all",
 	                        "elementType": "all",
 	                        "stylers": {
-	                            "lightness": 61,
+	                            "lightness": 70,
 	                            "saturation": -70
 	                        }
 	                    }, {
 	                        "featureType": "road",
 	                        "elementType": "labels",
+	                        "stylers": {
+	                            "visibility": "off"
+	                        }
+	                    }, {
+	                        "featureType": "poi",
+	                        "elementType": "all",
 	                        "stylers": {
 	                            "visibility": "off"
 	                        }

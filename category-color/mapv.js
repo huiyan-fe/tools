@@ -193,35 +193,6 @@ var possibleConstructorReturn = function (self, call) {
  * @author kyle / http://nikai.us/
  */
 
-/**
- * DataSet
- *
- * A data set can:
- * - add/remove/update data
- * - gives triggers upon changes in the data
- * - can  import/export data in various data formats
- * @param {Array} [data]    Optional array with initial data
- * the field geometry is like geojson, it can be:
- * {
- *     "type": "Point",
- *     "coordinates": [125.6, 10.1]
- * }
- * {
- *     "type": "LineString",
- *     "coordinates": [
- *         [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
- *     ]
- * }
- * {
- *     "type": "Polygon",
- *     "coordinates": [
- *         [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
- *           [100.0, 1.0], [100.0, 0.0] ]
- *     ]
- * }
- * @param {Object} [options]   Available options:
- * 
- */
 function DataSet(data, options) {
 
     this._options = options || {};
@@ -672,11 +643,6 @@ var utilsColorPalette = {
  * @author kyle / http://nikai.us/
  */
 
-/**
- * Category
- * @param {Object} [options]   Available options:
- *                             {Object} gradient: { 0.25: "rgb(0,0,255)", 0.55: "rgb(0,255,0)", 0.85: "yellow", 1.0: "rgb(255,0,0)"}
- */
 function Intensity(options) {
 
     options = options || {};
@@ -689,11 +655,16 @@ function Intensity(options) {
     this.maxSize = options.maxSize || 35;
     this.minSize = options.minSize || 0;
     this.max = options.max || 100;
+    this.min = options.min || 0;
     this.initPalette();
 }
 
-Intensity.prototype.setMax = function (max) {
-    this.max = max || 100;
+Intensity.prototype.setMax = function (value) {
+    this.max = value || 100;
+};
+
+Intensity.prototype.setMin = function (value) {
+    this.min = value || 0;
 };
 
 Intensity.prototype.setMaxSize = function (maxSize) {
@@ -731,12 +702,17 @@ Intensity.prototype.getColor = function (value) {
 
 Intensity.prototype.getImageData = function (value) {
     var max = this.max;
+    var min = this.min;
 
     if (value > max) {
         value = max;
     }
 
-    var index = Math.floor(value / max * (256 - 1)) * 4;
+    if (value < min) {
+        value = min;
+    }
+
+    var index = Math.floor((value - min) / (max - min) * (256 - 1)) * 4;
 
     var imageData = this.paletteCtx.getImageData(0, 0, 256, 1).data;
 
@@ -753,6 +729,7 @@ Intensity.prototype.getSize = function (value) {
 
     var size = 0;
     var max = this.max;
+    var min = this.min;
     var maxSize = this.maxSize;
     var minSize = this.minSize;
 
@@ -760,7 +737,11 @@ Intensity.prototype.getSize = function (value) {
         value = max;
     }
 
-    size = minSize + value / max * (maxSize - minSize);
+    if (value < min) {
+        value = min;
+    }
+
+    size = minSize + (value - min) / (max - min) * (maxSize - minSize);
 
     return size;
 };
@@ -2777,6 +2758,18 @@ var MapHelper = function () {
     return MapHelper;
 }();
 
+// function MapHelper(dom, type, opt) {
+//     var map = new BMap.Map(dom, {
+//         enableMapClick: false
+//     });
+//     map.centerAndZoom(new BMap.Point(106.962497, 38.208726), 5);
+//     map.enableScrollWheelZoom(true);
+
+//     map.setMapStyle({
+//         style: 'light'
+//     });
+// }
+
 /**
  * 一直覆盖在当前地图视野的Canvas对象
  *
@@ -4463,6 +4456,10 @@ var Layer = function (_BaseLayer) {
 
             if (self.options.max) {
                 this.intensity.setMax(self.options.max);
+            }
+
+            if (self.options.min) {
+                this.intensity.setMin(self.options.min);
             }
 
             this.initAnimator();

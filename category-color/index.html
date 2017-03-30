@@ -90,6 +90,7 @@
         var options = {
             draw: 'simple',
             max: 100,
+            min: 0,
             size: 5,
             symbol: 'circle',
             maxSize: 50,
@@ -235,6 +236,7 @@
                     strokeStyle: '线颜色',
                     maxSize: '最大半径值',
                     max: '最大阈值',
+                    min: '最小阈值',
                 }
             });
 
@@ -304,6 +306,7 @@
                 case 'intensity':
                 case 'honeycomb':
                     gui.add(options, 'max', 1, 300).onFinishChange(finished);
+                    gui.add(options, 'min', -50, 50).onFinishChange(finished);
                     gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
                     gui.addColor(options, 'strokeStyle').onChange(finished);
                     gui.addGradient(options, 'gradient', gradientOptions).onFinishChange(finished);
@@ -314,6 +317,7 @@
 
         var intensity = new mapv.utilDataRangeIntensity({
             max: 100,
+            min: 0,
             maxSize: 25
         });
 
@@ -322,14 +326,25 @@
             dataInput = dataInput.split(';');
             data = [];
             var max = 0;
+            var min = 15;
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
                 if (line[1] > max) {
                     max = line[1]
                 }
+
+                if (min == undefined) {
+                    min = parseFloat(line[1]);
+                } 
+
+                if (line[1] < min) {
+                    min = parseFloat(line[1]);
+                }
             }
             intensity.setMax(max);
+            intensity.setMin(min);
             options.max = max;
+            options.min = min;
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
                 var cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0]);

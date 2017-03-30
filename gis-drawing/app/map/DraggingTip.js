@@ -8,7 +8,7 @@ function DraggingTip(options) {
     var name = options.name;
 
     this.map = map;
-    var tip = this.tip = new Tip(this.point, name, options.color);
+    var tip = this.tip = new Tip(this.point, name, options.color, options.index);
     var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(25, 25), {
         imageSize: new BMap.Size(25, 25)
     });

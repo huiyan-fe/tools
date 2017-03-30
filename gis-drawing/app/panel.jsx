@@ -93,6 +93,7 @@ class App extends React.Component {
                             map: map,
                             point: data[i].textPoint,
                             name: data[i].name,
+                            index: i + 1,
                             color: data[i].tipColor,
                             change: function() {
                                 data[i].textPoint = tip.point;

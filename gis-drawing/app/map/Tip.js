@@ -9,9 +9,10 @@ var borderColors = {
     '#6caeca': '#5188a5'
 }
 
-function Tip(point, text, color, hide){
+function Tip(point, text, color, index){
     this._point = point;
     this._text = text;
+    this._index = index;
     this.color = color || '#ee5d5b';
 }
 
@@ -40,6 +41,13 @@ Tip.prototype.initialize = function(map){
     div.style.whiteSpace = "nowrap";
     div.style.MozUserSelect = "none";
     div.style.fontSize = "12px"
+
+    div.style.border = "1px solid #a67972";
+    div.style.color = "#494947";
+    div.style.background = "#fff";
+    div.style.borderRadius = '3px';
+    div.style.paddingLeft = '15px';
+
     var span = this._span = document.createElement("span");
     div.appendChild(span);
     span.appendChild(document.createTextNode(this._text));      
@@ -55,6 +63,21 @@ Tip.prototype.initialize = function(map){
     arrow.style.left = "10px";
     arrow.style.overflow = "hidden";
     div.appendChild(arrow);
+
+    var number = this._number = document.createElement("div");
+    number.style.background = "#f15e5c";
+    number.style.color = "#fff";
+    number.style.position = "absolute";
+    number.style.left = "-14px";
+    number.style.top = "-1px";
+    number.style.position = "absolute";
+    number.style.textAlign = "center";
+    number.style.height = "28px";
+    number.style.lineHeight = "28px";
+    number.style.width = "28px";
+    number.style.borderRadius = "28px";
+    number.innerHTML = this._index;
+    div.appendChild(number);
 
     map.getPanes().labelPane.appendChild(div);
 

@@ -94,6 +94,7 @@
             size: 5,
             symbol: 'circle',
             maxSize: 50,
+            minSize: 1,
             maxOpacity: 0.8,
             globalAlpha: 1,
             lineWidth: 0,
@@ -235,6 +236,7 @@
                     lineWidth: '线宽',
                     strokeStyle: '线颜色',
                     maxSize: '最大半径值',
+                    minSize: '最小半径值',
                     max: '最大阈值',
                     min: '最小阈值',
                 }
@@ -310,6 +312,8 @@
                     gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
                     gui.addColor(options, 'strokeStyle').onChange(finished);
                     gui.addGradient(options, 'gradient', gradientOptions).onFinishChange(finished);
+                    gui.add(options, 'maxSize', 0, 100).onFinishChange(finished);
+                    gui.add(options, 'minSize', 0, 100).onFinishChange(finished);
                     break;
             }
             
@@ -318,7 +322,8 @@
         var intensity = new mapv.utilDataRangeIntensity({
             max: 100,
             min: 0,
-            maxSize: 25
+            maxSize: 15,
+            minSize: 5
         });
 
         function show () {

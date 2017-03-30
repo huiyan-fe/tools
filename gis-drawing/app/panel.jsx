@@ -45,7 +45,7 @@ class App extends React.Component {
             data.push({
                 points: pointArr,
                 strokeColor: 'red',
-                strokeWeight: 5,
+                strokeWeight: 3,
                 tipColor: '#ee5d5b',
                 textPoint: pointArr[~~(pointArr.length / 2)],
                 startPoint: pointArr[0],
@@ -76,7 +76,7 @@ class App extends React.Component {
         for (var i = 0; i < data.length; i++) {
             map.addOverlay(new BMap.Polyline(data[i].points, {
                 strokeColor: data[i].strokeColor || 'red',
-                strokeWeight: data[i].strokeWeight || 5
+                strokeWeight: data[i].strokeWeight || 3
             }));
 
             if (data[i].isShowArrow) {
@@ -156,7 +156,6 @@ class App extends React.Component {
 
         this.setState({
             data: data,
-            isShowTipArrow: flag
         }, function() {
             this.renderRoads();
         });
@@ -277,6 +276,7 @@ function getDirection(points, i) {
     var marker = new BMap.Marker(curPos);
     // marker.enableDragging();
     map.addOverlay(marker);
+    marker.enableDragging();
     marker.setIcon(icon);
     marker.setShadow(icon);
     var targetPos = points[curIndex + 2]; 

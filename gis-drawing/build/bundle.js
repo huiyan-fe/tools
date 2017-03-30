@@ -22005,7 +22005,7 @@
 	                data.push({
 	                    points: pointArr,
 	                    strokeColor: 'red',
-	                    strokeWeight: 5,
+	                    strokeWeight: 3,
 	                    tipColor: '#ee5d5b',
 	                    textPoint: pointArr[~~(pointArr.length / 2)],
 	                    startPoint: pointArr[0],
@@ -22038,7 +22038,7 @@
 	            for (var i = 0; i < data.length; i++) {
 	                map.addOverlay(new BMap.Polyline(data[i].points, {
 	                    strokeColor: data[i].strokeColor || 'red',
-	                    strokeWeight: data[i].strokeWeight || 5
+	                    strokeWeight: data[i].strokeWeight || 3
 	                }));
 
 	                if (data[i].isShowArrow) {
@@ -22117,8 +22117,7 @@
 	            }
 
 	            this.setState({
-	                data: data,
-	                isShowTipArrow: flag
+	                data: data
 	            }, function () {
 	                this.renderRoads();
 	            });
@@ -22258,6 +22257,7 @@
 	    var marker = new BMap.Marker(curPos);
 	    // marker.enableDragging();
 	    map.addOverlay(marker);
+	    marker.enableDragging();
 	    marker.setIcon(icon);
 	    marker.setShadow(icon);
 	    var targetPos = points[curIndex + 2];

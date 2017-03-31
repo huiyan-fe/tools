@@ -36,16 +36,16 @@ Tip.prototype.initialize = function(map){
     div.style.backgroundColor = this.color;
     div.style.border = "1px solid " + borderColors[this.color];
     div.style.color = "white";
-    div.style.height = "28px";
+    div.style.height = "38px";
     div.style.padding = "5px";
     div.style.whiteSpace = "nowrap";
     div.style.MozUserSelect = "none";
-    div.style.fontSize = "12px"
+    div.style.fontSize = "18px"
 
     div.style.border = "1px solid #a67972";
     div.style.color = "#494947";
     div.style.background = "#fff";
-    div.style.borderRadius = '15px';
+    div.style.borderRadius = '25px';
     div.style.paddingLeft = '30px';
 
     var span = this._span = document.createElement("span");
@@ -71,10 +71,10 @@ Tip.prototype.initialize = function(map){
     number.style.top = "3px";
     number.style.position = "absolute";
     number.style.textAlign = "center";
-    number.style.height = "20px";
-    number.style.width = "20px";
-    number.style.lineHeight = "20px";
-    number.style.borderRadius = "20px";
+    number.style.height = "30px";
+    number.style.width = "30px";
+    number.style.lineHeight = "30px";
+    number.style.borderRadius = "30px";
 
     this.setNumberLeft();
 
@@ -88,7 +88,7 @@ Tip.prototype.initialize = function(map){
 
 
 Tip.prototype.setNumberLeft = function(){
-    this._div.style.paddingLeft = '30px';
+    this._div.style.paddingLeft = '35px';
     this._div.style.paddingRight = '5px';
     this._number.style.left = "5px";
     this._number.style.right = "initial";
@@ -96,7 +96,7 @@ Tip.prototype.setNumberLeft = function(){
 
 Tip.prototype.setNumberRight = function(){
     this._div.style.paddingLeft = '5px';
-    this._div.style.paddingRight = '30px';
+    this._div.style.paddingRight = '35px';
     this._number.style.left = "initial";
     this._number.style.right = "5px";
 }

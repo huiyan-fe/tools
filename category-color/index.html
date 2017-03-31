@@ -75,12 +75,14 @@
 
         // 构造数据
         while (randomCount--) {
-            var cityCenter = mapv.utilCityCenter.getCenterByCityName(citys[parseInt(Math.random() * citys.length)]);
+            var city = citys[parseInt(Math.random() * citys.length)];
+            var cityCenter = mapv.utilCityCenter.getCenterByCityName(city);
             data.push({
                 geometry: {
                     type: 'Point',
                     coordinates: [cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4]
                 },
+                text: city,
                 count: 30 * Math.random()
             });
         }
@@ -112,6 +114,20 @@
         }
 
         var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+
+        var textOptions = {
+            draw: 'text',
+            avoid: true,
+            offset: {
+                x: 0,
+                y: 10
+            },
+            fillStyle: 'red',
+            shadowColor: 'yellow',
+            shadowBlur: 5
+        }
+
+        var textLayer = new mapv.baiduMapLayer(map, dataSet, textOptions);
 
 
         function finished() {
@@ -358,6 +374,7 @@
                         type: 'Point',
                         coordinates: [cityCenter.lng, cityCenter.lat]
                     },
+                    text: line[0],
                     fillStyle: line[2]
                 }
                 if (line[1]) {

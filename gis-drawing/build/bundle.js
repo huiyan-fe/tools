@@ -22408,6 +22408,8 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        null,
+	                        index + 1,
+	                        '.  ',
 	                        item.name
 	                    ),
 	                    _react2.default.createElement(

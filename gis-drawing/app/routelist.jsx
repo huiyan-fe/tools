@@ -58,7 +58,7 @@ class App extends React.Component {
         var self = this;
         var list = this.props.data.map(function (item, index) {
             return <div className="route-list-item" key={index}>
-                <div>{item.name}</div>
+                <div>{index + 1}.  {item.name}</div>
                 <div>
                   <div className="switch">
                     <label>

@@ -23,6 +23,12 @@ class App extends React.Component {
         });
     }
 
+    changeNumber(index, flag) {
+        this.props.updateDataByIndex(index, {
+            isNumberLeft: flag
+        });
+    }
+
     changeText(index, flag) {
         this.props.updateDataByIndex(index, {
             isShowText: flag
@@ -60,6 +66,14 @@ class App extends React.Component {
                       <input type="checkbox" checked={item.isShowArrow} onClick={self.changeArrow.bind(self, index, !item.isShowArrow)}/>
                       <span className="lever"></span>
                       显示箭头
+                    </label>
+                  </div>
+                  <div className="switch">
+                    <label>
+                      右边
+                      <input type="checkbox" checked={item.isNumberLeft} onClick={self.changeNumber.bind(self, index, !item.isNumberLeft)}/>
+                      <span className="lever"></span>
+                      左边
                     </label>
                   </div>
                   <div className="switch">

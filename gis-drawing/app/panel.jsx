@@ -47,6 +47,7 @@ class App extends React.Component {
                 strokeColor: 'red',
                 strokeWeight: 3,
                 tipColor: '#ee5d5b',
+                isNumberLeft: true,
                 textPoint: pointArr[~~(pointArr.length / 2)],
                 startPoint: pointArr[0],
                 endPoint: pointArr[pointArr.length - 1],
@@ -100,6 +101,10 @@ class App extends React.Component {
                             }
                         });
                         tip.show();
+
+                        if (!data[i].isNumberLeft) {
+                            tip.setNumberRight();
+                        }
                     }
 
                     if (data[i].startName) {

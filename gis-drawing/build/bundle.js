@@ -22007,6 +22007,7 @@
 	                    strokeColor: 'red',
 	                    strokeWeight: 3,
 	                    tipColor: '#ee5d5b',
+	                    isNumberLeft: true,
 	                    textPoint: pointArr[~~(pointArr.length / 2)],
 	                    startPoint: pointArr[0],
 	                    endPoint: pointArr[pointArr.length - 1],
@@ -22062,6 +22063,10 @@
 	                                }
 	                            });
 	                            tip.show();
+
+	                            if (!data[i].isNumberLeft) {
+	                                tip.setNumberRight();
+	                            }
 	                        }
 
 	                        if (data[i].startName) {
@@ -22357,6 +22362,13 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeNumber',
+	        value: function changeNumber(index, flag) {
+	            this.props.updateDataByIndex(index, {
+	                isNumberLeft: flag
+	            });
+	        }
+	    }, {
 	        key: 'changeText',
 	        value: function changeText(index, flag) {
 	            this.props.updateDataByIndex(index, {
@@ -22411,6 +22423,18 @@
 	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isShowArrow, onClick: self.changeArrow.bind(self, index, !item.isShowArrow) }),
 	                                _react2.default.createElement('span', { className: 'lever' }),
 	                                '\u663E\u793A\u7BAD\u5934'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'switch' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                null,
+	                                '\u53F3\u8FB9',
+	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isNumberLeft, onClick: self.changeNumber.bind(self, index, !item.isNumberLeft) }),
+	                                _react2.default.createElement('span', { className: 'lever' }),
+	                                '\u5DE6\u8FB9'
 	                            )
 	                        ),
 	                        _react2.default.createElement(
@@ -22567,6 +22591,14 @@
 	    }
 	};
 
+	DraggingTip.prototype.setNumberLeft = function () {
+	    this.tip.setNumberLeft();
+	};
+
+	DraggingTip.prototype.setNumberRight = function () {
+	    this.tip.setNumberRight();
+	};
+
 	exports.default = DraggingTip;
 
 /***/ },
@@ -22647,7 +22679,6 @@
 	    number.style.background = "#f15e5c";
 	    number.style.color = "#fff";
 	    number.style.position = "absolute";
-	    number.style.left = "5px";
 	    number.style.top = "3px";
 	    number.style.position = "absolute";
 	    number.style.textAlign = "center";
@@ -22656,12 +22687,28 @@
 	    number.style.lineHeight = "20px";
 	    number.style.borderRadius = "20px";
 
+	    this.setNumberLeft();
+
 	    number.innerHTML = this._index;
 	    div.appendChild(number);
 
 	    map.getPanes().labelPane.appendChild(div);
 
 	    return div;
+	};
+
+	Tip.prototype.setNumberLeft = function () {
+	    this._div.style.paddingLeft = '30px';
+	    this._div.style.paddingRight = '5px';
+	    this._number.style.left = "5px";
+	    this._number.style.right = "initial";
+	};
+
+	Tip.prototype.setNumberRight = function () {
+	    this._div.style.paddingLeft = '5px';
+	    this._div.style.paddingRight = '30px';
+	    this._number.style.left = "initial";
+	    this._number.style.right = "5px";
 	};
 
 	Tip.prototype.setPosition = function (point) {

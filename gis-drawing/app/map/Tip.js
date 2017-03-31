@@ -68,7 +68,6 @@ Tip.prototype.initialize = function(map){
     number.style.background = "#f15e5c";
     number.style.color = "#fff";
     number.style.position = "absolute";
-    number.style.left = "5px";
     number.style.top = "3px";
     number.style.position = "absolute";
     number.style.textAlign = "center";
@@ -77,6 +76,7 @@ Tip.prototype.initialize = function(map){
     number.style.lineHeight = "20px";
     number.style.borderRadius = "20px";
 
+    this.setNumberLeft();
 
     number.innerHTML = this._index;
     div.appendChild(number);
@@ -84,6 +84,21 @@ Tip.prototype.initialize = function(map){
     map.getPanes().labelPane.appendChild(div);
 
     return div;
+}
+
+
+Tip.prototype.setNumberLeft = function(){
+    this._div.style.paddingLeft = '30px';
+    this._div.style.paddingRight = '5px';
+    this._number.style.left = "5px";
+    this._number.style.right = "initial";
+}
+
+Tip.prototype.setNumberRight = function(){
+    this._div.style.paddingLeft = '5px';
+    this._div.style.paddingRight = '30px';
+    this._number.style.left = "initial";
+    this._number.style.right = "5px";
 }
 
 Tip.prototype.setPosition = function(point){

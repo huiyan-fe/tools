@@ -32,4 +32,12 @@ DraggingTip.prototype.show = function () {
     }
 }
 
+DraggingTip.prototype.setNumberLeft = function () {
+    this.tip.setNumberLeft();
+}
+
+DraggingTip.prototype.setNumberRight = function () {
+    this.tip.setNumberRight();
+}
+
 export default DraggingTip;

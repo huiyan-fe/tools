@@ -22206,6 +22206,21 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeStrokeWeight',
+	        value: function changeStrokeWeight() {
+	            var self = this;
+	            var data = this.state.data;
+	            for (var i = 0; i < data.length; i++) {
+	                data[i].strokeWeight = this.refs.strokeWeight.value;
+	            }
+
+	            this.setState({
+	                data: data
+	            }, function () {
+	                this.renderRoads();
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -22255,6 +22270,16 @@
 	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowText, onClick: this.changeText.bind(this, !this.state.isShowText) }),
 	                        _react2.default.createElement('span', { className: 'lever' }),
 	                        '\u663E\u793A\u6240\u6709\u6587\u672C'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    '\u7EBF\u5BBD',
+	                    _react2.default.createElement(
+	                        'p',
+	                        { className: 'range-field' },
+	                        _react2.default.createElement('input', { ref: 'strokeWeight', type: 'range', min: '0', max: '25', onChange: this.changeStrokeWeight.bind(this), defaultValue: '3' })
 	                    )
 	                ),
 	                _react2.default.createElement(_routelist2.default, { data: this.state.data, updateDataByIndex: this.updateDataByIndex })
@@ -22364,6 +22389,14 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeName',
+	        value: function changeName(index, flag) {
+	            var value = this.refs['name' + index].value;
+	            this.props.updateDataByIndex(index, {
+	                name: value
+	            });
+	        }
+	    }, {
 	        key: 'changeNumber',
 	        value: function changeNumber(index, flag) {
 	            this.props.updateDataByIndex(index, {
@@ -22412,7 +22445,7 @@
 	                        null,
 	                        index + 1,
 	                        '.  ',
-	                        item.name
+	                        _react2.default.createElement('input', { type: 'text', ref: "name" + index, defaultValue: item.name, onChange: self.changeName.bind(self, index) })
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
@@ -22461,7 +22494,7 @@
 	                        _react2.default.createElement(
 	                            'p',
 	                            { className: 'range-field' },
-	                            _react2.default.createElement('input', { ref: 'range' + index, type: 'range', min: '0', max: '25', onChange: self.changeStrokeWeight.bind(self, index), defaultValue: '5' })
+	                            _react2.default.createElement('input', { ref: 'range' + index, type: 'range', min: '0', max: '25', onChange: self.changeStrokeWeight.bind(self, index), defaultValue: '3' })
 	                        )
 	                    )
 	                );

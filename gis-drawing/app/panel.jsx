@@ -247,6 +247,20 @@ class App extends React.Component {
         });
     }
 
+    changeStrokeWeight() {
+        var self = this;
+        var data = this.state.data;
+        for (var i = 0; i < data.length; i++) {
+            data[i].strokeWeight = this.refs.strokeWeight.value;
+        }
+
+        this.setState({
+            data: data
+        }, function() {
+            this.renderRoads();
+        });
+    }
+
     render() {
         return (
             <div className="panel">
@@ -277,6 +291,12 @@ class App extends React.Component {
                       <span className="lever"></span>
                       显示所有文本
                     </label>
+                </div>
+                <div>
+                    线宽
+                    <p className="range-field">
+                        <input ref="strokeWeight" type="range" min="0" max="25" onChange={this.changeStrokeWeight.bind(this)} defaultValue='3'/>
+                    </p>
                 </div>
                 <RouteList data={this.state.data} updateDataByIndex={this.updateDataByIndex}/>
             </div>

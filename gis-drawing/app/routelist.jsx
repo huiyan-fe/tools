@@ -23,6 +23,13 @@ class App extends React.Component {
         });
     }
 
+    changeName(index, flag) {
+        var value = this.refs['name' + index].value;
+        this.props.updateDataByIndex(index, {
+            name: value
+        });
+    }
+
     changeNumber(index, flag) {
         this.props.updateDataByIndex(index, {
             isNumberLeft: flag
@@ -58,7 +65,7 @@ class App extends React.Component {
         var self = this;
         var list = this.props.data.map(function (item, index) {
             return <div className="route-list-item" key={index}>
-                <div>{index + 1}.  {item.name}</div>
+                <div>{index + 1}.  <input type="text" ref={"name" + index} defaultValue={item.name} onChange={self.changeName.bind(self, index)}/></div>
                 <div>
                   <div className="switch">
                     <label>
@@ -90,7 +97,7 @@ class App extends React.Component {
                     <ColorList changeColor={self.changeColor.bind(self, index)}/>
                     线宽
                     <p className="range-field">
-                        <input ref={'range' + index} type="range" min="0" max="25" onChange={self.changeStrokeWeight.bind(self, index)} defaultValue='5'/>
+                        <input ref={'range' + index} type="range" min="0" max="25" onChange={self.changeStrokeWeight.bind(self, index)} defaultValue='3'/>
                     </p>
                 </div>
             </div>;

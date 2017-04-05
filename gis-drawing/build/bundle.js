@@ -21988,7 +21988,6 @@
 	            var data = this.state.data;
 	            var point = null;
 	            var lines = tex.split(";");
-	            console.log('lines.length', lines.length);
 	            for (var j = 0; j < lines.length; j++) {
 	                var item = lines[j].split("|");
 	                var list = item[0];
@@ -22735,15 +22734,15 @@
 	};
 
 	Tip.prototype.setNumberLeft = function () {
-	    this._div.style.paddingLeft = '35px';
-	    this._div.style.paddingRight = '5px';
+	    this._div.style.paddingLeft = '38px';
+	    this._div.style.paddingRight = '8px';
 	    this._number.style.left = "5px";
 	    this._number.style.right = "initial";
 	};
 
 	Tip.prototype.setNumberRight = function () {
-	    this._div.style.paddingLeft = '5px';
-	    this._div.style.paddingRight = '35px';
+	    this._div.style.paddingLeft = '8px';
+	    this._div.style.paddingRight = '38px';
 	    this._number.style.left = "initial";
 	    this._number.style.right = "5px";
 	};

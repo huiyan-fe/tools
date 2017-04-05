@@ -26,7 +26,6 @@ class App extends React.Component {
         var data = this.state.data;
         var point = null;
         var lines = tex.split(";");
-        console.log('lines.length', lines.length);
         for (var j = 0; j < lines.length; j++) {
             var item = lines[j].split("|");
             var list = item[0];

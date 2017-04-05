@@ -88,15 +88,15 @@ Tip.prototype.initialize = function(map){
 
 
 Tip.prototype.setNumberLeft = function(){
-    this._div.style.paddingLeft = '35px';
-    this._div.style.paddingRight = '5px';
+    this._div.style.paddingLeft = '38px';
+    this._div.style.paddingRight = '8px';
     this._number.style.left = "5px";
     this._number.style.right = "initial";
 }
 
 Tip.prototype.setNumberRight = function(){
-    this._div.style.paddingLeft = '5px';
-    this._div.style.paddingRight = '35px';
+    this._div.style.paddingLeft = '8px';
+    this._div.style.paddingRight = '38px';
     this._number.style.left = "initial";
     this._number.style.right = "5px";
 }

@@ -4,7 +4,7 @@
 	(factory((global.mapv = global.mapv || {})));
 }(this, (function (exports) { 'use strict';
 
-var version = "2.0.12";
+var version = "2.0.13";
 
 /**
  * @author kyle / http://nikai.us/
@@ -193,6 +193,35 @@ var possibleConstructorReturn = function (self, call) {
  * @author kyle / http://nikai.us/
  */
 
+/**
+ * DataSet
+ *
+ * A data set can:
+ * - add/remove/update data
+ * - gives triggers upon changes in the data
+ * - can  import/export data in various data formats
+ * @param {Array} [data]    Optional array with initial data
+ * the field geometry is like geojson, it can be:
+ * {
+ *     "type": "Point",
+ *     "coordinates": [125.6, 10.1]
+ * }
+ * {
+ *     "type": "LineString",
+ *     "coordinates": [
+ *         [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
+ *     ]
+ * }
+ * {
+ *     "type": "Polygon",
+ *     "coordinates": [
+ *         [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+ *           [100.0, 1.0], [100.0, 0.0] ]
+ *     ]
+ * }
+ * @param {Object} [options]   Available options:
+ * 
+ */
 function DataSet(data, options) {
 
     this._options = options || {};
@@ -621,6 +650,11 @@ function Canvas(width, height) {
  * @author kyle / http://nikai.us/
  */
 
+/**
+ * Category
+ * @param {Object} [options]   Available options:
+ *                             {Object} gradient: { 0.25: "rgb(0,0,255)", 0.55: "rgb(0,255,0)", 0.85: "yellow", 1.0: "rgb(255,0,0)"}
+ */
 function Intensity(options) {
 
     options = options || {};
@@ -751,6 +785,10 @@ Intensity.prototype.getLegend = function (options) {
     return canvas;
 };
 
+var global$1 = typeof window === 'undefined' ? {} : window;
+
+var devicePixelRatio = global$1.devicePixelRatio;
+
 /**
  * @author kyle / http://nikai.us/
  */
@@ -811,6 +849,8 @@ function drawGray(context, dataSet, options) {
     });
 
     var circle = createCircle(size);
+    var circleHalfWidth = circle.width / 2;
+    var circleHalfHeight = circle.height / 2;
 
     var data = dataSet;
 
@@ -841,7 +881,7 @@ function drawGray(context, dataSet, options) {
             if (type === 'Point') {
                 var count = item.count === undefined ? 1 : item.count;
                 context.globalAlpha = count / max;
-                context.drawImage(circle, coordinates[0] - circle.width / 2, coordinates[1] - circle.height / 2);
+                context.drawImage(circle, coordinates[0] - circleHalfWidth, coordinates[1] - circleHalfHeight);
             } else if (type === 'LineString') {
                 var count = item.count === undefined ? 1 : item.count;
                 context.globalAlpha = count / max;
@@ -856,6 +896,9 @@ function drawGray(context, dataSet, options) {
 function draw(context, dataSet, options) {
     var strength = options.strength || 0.3;
     context.strokeStyle = 'rgba(0,0,0,' + strength + ')';
+    var shadowCanvas = new Canvas(context.canvas.width, context.canvas.height);
+    var shadowContext = shadowCanvas.getContext('2d');
+    shadowContext.scale(devicePixelRatio, devicePixelRatio);
 
     options = options || {};
 
@@ -868,13 +911,13 @@ function draw(context, dataSet, options) {
     });
 
     //console.time('drawGray')
-    drawGray(context, data, options);
+    drawGray(shadowContext, data, options);
 
     //console.timeEnd('drawGray');
     // return false;
     if (!options.absolute) {
         //console.time('changeColor');
-        var colored = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+        var colored = shadowContext.getImageData(0, 0, context.canvas.width, context.canvas.height);
         colorize(colored.data, intensity.getImageData(), options);
         //console.timeEnd('changeColor');
         context.putImageData(colored, 0, 0);
@@ -883,6 +926,7 @@ function draw(context, dataSet, options) {
     }
 
     intensity = null;
+    shadowCanvas = null;
 }
 
 var drawHeatmap = {
@@ -2743,18 +2787,6 @@ var MapHelper = function () {
     return MapHelper;
 }();
 
-// function MapHelper(dom, type, opt) {
-//     var map = new BMap.Map(dom, {
-//         enableMapClick: false
-//     });
-//     map.centerAndZoom(new BMap.Point(106.962497, 38.208726), 5);
-//     map.enableScrollWheelZoom(true);
-
-//     map.setMapStyle({
-//         style: 'light'
-//     });
-// }
-
 /**
  * 一直覆盖在当前地图视野的Canvas对象
  *
@@ -2778,9 +2810,9 @@ function CanvasLayer(options) {
     this.show();
 }
 
-var global$1 = typeof window === 'undefined' ? {} : window;
+var global$3 = typeof window === 'undefined' ? {} : window;
 
-if (global$1.BMap) {
+if (global$3.BMap) {
 
     CanvasLayer.prototype = new BMap.Overlay();
 
@@ -2803,7 +2835,7 @@ if (global$1.BMap) {
         var size = this._map.getSize();
         var canvas = this.canvas;
 
-        var devicePixelRatio = this.devicePixelRatio = global$1.devicePixelRatio;
+        var devicePixelRatio = this.devicePixelRatio = global$3.devicePixelRatio;
 
         canvas.width = size.width * devicePixelRatio;
         canvas.height = size.height * devicePixelRatio;
@@ -2860,182 +2892,6 @@ if (global$1.BMap) {
         return this.zIndex;
     };
 }
-
-var AnimationLayer = function () {
-    function AnimationLayer(map, dataSet, options) {
-        classCallCheck(this, AnimationLayer);
-
-        this.map = map;
-        this.options = options || {};
-        this.dataSet = dataSet;
-        var canvasLayer = new CanvasLayer({
-            map: map,
-            update: this._canvasUpdate.bind(this)
-        });
-        this.transferToMercator();
-        var self = this;
-        dataSet.on('change', function () {
-            self.transferToMercator();
-            canvasLayer.draw();
-        });
-        this.ctx = canvasLayer.canvas.getContext('2d');
-
-        this.start();
-    }
-
-    // 经纬度左边转换为墨卡托坐标
-
-
-    createClass(AnimationLayer, [{
-        key: "transferToMercator",
-        value: function transferToMercator() {
-            var projection = this.map.getMapType().getProjection();
-
-            if (this.options.coordType !== 'bd09mc') {
-                var data = this.dataSet.get();
-                data = this.dataSet.transferCoordinate(data, function (coordinates) {
-                    var pixel = projection.lngLatToPoint({
-                        lng: coordinates[0],
-                        lat: coordinates[1]
-                    });
-                    return [pixel.x, pixel.y];
-                }, 'coordinates', 'coordinates_mercator');
-                this.dataSet._set(data);
-            }
-        }
-    }, {
-        key: "_canvasUpdate",
-        value: function _canvasUpdate() {
-            var ctx = this.ctx;
-            if (!ctx) {
-                return;
-            }
-            //clear(ctx);
-            var map = this.map;
-            var zoomUnit = Math.pow(2, 18 - map.getZoom());
-            var projection = map.getMapType().getProjection();
-
-            var mcCenter = projection.lngLatToPoint(map.getCenter());
-            var nwMc = new BMap.Pixel(mcCenter.x - map.getSize().width / 2 * zoomUnit, mcCenter.y + map.getSize().height / 2 * zoomUnit); //左上角墨卡托坐标
-
-            clear(ctx);
-
-            var dataGetOptions = {
-                fromColumn: this.options.coordType == 'bd09mc' ? 'coordinates' : 'coordinates_mercator',
-                transferCoordinate: function transferCoordinate(coordinate) {
-                    if (!coordinate) {
-                        return;
-                    }
-                    var x = (coordinate[0] - nwMc.x) / zoomUnit;
-                    var y = (nwMc.y - coordinate[1]) / zoomUnit;
-                    return [x, y];
-                }
-            };
-
-            this.data = this.dataSet.get(dataGetOptions);
-
-            this.drawAnimation();
-        }
-    }, {
-        key: "drawAnimation",
-        value: function drawAnimation() {
-            var ctx = this.ctx;
-            var data = this.data;
-            if (!data) {
-                return;
-            }
-
-            ctx.save();
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'rgba(0, 0, 0, .1)';
-            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.restore();
-
-            if (this.options.shadowColor) {
-                ctx.shadowColor = this.options.shadowColor;
-            }
-            if (this.options.shadowBlur) {
-                ctx.shadowBlur = this.options.shadowBlur;
-            }
-            if (this.options.globalCompositeOperation) {
-                ctx.globalCompositeOperation = this.options.globalCompositeOperation;
-            }
-
-            var options = this.options;
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].geometry.type === 'Point') {
-                    ctx.beginPath();
-                    var maxSize = data[i].size || this.options.size;
-                    var minSize = data[i].minSize || this.options.minSize || 0;
-                    if (data[i]._size === undefined) {
-                        data[i]._size = minSize;
-                    }
-                    ctx.arc(data[i].geometry._coordinates[0], data[i].geometry._coordinates[1], data[i]._size, 0, Math.PI * 2, true);
-                    ctx.closePath();
-
-                    data[i]._size++;
-
-                    if (data[i]._size > maxSize) {
-                        data[i]._size = minSize;
-                    }
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = data[i].strokeStyle || options.strokeStyle || 'yellow';
-                    ctx.stroke();
-                    var fillStyle = data[i].fillStyle || options.fillStyle;
-                    if (fillStyle) {
-                        ctx.fillStyle = fillStyle;
-                        ctx.fill();
-                    }
-                } else if (data[i].geometry.type === 'LineString') {
-                    ctx.beginPath();
-                    var size = data[i].size || this.options.size || 5;
-                    var minSize = data[i].minSize || this.options.minSize || 0;
-                    if (data[i]._index === undefined) {
-                        data[i]._index = 0;
-                    }
-                    var index = data[i]._index;
-                    ctx.arc(data[i].geometry._coordinates[index][0], data[i].geometry._coordinates[index][1], size, 0, Math.PI * 2, true);
-                    ctx.closePath();
-
-                    data[i]._index++;
-
-                    if (data[i]._index >= data[i].geometry._coordinates.length) {
-                        data[i]._index = 0;
-                    }
-
-                    ctx.lineWidth = options.lineWidth || 1;
-                    var strokeStyle = data[i].strokeStyle || options.strokeStyle;
-                    var fillStyle = data[i].fillStyle || options.fillStyle || 'yellow';
-                    ctx.fillStyle = fillStyle;
-                    ctx.fill();
-                    if (strokeStyle) {
-                        ctx.strokeStyle = strokeStyle;
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-    }, {
-        key: "animate",
-        value: function animate() {
-            this.drawAnimation();
-            var animateTime = this.options.animateTime || 100;
-            this.timeout = setTimeout(this.animate.bind(this), animateTime);
-        }
-    }, {
-        key: "start",
-        value: function start() {
-            this.stop();
-            this.animate();
-        }
-    }, {
-        key: "stop",
-        value: function stop() {
-            clearTimeout(this.timeout);
-        }
-    }]);
-    return AnimationLayer;
-}();
 
 /**
  * Tween.js - Licensed under the MIT license
@@ -3847,8 +3703,13 @@ var drawText = {
 
         var textKey = options.textKey || 'text';
 
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
+        if (!options.textAlign) {
+            context.textAlign = 'center';
+        }
+
+        if (!options.textBaseline) {
+            context.textBaseline = 'middle';
+        }
 
         if (options.avoid) {
             // 标注避让
@@ -4076,16 +3937,18 @@ var BaseLayer = function () {
                         data[i]._size = undefined;
                     }
 
+                    var styleType = 'fillStyle';
+
+                    if (data[i].geometry.type === 'LineString' || self.options.styleType === 'stroke') {
+                        styleType = 'strokeStyle';
+                    }
+
                     if (self.options.draw == 'intensity') {
-                        if (data[i].geometry.type === 'LineString') {
-                            data[i].strokeStyle = self.intensity.getColor(item.count);
-                        } else {
-                            data[i].fillStyle = self.intensity.getColor(item.count);
-                        }
+                        data[i][styleType] = self.intensity.getColor(item.count);
                     } else if (self.options.draw == 'category') {
-                        data[i].fillStyle = self.category.get(item.count);
+                        data[i][styleType] = self.category.get(item.count);
                     } else if (self.options.draw == 'choropleth') {
-                        data[i].fillStyle = self.choropleth.get(item.count);
+                        data[i][styleType] = self.choropleth.get(item.count);
                     }
                 }
             }
@@ -4285,6 +4148,223 @@ var BaseLayer = function () {
     }]);
     return BaseLayer;
 }();
+
+var AnimationLayer = function (_BaseLayer) {
+    inherits(AnimationLayer, _BaseLayer);
+
+    function AnimationLayer(map, dataSet, options) {
+        classCallCheck(this, AnimationLayer);
+
+        var _this = possibleConstructorReturn(this, (AnimationLayer.__proto__ || Object.getPrototypeOf(AnimationLayer)).call(this, map, dataSet, options));
+
+        _this.map = map;
+        _this.options = options || {};
+        _this.dataSet = dataSet;
+
+        _this.init(options);
+
+        var canvasLayer = new CanvasLayer({
+            map: map,
+            update: _this._canvasUpdate.bind(_this)
+        });
+        _this.transferToMercator();
+        var self = _this;
+        dataSet.on('change', function () {
+            self.transferToMercator();
+            canvasLayer.draw();
+        });
+        _this.ctx = canvasLayer.canvas.getContext('2d');
+
+        _this.start();
+        return _this;
+    }
+
+    createClass(AnimationLayer, [{
+        key: "init",
+        value: function init(options) {
+
+            var self = this;
+            self.options = options;
+            this.initDataRange(options);
+            this.context = self.options.context || '2d';
+
+            if (self.options.zIndex) {
+                this.canvasLayer && this.canvasLayer.setZIndex(self.options.zIndex);
+            }
+
+            if (self.options.max) {
+                this.intensity.setMax(self.options.max);
+            }
+
+            if (self.options.min) {
+                this.intensity.setMin(self.options.min);
+            }
+
+            this.initAnimator();
+        }
+
+        // 经纬度左边转换为墨卡托坐标
+
+    }, {
+        key: "transferToMercator",
+        value: function transferToMercator() {
+            var projection = this.map.getMapType().getProjection();
+
+            if (this.options.coordType !== 'bd09mc') {
+                var data = this.dataSet.get();
+                data = this.dataSet.transferCoordinate(data, function (coordinates) {
+                    var pixel = projection.lngLatToPoint({
+                        lng: coordinates[0],
+                        lat: coordinates[1]
+                    });
+                    return [pixel.x, pixel.y];
+                }, 'coordinates', 'coordinates_mercator');
+                this.dataSet._set(data);
+            }
+        }
+    }, {
+        key: "_canvasUpdate",
+        value: function _canvasUpdate() {
+            var ctx = this.ctx;
+            if (!ctx) {
+                return;
+            }
+            //clear(ctx);
+            var map = this.map;
+            var zoomUnit = Math.pow(2, 18 - map.getZoom());
+            var projection = map.getMapType().getProjection();
+
+            var mcCenter = projection.lngLatToPoint(map.getCenter());
+            var nwMc = new BMap.Pixel(mcCenter.x - map.getSize().width / 2 * zoomUnit, mcCenter.y + map.getSize().height / 2 * zoomUnit); //左上角墨卡托坐标
+
+            clear(ctx);
+
+            var dataGetOptions = {
+                fromColumn: this.options.coordType == 'bd09mc' ? 'coordinates' : 'coordinates_mercator',
+                transferCoordinate: function transferCoordinate(coordinate) {
+                    if (!coordinate) {
+                        return;
+                    }
+                    var x = (coordinate[0] - nwMc.x) / zoomUnit;
+                    var y = (nwMc.y - coordinate[1]) / zoomUnit;
+                    return [x, y];
+                }
+            };
+
+            this.data = this.dataSet.get(dataGetOptions);
+
+            this.processData(this.data);
+
+            this.drawAnimation();
+        }
+    }, {
+        key: "drawAnimation",
+        value: function drawAnimation() {
+            var ctx = this.ctx;
+            var data = this.data;
+            if (!data) {
+                return;
+            }
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.restore();
+
+            ctx.save();
+            if (this.options.shadowColor) {
+                ctx.shadowColor = this.options.shadowColor;
+            }
+
+            if (this.options.shadowBlur) {
+                ctx.shadowBlur = this.options.shadowBlur;
+            }
+
+            if (this.options.globalAlpha) {
+                ctx.globalAlpha = this.options.globalAlpha;
+            }
+
+            if (this.options.globalCompositeOperation) {
+                ctx.globalCompositeOperation = this.options.globalCompositeOperation;
+            }
+
+            var options = this.options;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].geometry.type === 'Point') {
+                    ctx.beginPath();
+                    var maxSize = data[i].size || this.options.size;
+                    var minSize = data[i].minSize || this.options.minSize || 0;
+                    if (data[i]._size === undefined) {
+                        data[i]._size = minSize;
+                    }
+                    ctx.arc(data[i].geometry._coordinates[0], data[i].geometry._coordinates[1], data[i]._size, 0, Math.PI * 2, true);
+                    ctx.closePath();
+
+                    data[i]._size++;
+
+                    if (data[i]._size > maxSize) {
+                        data[i]._size = minSize;
+                    }
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = data[i].strokeStyle || options.strokeStyle || 'yellow';
+                    ctx.stroke();
+                    var fillStyle = data[i].fillStyle || options.fillStyle;
+                    if (fillStyle) {
+                        ctx.fillStyle = fillStyle;
+                        ctx.fill();
+                    }
+                } else if (data[i].geometry.type === 'LineString') {
+                    ctx.beginPath();
+                    var size = data[i].size || this.options.size || 5;
+                    var minSize = data[i].minSize || this.options.minSize || 0;
+                    if (data[i]._index === undefined) {
+                        data[i]._index = 0;
+                    }
+                    var index = data[i]._index;
+                    ctx.arc(data[i].geometry._coordinates[index][0], data[i].geometry._coordinates[index][1], size, 0, Math.PI * 2, true);
+                    ctx.closePath();
+
+                    data[i]._index++;
+
+                    if (data[i]._index >= data[i].geometry._coordinates.length) {
+                        data[i]._index = 0;
+                    }
+
+                    ctx.lineWidth = options.lineWidth || 1;
+                    var strokeStyle = data[i].strokeStyle || options.strokeStyle;
+                    var fillStyle = data[i].fillStyle || options.fillStyle || 'yellow';
+                    ctx.fillStyle = fillStyle;
+                    ctx.fill();
+                    if (strokeStyle) {
+                        ctx.strokeStyle = strokeStyle;
+                        ctx.stroke();
+                    }
+                }
+            }
+            ctx.restore();
+        }
+    }, {
+        key: "animate",
+        value: function animate() {
+            this.drawAnimation();
+            var animateTime = this.options.animateTime || 100;
+            this.timeout = setTimeout(this.animate.bind(this), animateTime);
+        }
+    }, {
+        key: "start",
+        value: function start() {
+            this.stop();
+            this.animate();
+        }
+    }, {
+        key: "stop",
+        value: function stop() {
+            clearTimeout(this.timeout);
+        }
+    }]);
+    return AnimationLayer;
+}(BaseLayer);
 
 /**
  * @author kyle / http://nikai.us/
@@ -4727,9 +4807,9 @@ function CanvasLayer$2(opt_options) {
   }
 }
 
-var global$2 = typeof window === 'undefined' ? {} : window;
+var global$4 = typeof window === 'undefined' ? {} : window;
 
-if (global$2.google && global$2.google.maps) {
+if (global$4.google && global$4.google.maps) {
 
   CanvasLayer$2.prototype = new google.maps.OverlayView();
 
@@ -4770,8 +4850,8 @@ if (global$2.google && global$2.google.maps) {
    * @return {number} The browser-defined id for the requested callback.
    * @private
    */
-  CanvasLayer$2.prototype.requestAnimFrame_ = global$2.requestAnimationFrame || global$2.webkitRequestAnimationFrame || global$2.mozRequestAnimationFrame || global$2.oRequestAnimationFrame || global$2.msRequestAnimationFrame || function (callback) {
-    return global$2.setTimeout(callback, 1000 / 60);
+  CanvasLayer$2.prototype.requestAnimFrame_ = global$4.requestAnimationFrame || global$4.webkitRequestAnimationFrame || global$4.mozRequestAnimationFrame || global$4.oRequestAnimationFrame || global$4.msRequestAnimationFrame || function (callback) {
+    return global$4.setTimeout(callback, 1000 / 60);
   };
 
   /**
@@ -4783,7 +4863,7 @@ if (global$2.google && global$2.google.maps) {
    * @param {number=} requestId The id of the frame request to cancel.
    * @private
    */
-  CanvasLayer$2.prototype.cancelAnimFrame_ = global$2.cancelAnimationFrame || global$2.webkitCancelAnimationFrame || global$2.mozCancelAnimationFrame || global$2.oCancelAnimationFrame || global$2.msCancelAnimationFrame || function (requestId) {};
+  CanvasLayer$2.prototype.cancelAnimFrame_ = global$4.cancelAnimationFrame || global$4.webkitCancelAnimationFrame || global$4.mozCancelAnimationFrame || global$4.oCancelAnimationFrame || global$4.msCancelAnimationFrame || function (requestId) {};
 
   /**
    * Sets any options provided. See CanvasLayerOptions for more information.
@@ -4950,7 +5030,7 @@ if (global$2.google && global$2.google.maps) {
 
     // cease canvas update callbacks
     if (this.requestAnimationFrameId_) {
-      this.cancelAnimFrame_.call(global$2, this.requestAnimationFrameId_);
+      this.cancelAnimFrame_.call(global$4, this.requestAnimationFrameId_);
       this.requestAnimationFrameId_ = null;
     }
   };
@@ -5075,7 +5155,7 @@ if (global$2.google && global$2.google.maps) {
    */
   CanvasLayer$2.prototype.scheduleUpdate = function () {
     if (this.isAdded_ && !this.requestAnimationFrameId_) {
-      this.requestAnimationFrameId_ = this.requestAnimFrame_.call(global$2, this.requestUpdateFunction_);
+      this.requestAnimationFrameId_ = this.requestAnimFrame_.call(global$4, this.requestUpdateFunction_);
     }
   };
 }

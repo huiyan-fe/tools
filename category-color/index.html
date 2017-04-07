@@ -125,8 +125,9 @@
         var textOptions = {
             draw: 'text',
             avoid: true,
+            textAlign: 'left',
             offset: {
-                x: 21,
+                x: 6,
                 y: 0
             },
             size: 14,
@@ -381,7 +382,7 @@
                         type: 'Point',
                         coordinates: [cityCenter.lng, cityCenter.lat]
                     },
-                    text: line[0],
+                    text: (i + 1) + '.' + line[0],
                     fillStyle: line[2]
                 }
                 if (line[1]) {

@@ -37,6 +37,11 @@
         </div>
         <div>
         <button onclick="show()">显示</button>
+        <div>
+        文本标签：
+        <button onclick="showText()">显示</button>
+        <button onclick="hideText()">隐藏</button>
+        </div>
         </div>
     </div>
 
@@ -393,6 +398,14 @@
             }
             dataSet.set(data);
             finished();
+        }
+
+        function showText() {
+            textLayer.show();
+        }
+
+        function hideText() {
+            textLayer.hide();
         }
 
     </script>

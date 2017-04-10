@@ -95,6 +95,7 @@
                     coordinates: [cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4]
                 },
                 text: city,
+                number: randomCount,
                 count: 30 * Math.random()
             });
         }
@@ -105,7 +106,7 @@
             draw: 'simple',
             max: 100,
             min: 0,
-            size: 5,
+            size: 10,
             symbol: 'circle',
             maxSize: 50,
             minSize: 1,
@@ -132,7 +133,7 @@
             avoid: true,
             textAlign: 'left',
             offset: {
-                x: 6,
+                x: 9,
                 y: 0
             },
             size: 18,
@@ -142,6 +143,17 @@
 
         var textLayer = new mapv.baiduMapLayer(map, dataSet, textOptions);
 
+
+        var textOptions = {
+            draw: 'text',
+            avoid: true,
+            size: 12,
+            fillStyle: 'white',
+            textKey: 'number',
+            shadowBlur: 5
+        }
+
+        var textLayer1 = new mapv.baiduMapLayer(map, dataSet, textOptions);
 
         function finished() {
             mapvLayer.update({
@@ -387,7 +399,8 @@
                         type: 'Point',
                         coordinates: [cityCenter.lng, cityCenter.lat]
                     },
-                    text: (i + 1) + '.' + line[0],
+                    text: line[0],
+                    number: (i + 1),
                     fillStyle: line[2]
                 }
                 if (line[1]) {
@@ -402,10 +415,12 @@
 
         function showText() {
             textLayer.show();
+            textLayer1.show();
         }
 
         function hideText() {
             textLayer.hide();
+            textLayer1.hide();
         }
 
     </script>

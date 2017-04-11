@@ -635,6 +635,9 @@ var styleOptions = {
     });
 
 function getDirection(points, i) {
+    if (i >= points.length) {
+        return null;
+    }
     var icon = new BMap.Icon("direction.png", new BMap.Size(20, 20), {
         imageSize: new BMap.Size(20, 20)
     });

@@ -87,13 +87,14 @@
                         "elementType": "geometry.stroke",
                         "stylers": {
                                   "color": "#808080",
-                                  "weight": "1.5",
+                                  "weight": "1.3",
                                   "lightness": 6,
                                   "saturation": 5
                         }
               }
             ]
         });
+        /*
         map.setMapStyle({
             styleJson: [
               {
@@ -112,14 +113,15 @@
               }
             ]
         });
+        */
 
         $.get('china.json', function(geojson) {
 
             var dataSet = mapv.geojson.getDataSet(geojson);
 
             var options = {
-                fillStyle: '#d1d1d1',
-                strokeStyle: 'white',
+                fillStyle: 'rgba(0, 0, 0, 0)',
+                strokeStyle: '#ccc',
                 lineWidth: 1,
                 zIndex: 1,
                 draw: 'simple'
@@ -128,6 +130,51 @@
             var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
 
         });
+
+        /*
+        var bdary = new BMap.Boundary();
+        bdary.get('中国', function(rs){       //获取行政区域
+            var tmpData = [];
+            for (var i = 0; i < rs.boundaries.length; i++) {
+                var coordinates = [];
+                var path = rs.boundaries[i].split(';');
+                for (var j = 0; j < path.length; j++) {
+                    coordinates.push(path[j].split(','));
+                }
+
+                tmpData.push({
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [coordinates]
+                    }
+                });
+            }
+
+            var options = {
+                fillStyle: 'rgba(0, 0, 0, 0)',
+                strokeStyle: '#aaa',
+                lineWidth: 4,
+                zIndex: 1,
+                draw: 'simple'
+            }
+
+            var mapvLayer = new mapv.baiduMapLayer(map, tmpData, options);
+        });
+        */
+    function getBoundary(){       
+        var bdary = new BMap.Boundary();
+        bdary.get("中国", function(rs){       //获取行政区域
+            var count = rs.boundaries.length; //行政区域的点有多少个
+            var pointArray = [];
+            for (var i = 0; i < count; i++) {
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 4, strokeOpacity:1, fillOpacity: 0.01, strokeColor: "#ff0000"}); //建立多边形覆盖物
+                map.addOverlay(ply);  //添加覆盖物
+                pointArray = pointArray.concat(ply.getPath());
+            }    
+        });   
+    }
+
+    //getBoundary();
 
 
         var randomCount = 300;
@@ -150,7 +197,6 @@
                 count: 30 * Math.random()
             });
         }
-        console.log(data)
         var dataSet = new mapv.DataSet(data);
 
         var options = {

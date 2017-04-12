@@ -152,14 +152,12 @@
             }
 
             var options = {
-                fillStyle: 'rgba(0, 0, 0, 0.05)',
-                shadowColor: 'rgba(0, 0, 0, 0.05)',
-                shadowBlur: 50,
+                fillStyle: 'rgba(0, 0, 0, 0.2)',
                 zIndex: 1,
                 draw: 'simple'
             }
 
-            var mapvLayer = new mapv.baiduMapLayer(map, tmpData, options);
+            var mapvLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(tmpData), options);
         });
 
     function getBoundary(){       

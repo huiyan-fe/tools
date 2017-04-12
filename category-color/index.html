@@ -82,6 +82,7 @@
                                   "visibility": "off"
                         }
               },
+              /*
               {
                         "featureType": "administrative",
                         "elementType": "geometry.stroke",
@@ -92,6 +93,7 @@
                                   "saturation": 5
                         }
               }
+              */
             ]
         });
         /*
@@ -131,7 +133,6 @@
 
         });
 
-        /*
         var bdary = new BMap.Boundary();
         bdary.get('中国', function(rs){       //获取行政区域
             var tmpData = [];
@@ -151,16 +152,16 @@
             }
 
             var options = {
-                fillStyle: 'rgba(0, 0, 0, 0)',
-                strokeStyle: '#aaa',
-                lineWidth: 4,
+                fillStyle: 'rgba(0, 0, 0, 0.05)',
+                shadowColor: 'rgba(0, 0, 0, 0.05)',
+                shadowBlur: 50,
                 zIndex: 1,
                 draw: 'simple'
             }
 
             var mapvLayer = new mapv.baiduMapLayer(map, tmpData, options);
         });
-        */
+
     function getBoundary(){       
         var bdary = new BMap.Boundary();
         bdary.get("中国", function(rs){       //获取行政区域

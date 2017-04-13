@@ -71,7 +71,7 @@
                         "featureType": "all",
                         "elementType": "all",
                         "stylers": {
-                                  "lightness": 61,
+                                  "lightness": 40,
                                   "saturation": -100
                         }
               },
@@ -80,6 +80,13 @@
                         "elementType": "labels",
                         "stylers": {
                                   "visibility": "off"
+                        }
+              },
+              {
+                        "featureType": "0801",
+                        "elementType": "all",
+                        "stylers": {
+                                  "color": "#ffffff"
                         }
               },
               /*
@@ -95,6 +102,54 @@
               }
               */
             ]
+        });
+
+        map.setMapStyle({
+            styleJson: [
+          {
+                    "featureType": "all",
+                    "elementType": "all",
+                    "stylers": {
+                              "lightness": 40,
+                              "saturation": -100
+                    }
+          },
+          {
+                    "featureType": "0801",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#ffffff"
+                    }
+          },
+          {
+                    "featureType": "administrative",
+                    "elementType": "labels",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "0801",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "060101",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "060102",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          }
+]
         });
         /*
         map.setMapStyle({
@@ -117,6 +172,7 @@
         });
         */
 
+        /*
         $.get('china.json', function(geojson) {
 
             var dataSet = mapv.geojson.getDataSet(geojson);
@@ -132,7 +188,9 @@
             var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
 
         });
+        */
 
+        /*
         var bdary = new BMap.Boundary();
         bdary.get('中国', function(rs){       //获取行政区域
             var tmpData = [];
@@ -159,6 +217,7 @@
 
             var mapvLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(tmpData), options);
         });
+*/
 
     function getBoundary(){       
         var bdary = new BMap.Boundary();

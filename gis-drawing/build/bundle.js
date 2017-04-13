@@ -22046,7 +22046,11 @@
 	                if (data[i].isShowArrow) {
 	                    //getDirection(data[i].points, ~~(data[i].points.length / 3));
 	                    //getDirection(data[i].points, ~~(data[i].points.length / 3 * 2));
-	                    getDirection(data[i].points, ~~(data[i].points.length / 2));
+	                    var index = ~~(data[i].points.length / 2);
+	                    if (index >= data[i].points.length - 1) {
+	                        index = data[i].points.length - 2;
+	                    }
+	                    getDirection(data[i].points, index);
 	                }
 
 	                if (data[i].isShowText) {
@@ -22303,7 +22307,7 @@
 	    marker.enableDragging();
 	    marker.setIcon(icon);
 	    marker.setShadow(icon);
-	    var targetPos = points[curIndex + 2];
+	    var targetPos = points[curIndex + 1];
 	    var curPos = project.lngLatToPoint(curPos);
 	    var targetPos = project.lngLatToPoint(targetPos);
 

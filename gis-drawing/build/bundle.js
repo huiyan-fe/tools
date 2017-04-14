@@ -22000,8 +22000,16 @@
 	                    } else {
 	                        point = new BMap.Point(points[i], points[i + 1]);
 	                    }
-	                    pointArr.push(point);
-	                    pointArrs.push(point);
+	                    var isExist = false;
+	                    for (var z = 0; z < pointArr.length; z++) {
+	                        if (point.lng == pointArr[z].lng && point.lat == pointArr[z].lat) {
+	                            isExist = true;
+	                        }
+	                    }
+	                    if (!isExist) {
+	                        pointArr.push(point);
+	                        pointArrs.push(point);
+	                    }
 	                }
 	                data.push({
 	                    points: pointArr,

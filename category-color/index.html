@@ -22,6 +22,7 @@
             position: absolute;
             left: 10px;
             bottom: 50px;
+            text-align: center;
         }
 
 
@@ -30,7 +31,11 @@
 <body>
 
     <div id="map"></div>
-    <div id="legend"></div>
+    <div id="legend">
+        <div>高</div>
+        <div id="legendValue"></div>
+        <div>低</div>
+    </div>
     <div id="container" style="position:absolute;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
         <div>
         <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="dataInput" placeholder="需要显示的数据格式示例：北京,18,red;天津,15,blue">哈尔滨,181;济南,163;石家庄,158;成都,153;郑州,153;重庆,152;杭州,150;长春,150;西安,149;合肥,148;北京,148;广州,147;沈阳,146;南宁,146;天津,146;乌鲁木齐,146;昆明,145;贵阳,144;汕头,143;上海,143;珠海,143;洛阳,142;惠州,141;大连,141;长沙,141;海口,141;南京,141;武汉,141;青岛,140;太原,139;厦门,139;福州,138;佛山,137;金华,137;南昌,136;扬州,136;徐州,136;东莞,134;南通,131;潍坊,131;泉州,131;温州,131;宁波,131;嘉兴,131;深圳,129;烟台,129;常州,128;苏州,128;无锡,121</textarea>
@@ -317,8 +322,8 @@
             mapvLayer.update({
                 options: options 
             });
-            $('#legend').html('');
-            $('#legend').append(mapvLayer.getLegend({
+            $('#legendValue').html('');
+            $('#legendValue').append(mapvLayer.getLegend({
                 width: 30,
                 height: 150
             }));
@@ -555,6 +560,7 @@
                 if (!cityCenter) {
                     cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0].replace('市', ''));
                 }
+                console.log(line[0], line[0].length, cityCenter);
                 var item = {
                     geometry: {
                         type: 'Point',

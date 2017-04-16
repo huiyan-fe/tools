@@ -502,6 +502,7 @@
                     gui.addColor(options, 'strokeStyle').onChange(finished);
                     gui.add(options, 'max', 1, 300).onFinishChange(finished);
                     gui.add(options, 'maxSize', 35, 100).onFinishChange(finished);
+                    gui.add(options, 'minSize', 0, 100).onFinishChange(finished);
                     break;
                 case 'heatmap':
                     // gui.add(options, 'shadowBlur', 1, 100).onFinishChange(finished);

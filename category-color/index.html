@@ -552,6 +552,9 @@
             for (var i = 0; i < dataInput.length; i++) {
                 var line = dataInput[i].split(',');
                 var cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0]);
+                if (!cityCenter) {
+                    cityCenter = mapv.utilCityCenter.getCenterByCityName(line[0].replace('市', ''));
+                }
                 var item = {
                     geometry: {
                         type: 'Point',

@@ -3,12 +3,36 @@ import RouteList from './routelist.jsx';
 import DraggingTip from './map/DraggingTip.js';
 import DraggingLabel from './map/DraggingLabel.js';
 
+var chinaLayer = null;
+$.get('static/china.json', function(geojson) {
+
+    var dataSet = mapv.geojson.getDataSet(geojson);
+
+    var options = {
+        fillStyle: 'rgba(218, 218, 218, 1)',
+        //fillStyle: '#1495ff',
+        //fillStyle: 'lightblue',
+        //fillStyle: 'rgba(50, 50, 50, 0.5)',
+        //strokeStyle: '#999',
+        strokeStyle: 'rgba(255, 255, 255, 1)',
+        lineWidth: 1,
+        zIndex: 1,
+        enableMassClear: false,
+        draw: 'simple'
+    }
+
+    chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
+    chinaLayer.hide();
+
+});
+
 class App extends React.Component {
     constructor(args) {
         super(args);
         this.state = {
             isShowTipArrow: false,
             isShowRoadLabel: true,
+            isShowChina: false,
             isShowText: true,
             data: []
         }
@@ -65,6 +89,9 @@ class App extends React.Component {
                 endName: item[3]
             });
         }
+        if (pointArrs.length == lines.length) {
+            this.addPoints(pointArrs);
+        }
         this.setState({
             data: data
         }, function() {
@@ -75,6 +102,32 @@ class App extends React.Component {
 
     clearRoads() {
         map.clearOverlays();
+    }
+
+    addPoints(pointArrs) {
+        var data = [];
+        for (var i = 0; i < pointArrs.length; i++) {
+            data.push({
+                geometry: {
+                    type: 'Point',
+                    coordinates: [pointArrs[i].lng, pointArrs[i].lat]
+                }
+            });
+        }
+
+        var dataSet = new mapv.DataSet(data);
+
+        var options = {
+            fillStyle: 'rgba(255, 50, 50, 0.6)',
+            shadowColor: 'rgba(255, 50, 50, 1)',
+            enableMassClear: false,
+            shadowBlur: 30,
+            zIndex: 2,
+            size: 5,
+            draw: 'simple'
+        }
+
+        var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
     }
 
     renderRoads() {
@@ -185,27 +238,20 @@ class App extends React.Component {
         }, this.changeMapStyle.bind(this));
     }
 
+    showChina(flag) {
+        var self = this;
+
+        this.setState({
+            isShowChina: flag
+        }, this.changeMapStyle.bind(this));
+    }
+
     changeMapStyle() {
-        if (this.state.isShowRoadLabel) {
+        if (this.state.isShowChina) {
             map.setMapStyle({
                 styleJson: [
               {
                         "featureType": "all",
-                        "elementType": "all",
-                        "stylers": {
-                                  "lightness": 70,
-                                  "saturation": -70
-                        }
-              },
-              {
-                        "featureType": "road",
-                        "elementType": "labels",
-                        "stylers": {
-                                  "visibility": "on"
-                        }
-              },
-              {
-                        "featureType": "poi",
                         "elementType": "all",
                         "stylers": {
                                   "visibility": "off"
@@ -213,34 +259,67 @@ class App extends React.Component {
               }
             ]
             });
+            map.getContainer().style.background = '#fff';
+            chinaLayer && chinaLayer.show();
         } else {
-            map.setMapStyle({
-                styleJson: [
-              {
-                        "featureType": "all",
-                        "elementType": "all",
-                        "stylers": {
-                                  "lightness": 70,
-                                  "saturation": -70
-                        }
-              },
-              {
-                        "featureType": "road",
-                        "elementType": "labels",
-                        "stylers": {
-                                  "visibility": "off"
-                        }
-              },
-              {
-                        "featureType": "poi",
-                        "elementType": "all",
-                        "stylers": {
-                                  "visibility": "off"
-                        }
-              }
-            ]
-            });
+            chinaLayer && chinaLayer.hide();
+            if (this.state.isShowRoadLabel) {
+                map.setMapStyle({
+                    styleJson: [
+                  {
+                            "featureType": "all",
+                            "elementType": "all",
+                            "stylers": {
+                                      "lightness": 70,
+                                      "saturation": -70
+                            }
+                  },
+                  {
+                            "featureType": "road",
+                            "elementType": "labels",
+                            "stylers": {
+                                      "visibility": "on"
+                            }
+                  },
+                  {
+                            "featureType": "poi",
+                            "elementType": "all",
+                            "stylers": {
+                                      "visibility": "off"
+                            }
+                  }
+                ]
+                });
+            } else {
+                map.setMapStyle({
+                    styleJson: [
+                  {
+                            "featureType": "all",
+                            "elementType": "all",
+                            "stylers": {
+                                      "lightness": 70,
+                                      "saturation": -70
+                            }
+                  },
+                  {
+                            "featureType": "road",
+                            "elementType": "labels",
+                            "stylers": {
+                                      "visibility": "off"
+                            }
+                  },
+                  {
+                            "featureType": "poi",
+                            "elementType": "all",
+                            "stylers": {
+                                      "visibility": "off"
+                            }
+                  }
+                ]
+                });
+            }
         }
+        
     }
 
     changeText(flag) {
@@ -277,7 +356,15 @@ class App extends React.Component {
             <div className="panel">
                 <div className="inner">
                     <textarea ref="textarea" style={{height: '100px',width:'100%',border:'1px solid #999'}} className="" placeholder="116.330484,40.031406,116.33124,40.029496,116.33124,40.029496|高速公路"></textarea>
-                    <a className="waves-effect waves-light btn" onClick={this.addData.bind(this)}>添加道路</a>
+                    <a className="waves-effect waves-light btn" onClick={this.addData.bind(this)}>添加道路或点数据</a>
+                </div>
+                <div className="switch">
+                    <label>
+                      显示详细地图
+                      <input type="checkbox" checked={this.state.isShowChina} onClick={this.showChina.bind(this, !this.state.isShowChina)}/>
+                      <span className="lever"></span>
+                      显示全国地图
+                    </label>
                 </div>
                 <div className="switch">
                     <label>

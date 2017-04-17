@@ -21957,6 +21957,28 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var chinaLayer = null;
+	$.get('static/china.json', function (geojson) {
+
+	    var dataSet = mapv.geojson.getDataSet(geojson);
+
+	    var options = {
+	        fillStyle: 'rgba(218, 218, 218, 1)',
+	        //fillStyle: '#1495ff',
+	        //fillStyle: 'lightblue',
+	        //fillStyle: 'rgba(50, 50, 50, 0.5)',
+	        //strokeStyle: '#999',
+	        strokeStyle: 'rgba(255, 255, 255, 1)',
+	        lineWidth: 1,
+	        zIndex: 1,
+	        enableMassClear: false,
+	        draw: 'simple'
+	    };
+
+	    chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
+	    chinaLayer.hide();
+	});
+
 	var App = function (_React$Component) {
 	    _inherits(App, _React$Component);
 
@@ -21968,6 +21990,7 @@
 	        _this.state = {
 	            isShowTipArrow: false,
 	            isShowRoadLabel: true,
+	            isShowChina: false,
 	            isShowText: true,
 	            data: []
 	        };
@@ -22027,6 +22050,9 @@
 	                    endName: item[3]
 	                });
 	            }
+	            if (pointArrs.length == lines.length) {
+	                this.addPoints(pointArrs);
+	            }
 	            this.setState({
 	                data: data
 	            }, function () {
@@ -22038,6 +22064,33 @@
 	        key: 'clearRoads',
 	        value: function clearRoads() {
 	            map.clearOverlays();
+	        }
+	    }, {
+	        key: 'addPoints',
+	        value: function addPoints(pointArrs) {
+	            var data = [];
+	            for (var i = 0; i < pointArrs.length; i++) {
+	                data.push({
+	                    geometry: {
+	                        type: 'Point',
+	                        coordinates: [pointArrs[i].lng, pointArrs[i].lat]
+	                    }
+	                });
+	            }
+
+	            var dataSet = new mapv.DataSet(data);
+
+	            var options = {
+	                fillStyle: 'rgba(255, 50, 50, 0.6)',
+	                shadowColor: 'rgba(255, 50, 50, 1)',
+	                enableMassClear: false,
+	                shadowBlur: 30,
+	                zIndex: 2,
+	                size: 5,
+	                draw: 'simple'
+	            };
+
+	            var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
 	        }
 	    }, {
 	        key: 'renderRoads',
@@ -22150,54 +22203,78 @@
 	            }, this.changeMapStyle.bind(this));
 	        }
 	    }, {
+	        key: 'showChina',
+	        value: function showChina(flag) {
+	            var self = this;
+
+	            this.setState({
+	                isShowChina: flag
+	            }, this.changeMapStyle.bind(this));
+	        }
+	    }, {
 	        key: 'changeMapStyle',
 	        value: function changeMapStyle() {
-	            if (this.state.isShowRoadLabel) {
+	            if (this.state.isShowChina) {
 	                map.setMapStyle({
 	                    styleJson: [{
 	                        "featureType": "all",
-	                        "elementType": "all",
-	                        "stylers": {
-	                            "lightness": 70,
-	                            "saturation": -70
-	                        }
-	                    }, {
-	                        "featureType": "road",
-	                        "elementType": "labels",
-	                        "stylers": {
-	                            "visibility": "on"
-	                        }
-	                    }, {
-	                        "featureType": "poi",
 	                        "elementType": "all",
 	                        "stylers": {
 	                            "visibility": "off"
 	                        }
 	                    }]
 	                });
+	                map.getContainer().style.background = '#fff';
+	                chinaLayer && chinaLayer.show();
 	            } else {
-	                map.setMapStyle({
-	                    styleJson: [{
-	                        "featureType": "all",
-	                        "elementType": "all",
-	                        "stylers": {
-	                            "lightness": 70,
-	                            "saturation": -70
-	                        }
-	                    }, {
-	                        "featureType": "road",
-	                        "elementType": "labels",
-	                        "stylers": {
-	                            "visibility": "off"
-	                        }
-	                    }, {
-	                        "featureType": "poi",
-	                        "elementType": "all",
-	                        "stylers": {
-	                            "visibility": "off"
-	                        }
-	                    }]
-	                });
+	                chinaLayer && chinaLayer.hide();
+	                if (this.state.isShowRoadLabel) {
+	                    map.setMapStyle({
+	                        styleJson: [{
+	                            "featureType": "all",
+	                            "elementType": "all",
+	                            "stylers": {
+	                                "lightness": 70,
+	                                "saturation": -70
+	                            }
+	                        }, {
+	                            "featureType": "road",
+	                            "elementType": "labels",
+	                            "stylers": {
+	                                "visibility": "on"
+	                            }
+	                        }, {
+	                            "featureType": "poi",
+	                            "elementType": "all",
+	                            "stylers": {
+	                                "visibility": "off"
+	                            }
+	                        }]
+	                    });
+	                } else {
+	                    map.setMapStyle({
+	                        styleJson: [{
+	                            "featureType": "all",
+	                            "elementType": "all",
+	                            "stylers": {
+	                                "lightness": 70,
+	                                "saturation": -70
+	                            }
+	                        }, {
+	                            "featureType": "road",
+	                            "elementType": "labels",
+	                            "stylers": {
+	                                "visibility": "off"
+	                            }
+	                        }, {
+	                            "featureType": "poi",
+	                            "elementType": "all",
+	                            "stylers": {
+	                                "visibility": "off"
+	                            }
+	                        }]
+	                    });
+	                }
 	            }
 	        }
 	    }, {
@@ -22244,7 +22321,19 @@
 	                    _react2.default.createElement(
 	                        'a',
 	                        { className: 'waves-effect waves-light btn', onClick: this.addData.bind(this) },
-	                        '\u6DFB\u52A0\u9053\u8DEF'
+	                        '\u6DFB\u52A0\u9053\u8DEF\u6216\u70B9\u6570\u636E'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'switch' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '\u663E\u793A\u8BE6\u7EC6\u5730\u56FE',
+	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowChina, onClick: this.showChina.bind(this, !this.state.isShowChina) }),
+	                        _react2.default.createElement('span', { className: 'lever' }),
+	                        '\u663E\u793A\u5168\u56FD\u5730\u56FE'
 	                    )
 	                ),
 	                _react2.default.createElement(

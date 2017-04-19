@@ -12,7 +12,19 @@ map.panBy(180, 0);
 
 var style = 'grayscale';
 
-map.setMapStyle({style:style});
+//map.setMapStyle({style:style});
+map.setMapStyle({
+    styleJson: [
+        {
+            "featureType": "all",
+            "elementType": "all",
+            "stylers": {
+                "lightness": 61,
+                "saturation": -70
+            }
+        }
+    ]
+});
 
 map.addControl(new BMap.CityListControl({
     anchor: BMAP_ANCHOR_TOP_LEFT,

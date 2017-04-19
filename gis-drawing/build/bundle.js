@@ -22024,23 +22024,31 @@
 	                var points = list.split(",");
 	                var pointArr = [];
 	                var coordinates = [];
-	                for (var i = 0; i < points.length; i += 2) {
-	                    if (points[i] > 10000) {
-	                        point = project.pointToLngLat(new BMap.Pixel(points[i], points[i + 1]));
-	                    } else {
-	                        point = new BMap.Point(points[i], points[i + 1]);
-	                    }
-	                    var isExist = false;
-	                    for (var z = 0; z < pointArr.length; z++) {
-	                        if (point.lng == pointArr[z].lng && point.lat == pointArr[z].lat) {
-	                            isExist = true;
+	                if (points.length > 1) {
+	                    for (var i = 0; i < points.length; i += 2) {
+	                        if (points[i] > 10000) {
+	                            point = project.pointToLngLat(new BMap.Pixel(points[i], points[i + 1]));
+	                        } else {
+	                            point = new BMap.Point(points[i], points[i + 1]);
+	                        }
+	                        var isExist = false;
+	                        for (var z = 0; z < pointArr.length; z++) {
+	                            if (point.lng == pointArr[z].lng && point.lat == pointArr[z].lat) {
+	                                isExist = true;
+	                            }
+	                        }
+	                        if (!isExist) {
+	                            pointArr.push(point);
+	                            pointArrs.push(point);
 	                        }
 	                    }
-	                    if (!isExist) {
-	                        pointArr.push(point);
-	                        pointArrs.push(point);
-	                    }
+	                } else {
+	                    var cityCenter = mapv.utilCityCenter.getCenterByCityName(points[0].replace('市', ''));
+	                    var point = new BMap.Point(cityCenter.lng, cityCenter.lat);
+	                    pointArr.push(point);
+	                    pointArrs.push(point);
 	                }
+
 	                data.push({
 	                    points: pointArr,
 	                    strokeColor: 'red',
@@ -22088,12 +22096,14 @@
 	            var dataSet = new mapv.DataSet(data);
 
 	            var options = {
-	                fillStyle: 'rgba(255, 50, 50, 0.6)',
-	                shadowColor: 'rgba(255, 50, 50, 1)',
+	                fillStyle: 'rgba(255, 50, 50, 0.8)',
 	                enableMassClear: false,
-	                shadowBlur: 30,
+	                shadowColor: 'rgba(55, 50, 50, 0.3)',
+	                shadowBlur: 20,
+	                strokeStyle: 'white',
+	                lineWidth: 2,
 	                zIndex: 2,
-	                size: 5,
+	                size: 6,
 	                draw: 'simple'
 	            };
 

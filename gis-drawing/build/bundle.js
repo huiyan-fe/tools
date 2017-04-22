@@ -21982,7 +21982,10 @@
 	    var myIcon = new BMap.Icon("./static/images/view.png", new BMap.Size(132 / 2, 196 / 2), {
 	        imageSize: new BMap.Size(132 / 2, 196 / 2)
 	    });
-	    var marker2 = new BMap.Marker(pt, { icon: myIcon }); // 创建标注
+	    var marker2 = new BMap.Marker(pt, {
+	        icon: myIcon,
+	        enableMassClear: false
+	    }); // 创建标注
 	    map.addOverlay(marker2);
 	});
 

@@ -25,13 +25,14 @@ $.get('static/china.json', function(geojson) {
     chinaLayer.hide();
 
     var pt = new BMap.Point(127.733142,21.226515);
-    var myIcon = new BMap.Icon("./static/images/view.png", new BMap.Size(132 / 2, 196 / 2), {
-        imageSize: new BMap.Size(132 / 2, 196 / 2)
-    });
-    var marker2 = new BMap.Marker(pt,{
-        icon:myIcon,
+    var jiuduanwidth = 408;
+    var jiuduanheight  = 563;
+    var scale = 4.5;
+    var myIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
         enableMassClear: false,
-    });  // 创建标注
+        imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
+    });
+    var marker2 = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
     map.addOverlay(marker2);
 
 });

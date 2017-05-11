@@ -2,8 +2,24 @@ import React from 'react';
 import RouteList from './routelist.jsx';
 import DraggingTip from './map/DraggingTip.js';
 import DraggingLabel from './map/DraggingLabel.js';
+import center from './center.js';
+
+var pt = new BMap.Point(127.733142,21.226515);
+var jiuduanwidth = 408;
+var jiuduanheight  = 563;
+var scale = 4.5;
+var myIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
+    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
+});
+var jiuduanxianMarker = new BMap.Marker(pt,{
+    icon:myIcon, 
+    enableMassClear: false,
+});  // 创建标注
+
 
 var chinaLayer = null;
+
+
 $.get('static/china.json', function(geojson) {
 
     var dataSet = mapv.geojson.getDataSet(geojson);
@@ -24,18 +40,7 @@ $.get('static/china.json', function(geojson) {
     chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
     chinaLayer.hide();
 
-    var pt = new BMap.Point(127.733142,21.226515);
-    var jiuduanwidth = 408;
-    var jiuduanheight  = 563;
-    var scale = 4.5;
-    var myIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-        imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
-    });
-    var marker2 = new BMap.Marker(pt,{
-        icon:myIcon, 
-        enableMassClear: false,
-    });  // 创建标注
-    map.addOverlay(marker2);
+    map.addOverlay(jiuduanxianMarker);
 
 });
 
@@ -48,6 +53,7 @@ class App extends React.Component {
             isShowChina: false,
             isShowText: true,
             isShowNumber: true,
+            isShowJiuduan: true,
             data: []
         }
         this.updateDataByIndex = this.updateDataByIndex.bind(this);
@@ -90,7 +96,17 @@ class App extends React.Component {
                 }
             } else {
                 var cityCenter = mapv.utilCityCenter.getCenterByCityName(points[0].replace('市', ''));
-                var point = new BMap.Point(cityCenter.lng, cityCenter.lat);
+                if (cityCenter) {
+                    var point = new BMap.Point(cityCenter.lng, cityCenter.lat);
+                } else {
+                    cityCenter = center[points[0]];
+                    if (cityCenter) {
+                        var point = new BMap.Point(cityCenter[0], cityCenter[1]);
+                    } else {
+                        console.log(points[0]);
+                    }
+                }
+
                 pointArr.push(point);
                 pointArrs.push(point);
             }
@@ -380,6 +396,21 @@ class App extends React.Component {
         });
     }
 
+    changeJiuduan(flag) {
+        var self = this;
+        var data = this.state.data;
+
+        this.setState({
+            isShowJiuduan: flag
+        }, function() {
+            if (this.state.isShowJiuduan) {
+                map.addOverlay(jiuduanxianMarker);
+            } else {
+                map.removeOverlay(jiuduanxianMarker);
+            }
+        });
+    }
+
     changeStrokeWeight() {
         var self = this;
         var data = this.state.data;
@@ -439,6 +470,14 @@ class App extends React.Component {
                       <input type="checkbox" checked={this.state.isShowNumber} onClick={this.changeNumber.bind(this, !this.state.isShowNumber)}/>
                       <span className="lever"></span>
                       显示编号
+                    </label>
+                </div>
+                <div className="switch">
+                    <label>
+                      隐藏九段线
+                      <input type="checkbox" checked={this.state.isShowJiuduan} onClick={this.changeJiuduan.bind(this, !this.state.isShowJiuduan)}/>
+                      <span className="lever"></span>
+                      显示九段线
                     </label>
                 </div>
                 <div>

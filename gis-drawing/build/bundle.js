@@ -21983,10 +21983,12 @@
 	    var jiuduanheight = 563;
 	    var scale = 4.5;
 	    var myIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-	        enableMassClear: false,
 	        imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
 	    });
-	    var marker2 = new BMap.Marker(pt, { icon: myIcon }); // 创建标注
+	    var marker2 = new BMap.Marker(pt, {
+	        icon: myIcon,
+	        enableMassClear: false
+	    }); // 创建标注
 	    map.addOverlay(marker2);
 	});
 

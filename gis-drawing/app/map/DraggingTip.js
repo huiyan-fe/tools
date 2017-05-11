@@ -40,4 +40,8 @@ DraggingTip.prototype.setNumberRight = function () {
     this.tip.setNumberRight();
 }
 
+DraggingTip.prototype.hideNumber = function () {
+    this.tip.hideNumber();
+}
+
 export default DraggingTip;

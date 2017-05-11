@@ -47,6 +47,7 @@ class App extends React.Component {
             isShowRoadLabel: true,
             isShowChina: false,
             isShowText: true,
+            isShowNumber: true,
             data: []
         }
         this.updateDataByIndex = this.updateDataByIndex.bind(this);
@@ -105,6 +106,7 @@ class App extends React.Component {
                 endPoint: pointArr[pointArr.length - 1],
                 isShowArrow: false,
                 isShowText: true,
+                isShowNumber: true,
                 name: item[1],
                 startName: item[2],
                 endName: item[3]
@@ -191,6 +193,9 @@ class App extends React.Component {
 
                         if (!data[i].isNumberLeft) {
                             tip.setNumberRight();
+                        }
+                        if (!data[i].isShowNumber) {
+                            tip.hideNumber();
                         }
                     }
 
@@ -360,6 +365,21 @@ class App extends React.Component {
         });
     }
 
+    changeNumber(flag) {
+        var self = this;
+        var data = this.state.data;
+        for (var i = 0; i < data.length; i++) {
+            data[i].isShowNumber = flag;
+        }
+
+        this.setState({
+            data: data,
+            isShowNumber: flag
+        }, function() {
+            this.renderRoads();
+        });
+    }
+
     changeStrokeWeight() {
         var self = this;
         var data = this.state.data;
@@ -411,6 +431,14 @@ class App extends React.Component {
                       <input type="checkbox" checked={this.state.isShowText} onClick={this.changeText.bind(this, !this.state.isShowText)}/>
                       <span className="lever"></span>
                       显示所有文本
+                    </label>
+                </div>
+                <div className="switch">
+                    <label>
+                      隐藏编号
+                      <input type="checkbox" checked={this.state.isShowNumber} onClick={this.changeNumber.bind(this, !this.state.isShowNumber)}/>
+                      <span className="lever"></span>
+                      显示编号
                     </label>
                 </div>
                 <div>

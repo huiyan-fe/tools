@@ -13,6 +13,8 @@ function Tip(point, text, color, index){
     this._point = point;
     this._text = text;
     this._index = index;
+    this._numberDirection = 'left';
+    this._isShowNumber = true;
     this.color = color || '#ee5d5b';
 }
 
@@ -76,7 +78,7 @@ Tip.prototype.initialize = function(map){
     number.style.lineHeight = "30px";
     number.style.borderRadius = "30px";
 
-    this.setNumberLeft();
+    this.renderDirection();
 
     number.innerHTML = this._index;
     div.appendChild(number);
@@ -88,17 +90,42 @@ Tip.prototype.initialize = function(map){
 
 
 Tip.prototype.setNumberLeft = function(){
-    this._div.style.paddingLeft = '38px';
-    this._div.style.paddingRight = '8px';
-    this._number.style.left = "5px";
-    this._number.style.right = "initial";
+    this._numberDirection = 'left';
+    this.renderDirection();
 }
 
 Tip.prototype.setNumberRight = function(){
-    this._div.style.paddingLeft = '8px';
-    this._div.style.paddingRight = '38px';
-    this._number.style.left = "initial";
-    this._number.style.right = "5px";
+    this._numberDirection = 'right';
+    this.renderDirection();
+}
+
+Tip.prototype.renderDirection = function(){
+    if (this._numberDirection == 'left') {
+        if (this._isShowNumber) {
+            this._div.style.paddingLeft = '38px';
+        } else {
+            this._div.style.paddingLeft = '8px';
+        }
+        this._div.style.paddingRight = '8px';
+        this._number.style.left = "5px";
+        this._number.style.right = "initial";
+    } else {
+        this._div.style.paddingLeft = '8px';
+        if (this._isShowNumber) {
+            this._div.style.paddingRight = '38px';
+        } else {
+            this._div.style.paddingRight = '8px';
+        }
+        this._number.style.left = "initial";
+        this._number.style.right = "5px";
+    }
+}
+
+
+Tip.prototype.hideNumber = function(){
+    this._isShowNumber = false;
+    this._number.style.display = "none";
+    this.renderDirection();
 }
 
 Tip.prototype.setPosition = function(point){

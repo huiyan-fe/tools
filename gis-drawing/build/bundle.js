@@ -22005,6 +22005,7 @@
 	            isShowRoadLabel: true,
 	            isShowChina: false,
 	            isShowText: true,
+	            isShowNumber: true,
 	            data: []
 	        };
 	        _this.updateDataByIndex = _this.updateDataByIndex.bind(_this);
@@ -22066,6 +22067,7 @@
 	                    endPoint: pointArr[pointArr.length - 1],
 	                    isShowArrow: false,
 	                    isShowText: true,
+	                    isShowNumber: true,
 	                    name: item[1],
 	                    startName: item[2],
 	                    endName: item[3]
@@ -22155,6 +22157,9 @@
 
 	                            if (!data[i].isNumberLeft) {
 	                                tip.setNumberRight();
+	                            }
+	                            if (!data[i].isShowNumber) {
+	                                tip.hideNumber();
 	                            }
 	                        }
 
@@ -22317,6 +22322,22 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeNumber',
+	        value: function changeNumber(flag) {
+	            var self = this;
+	            var data = this.state.data;
+	            for (var i = 0; i < data.length; i++) {
+	                data[i].isShowNumber = flag;
+	            }
+
+	            this.setState({
+	                data: data,
+	                isShowNumber: flag
+	            }, function () {
+	                this.renderRoads();
+	            });
+	        }
+	    }, {
 	        key: 'changeStrokeWeight',
 	        value: function changeStrokeWeight() {
 	            var self = this;
@@ -22393,6 +22414,18 @@
 	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowText, onClick: this.changeText.bind(this, !this.state.isShowText) }),
 	                        _react2.default.createElement('span', { className: 'lever' }),
 	                        '\u663E\u793A\u6240\u6709\u6587\u672C'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'switch' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        '\u9690\u85CF\u7F16\u53F7',
+	                        _react2.default.createElement('input', { type: 'checkbox', checked: this.state.isShowNumber, onClick: this.changeNumber.bind(this, !this.state.isShowNumber) }),
+	                        _react2.default.createElement('span', { className: 'lever' }),
+	                        '\u663E\u793A\u7F16\u53F7'
 	                    )
 	                ),
 	                _react2.default.createElement(
@@ -22527,6 +22560,13 @@
 	            });
 	        }
 	    }, {
+	        key: 'toggleNumber',
+	        value: function toggleNumber(index, flag) {
+	            this.props.updateDataByIndex(index, {
+	                isShowNumber: flag
+	            });
+	        }
+	    }, {
 	        key: 'changeText',
 	        value: function changeText(index, flag) {
 	            this.props.updateDataByIndex(index, {
@@ -22595,6 +22635,18 @@
 	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isNumberLeft, onClick: self.changeNumber.bind(self, index, !item.isNumberLeft) }),
 	                                _react2.default.createElement('span', { className: 'lever' }),
 	                                '\u5DE6\u8FB9'
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'switch' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                null,
+	                                '\u9690\u85CF\u7F16\u53F7',
+	                                _react2.default.createElement('input', { type: 'checkbox', checked: item.isShowNumber, onClick: self.toggleNumber.bind(self, index, !item.isShowNumber) }),
+	                                _react2.default.createElement('span', { className: 'lever' }),
+	                                '\u663E\u793A\u7F16\u53F7'
 	                            )
 	                        ),
 	                        _react2.default.createElement(
@@ -22759,6 +22811,10 @@
 	    this.tip.setNumberRight();
 	};
 
+	DraggingTip.prototype.hideNumber = function () {
+	    this.tip.hideNumber();
+	};
+
 	exports.default = DraggingTip;
 
 /***/ },
@@ -22785,6 +22841,8 @@
 	    this._point = point;
 	    this._text = text;
 	    this._index = index;
+	    this._numberDirection = 'left';
+	    this._isShowNumber = true;
 	    this.color = color || '#ee5d5b';
 	}
 
@@ -22847,7 +22905,7 @@
 	    number.style.lineHeight = "30px";
 	    number.style.borderRadius = "30px";
 
-	    this.setNumberLeft();
+	    this.renderDirection();
 
 	    number.innerHTML = this._index;
 	    div.appendChild(number);
@@ -22858,17 +22916,41 @@
 	};
 
 	Tip.prototype.setNumberLeft = function () {
-	    this._div.style.paddingLeft = '38px';
-	    this._div.style.paddingRight = '8px';
-	    this._number.style.left = "5px";
-	    this._number.style.right = "initial";
+	    this._numberDirection = 'left';
+	    this.renderDirection();
 	};
 
 	Tip.prototype.setNumberRight = function () {
-	    this._div.style.paddingLeft = '8px';
-	    this._div.style.paddingRight = '38px';
-	    this._number.style.left = "initial";
-	    this._number.style.right = "5px";
+	    this._numberDirection = 'right';
+	    this.renderDirection();
+	};
+
+	Tip.prototype.renderDirection = function () {
+	    if (this._numberDirection == 'left') {
+	        if (this._isShowNumber) {
+	            this._div.style.paddingLeft = '38px';
+	        } else {
+	            this._div.style.paddingLeft = '8px';
+	        }
+	        this._div.style.paddingRight = '8px';
+	        this._number.style.left = "5px";
+	        this._number.style.right = "initial";
+	    } else {
+	        this._div.style.paddingLeft = '8px';
+	        if (this._isShowNumber) {
+	            this._div.style.paddingRight = '38px';
+	        } else {
+	            this._div.style.paddingRight = '8px';
+	        }
+	        this._number.style.left = "initial";
+	        this._number.style.right = "5px";
+	    }
+	};
+
+	Tip.prototype.hideNumber = function () {
+	    this._isShowNumber = false;
+	    this._number.style.display = "none";
+	    this.renderDirection();
 	};
 
 	Tip.prototype.setPosition = function (point) {

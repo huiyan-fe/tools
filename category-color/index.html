@@ -582,7 +582,7 @@
                     // gui.add(options, 'shadowBlur', 1, 100).onFinishChange(finished);
                     gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
                     gui.addColor(options, 'strokeStyle').onChange(finished);
-                    gui.add(options, 'max', 1, 300).onFinishChange(finished);
+                    gui.add(options, 'max', 1, 500).onFinishChange(finished);
                     gui.add(options, 'maxSize', 15, 100).onFinishChange(finished);
                     gui.add(options, 'minSize', 0, 100).onFinishChange(finished);
                     break;
@@ -594,8 +594,8 @@
                 case 'grid':
                 case 'intensity':
                 case 'honeycomb':
-                    gui.add(options, 'max', 1, 300).onFinishChange(finished);
-                    gui.add(options, 'min', -100, 300).onFinishChange(finished);
+                    gui.add(options, 'max', 1, 50000).onFinishChange(finished);
+                    gui.add(options, 'min', -100, 50000).onFinishChange(finished);
                     gui.add(options, 'lineWidth', 1, 10).onFinishChange(finished);
                     gui.addColor(options, 'strokeStyle').onChange(finished);
                     gui.addGradient(options, 'gradient', gradientOptions).onFinishChange(finished);

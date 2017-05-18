@@ -656,7 +656,7 @@
                 }
                 if (line[1]) {
                     //item.size = intensity.getSize(line[1]);
-                    item.count = line[1];
+                    item.count = parseFloat(line[1]);
                 }
                 data.push(item);
                 if (line[3] !== 'nolabel') {

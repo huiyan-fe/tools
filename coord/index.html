@@ -315,7 +315,7 @@
             var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
             map.addOverlay(polygon);
 
-            polygon.enableEditing();
+            //polygon.enableEditing();
             polygon.addEventListener('lineupdate', function () {
                 showResult(polygon);
             });

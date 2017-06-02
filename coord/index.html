@@ -237,6 +237,7 @@
             var pointArrs = [];
             var data = [];
             var textData = [];
+            var coordType = 'bd09ll';
             var lines = tex.split(";");
             for (var j = 0; j < lines.length; j++) {
                 var item = lines[j].split("|");
@@ -246,6 +247,7 @@
                 var coordinates = [];
                 for(var i=0;i<points.length;i+=2){
                     if (points[i] > 10000) {
+                        coordType = 'bd09mc';
                         point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
                     } else {
                         point = new BMap.Point(points[i], points[i+1]);
@@ -286,10 +288,12 @@
                 draw: 'simple'
             }
 
+
             var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
             if (item.length > 1) {
                 textLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
                     fillStyle: 'blue',
+                    coordType: coordType,
                     font: "bold 22px Arial",
                     shadowBlur: 20,
                     shadowColor: 'yellow',

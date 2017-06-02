@@ -1,0 +1,29 @@
+{
+  "name": "road3d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack;"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://zhuwenlong@icode.baidu.com:8235/baidu/jiaotongyun-fe-tools/road3d"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "webpack": "^2.6.1",
+    "webpack-stream": "^3.2.0"
+  },
+  "dependencies": {
+    "eslint": "^3.19.0"
+  }
+}

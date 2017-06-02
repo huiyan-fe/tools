@@ -11,7 +11,7 @@ let Con = {
 let Camera = function (gl, opt = {}) {
     this.gl = gl;
 
-    this.radius = opt.radius || 4000;
+    this.radius = opt.radius || 1200;
     this.lon = opt.lon || 90;
     this.lat = opt.lat || 45;
 
@@ -23,7 +23,7 @@ let Camera = function (gl, opt = {}) {
     gl.viewport(0, 0, canvas.width, canvas.height);
     let pMatrix = mat4.create();
     this.nMatrix = mat4.create(); // The normal matrix
-    mat4.perspective(pMatrix, 45, canvas.width / canvas.height, 1, 100000.0);
+    mat4.perspective(pMatrix, 45, canvas.width / canvas.height, 1, 10000.0);
     gl.uniformMatrix4fv(gl.uPMatrix, false, pMatrix);
 
     this.computerXYZ();
@@ -98,7 +98,7 @@ Camera.prototype.drag = function () {
                 self.lat = startLat + dLat;
                 self.lat = Math.min(90, self.lat);
                 self.lat = Math.max(-90, self.lat);
-                self.lat = Math.max(10, self.lat);
+                self.lat = Math.max(0, self.lat);
             } else {
                 self.transX = (startTransX - dX * Con.longitudeLatitudeScale / 10);
                 self.transY = (startTransY + dY * Con.longitudeLatitudeScale / 10);

@@ -3,10 +3,7 @@ import Obj from './Object.js';
 class Path extends Obj {
     constructor(GL, obj) {
         super(GL, obj);
-
-        this.width = obj.width || 10.0;
-        this.height = obj.height || 10.0;
-
+        
         let color = this.color;
         let paths = obj.path;
         this.verticesColors = [];

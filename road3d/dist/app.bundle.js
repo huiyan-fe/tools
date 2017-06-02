@@ -233,9 +233,6 @@ var Path = function (_Obj) {
 
         var _this = _possibleConstructorReturn(this, (Path.__proto__ || Object.getPrototypeOf(Path)).call(this, GL, obj));
 
-        _this.width = obj.width || 10.0;
-        _this.height = obj.height || 10.0;
-
         var color = _this.color;
         var paths = obj.path;
         _this.verticesColors = [];
@@ -315,13 +312,15 @@ var Belt = function (_Obj) {
 
         var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
 
-        _this.width = obj.width || 10.0;
         _this.height = obj.height || 10.0;
 
         var color = _this.color;
         var paths = obj.path;
         _this.verticesColors = [];
         paths.forEach(function (point) {
+            point[2] = _this.height;
+            _this.verticesColors = _this.verticesColors.concat(point.concat(color));
+            point[2] = 0;
             _this.verticesColors = _this.verticesColors.concat(point.concat(color));
         });
         _this.verticesColors = new Float32Array(_this.verticesColors);
@@ -355,7 +354,7 @@ var Belt = function (_Obj) {
             //
 
             gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-            gl.drawArrays(gl.LINE_STRIP, 0, this.verticesColors.length / 6);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
         }
     }]);
 
@@ -640,10 +639,12 @@ var WebGl = function WebGl(dom, config) {
     var Dom = document.getElementById(dom);
     var DomSty = getComputedStyle(Dom);
 
+    // init canvas
     var canvas = document.createElement('canvas');
-    // console.log(DomSty.height)
-    canvas.height = parseInt(DomSty.height);
-    canvas.width = parseInt(DomSty.width);
+    canvas.height = parseInt(DomSty.height) * devicePixelRatio;
+    canvas.width = parseInt(DomSty.width) * devicePixelRatio;
+    canvas.style.height = parseInt(DomSty.height) + 'px';
+    canvas.style.width = parseInt(DomSty.width) + 'px';
     Dom.appendChild(canvas);
 
     // init renderlist
@@ -706,13 +707,77 @@ var _webgl = __webpack_require__(4);
 
 var _webgl2 = _interopRequireDefault(_webgl);
 
+var _path = __webpack_require__(11);
+
+var _path2 = _interopRequireDefault(_path);
+
+var _mercatorPorjection = __webpack_require__(12);
+
+var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mercatorProjection = new _mercatorPorjection2.default();
 
 window.onload = function () {
     var app = window.app = new _webgl2.default('canvas');
 
+    // x
     app.Path({
-        path: [[0, 0, 0], [1000, 1000, 0]]
+        path: [[0, 0, 0], [0, 100, 0]],
+        color: '#f00'
+    });
+
+    // y
+    app.Path({
+        path: [[0, 0, 0], [100, 0, 0]],
+        color: '#0f0'
+    });
+
+    // z
+    app.Path({
+        path: [[0, 0, 0], [0, 0, 100]],
+        color: '#00f'
+    });
+
+    // z
+    app.Path({
+        path: [[-500, 0, 0], [500, 0, 0]],
+        color: '#fff'
+    });
+
+    // prepare data
+    var maxWidth = 1000;
+    var min = [Infinity, Infinity];
+    var max = [-Infinity, -Infinity];
+    _path2.default.paths = _path2.default.paths.map(function (point) {
+        var newPoint = mercatorProjection.lngLatToMercator({
+            lng: point[0],
+            lat: point[1]
+        });
+
+        min[0] = Math.min(min[0], newPoint.lng);
+        min[1] = Math.min(min[1], newPoint.lat);
+        max[0] = Math.max(max[0], newPoint.lng);
+        max[1] = Math.max(max[1], newPoint.lat);
+
+        return [newPoint.lng, newPoint.lat, 0];
+    });
+    var mid = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2];
+    var delta = [max[0] - min[0], max[1] - min[1]];
+    var deltaMax = Math.max(delta[0], delta[1]);
+
+    var scale = maxWidth / deltaMax;
+    console.log(min, max, delta, scale);
+
+    var newPath = _path2.default.paths.map(function (point) {
+        return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale, 0];
+    });
+
+    //
+    app.Belt({
+        path: newPath,
+        height: 10
     });
 };
 
@@ -739,7 +804,7 @@ var Camera = function Camera(gl) {
 
     this.gl = gl;
 
-    this.radius = opt.radius || 4000;
+    this.radius = opt.radius || 1200;
     this.lon = opt.lon || 90;
     this.lat = opt.lat || 45;
 
@@ -751,7 +816,7 @@ var Camera = function Camera(gl) {
     gl.viewport(0, 0, canvas.width, canvas.height);
     var pMatrix = _glMatrixMin.mat4.create();
     this.nMatrix = _glMatrixMin.mat4.create(); // The normal matrix
-    _glMatrixMin.mat4.perspective(pMatrix, 45, canvas.width / canvas.height, 1, 100000.0);
+    _glMatrixMin.mat4.perspective(pMatrix, 45, canvas.width / canvas.height, 1, 10000.0);
     gl.uniformMatrix4fv(gl.uPMatrix, false, pMatrix);
 
     this.computerXYZ();
@@ -826,7 +891,7 @@ Camera.prototype.drag = function () {
                 self.lat = startLat + dLat;
                 self.lat = Math.min(90, self.lat);
                 self.lat = Math.max(-90, self.lat);
-                self.lat = Math.max(10, self.lat);
+                self.lat = Math.max(0, self.lat);
             } else {
                 self.transX = startTransX - dX * Con.longitudeLatitudeScale / 10;
                 self.transY = startTransY + dY * Con.longitudeLatitudeScale / 10;
@@ -2246,6 +2311,284 @@ webpackContext.keys = function webpackContextKeys() {
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
 webpackContext.id = 10;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var paths = [["116.452143", "39.889167", 0], ["116.451994", "39.890329", 0], ["116.451846", "39.891591", 0], ["116.451739", "39.892438", 0], ["116.451643", "39.893203", 0], ["116.451323", "39.895705", 0], ["116.451103", "39.897235", 0], ["116.451020", "39.897781", 0], ["116.450945", "39.898277", 0], ["116.450825", "39.899458", 0], ["116.450759", "39.900727", 0], ["116.450748", "39.900943", 0], ["116.450662", "39.903094", 0], ["116.450417", "39.903752", 0], ["116.449079", "39.904687", 0], ["116.446823", "39.905211", 0], ["116.444635", "39.905708", 0], ["116.443402", "39.906438", 0], ["116.443151", "39.906811", 0], ["116.443011", "39.907385", 0], ["116.443027", "39.907719", 0], ["116.443042", "39.907911", 0], ["116.443068", "39.908238", 0], ["116.442954", "39.909361", 0], ["116.442804", "39.910220", 0], ["116.442768", "39.910438", 0], ["116.442687", "39.910907", 0], ["116.442669", "39.911008", 0], ["116.442541", "39.911746", 0], ["116.442496", "39.911948", 0], ["116.442460", "39.912539", 0], ["116.442416", "39.913245", 0], ["116.442382", "39.914500", 0], ["116.442295", "39.915674", 0], ["116.442285", "39.915882", 0], ["116.442243", "39.916742", 0], ["116.442040", "39.917711", 0], ["116.441813", "39.918740", 0], ["116.441483", "39.921427", 0], ["116.441476", "39.921570", 0], ["116.441445", "39.922271", 0], ["116.441436", "39.922576", 0], ["116.441428", "39.922730", 0], ["116.441399", "39.923433", 0], ["116.441393", "39.923617", 0], ["116.441289", "39.925688", 0], ["116.441227", "39.927439", 0], ["116.441212", "39.927748", 0], ["116.441196", "39.927861", 0], ["116.441079", "39.930370", 0], ["116.441012", "39.931965", 0], ["116.440986", "39.932708", 0], ["116.440921", "39.934236", 0], ["116.440894", "39.934861", 0], ["116.440822", "39.936462", 0], ["116.440816", "39.936684", 0], ["116.440800", "39.937062", 0], ["116.440771", "39.937575", 0], ["116.440675", "39.939640", 0], ["116.440609", "39.941181", 0], ["116.440563", "39.942114", 0], ["116.440553", "39.942264", 0], ["116.440509", "39.943285", 0], ["116.440446", "39.944815", 0], ["116.440347", "39.947009", 0], ["116.440275", "39.949320", 0], ["116.440291", "39.949821", 0], ["116.440322", "39.950905", 0], ["116.440309", "39.951048", 0], ["116.440315", "39.951350", 0], ["116.440344", "39.952350", 0], ["116.440343", "39.952484", 0], ["116.438276", "39.955607", 0], ["116.437094", "39.955816", 0], ["116.435638", "39.955792", 0], ["116.435177", "39.955786", 0], ["116.434470", "39.955773", 0], ["116.430681", "39.955711", 0], ["116.427758", "39.955671", 0], ["116.426977", "39.955654", 0], ["116.426766", "39.955651", 0], ["116.426435", "39.955648", 0], ["116.425105", "39.955621", 0], ["116.421619", "39.955556", 0], ["116.418171", "39.955490", 0], ["116.414766", "39.955462", 0], ["116.410814", "39.955458", 0], ["116.406925", "39.955431", 0], ["116.402176", "39.955374", 0], ["116.400467", "39.955354", 0], ["116.400270", "39.955352", 0], ["116.397776", "39.955335", 0], ["116.396883", "39.955320", 0], ["116.396284", "39.955310", 0], ["116.391650", "39.955213", 0], ["116.388423", "39.955144", 0], ["116.386054", "39.955099", 0], ["116.384483", "39.955040", 0], ["116.382831", "39.954981", 0], ["116.382383", "39.954965", 0], ["116.381459", "39.954917", 0], ["116.378012", "39.954641", 0], ["116.375494", "39.953935", 0], ["116.374771", "39.953644", 0], ["116.372932", "39.952841", 0], ["116.371970", "39.952421", 0], ["116.370419", "39.951940", 0], ["116.367191", "39.950978", 0], ["116.366170", "39.950680", 0], ["116.366083", "39.950655", 0], ["116.365591", "39.950509", 0], ["116.361928", "39.948586", 0], ["116.361967", "39.947731", 0], ["116.362032", "39.946246", 0], ["116.362053", "39.943655", 0], ["116.362170", "39.941876", 0], ["116.362181", "39.941266", 0], ["116.362336", "39.938210", 0], ["116.362489", "39.935104", 0], ["116.362546", "39.933335", 0], ["116.362617", "39.931677", 0], ["116.362621", "39.931422", 0], ["116.362668", "39.930570", 0], ["116.362726", "39.929455", 0], ["116.362786", "39.928375", 0], ["116.362811", "39.927908", 0], ["116.362845", "39.927300", 0], ["116.362860", "39.926697", 0], ["116.363037", "39.923706", 0], ["116.363083", "39.922439", 0], ["116.363115", "39.921784", 0], ["116.363210", "39.919724", 0], ["116.363234", "39.916692", 0], ["116.363170", "39.916124", 0], ["116.363105", "39.914178", 0], ["116.363158", "39.913017", 0], ["116.363210", "39.911812", 0], ["116.363277", "39.910069", 0], ["116.363231", "39.908398", 0], ["116.363247", "39.907031", 0], ["116.363260", "39.906804", 0], ["116.363276", "39.906523", 0], ["116.363057", "39.905419", 0], ["116.360762", "39.904211", 0], ["116.357967", "39.904007", 0], ["116.357328", "39.903965", 0], ["116.355180", "39.901867", 0], ["116.355231", "39.900434", 0], ["116.355228", "39.900070", 0], ["116.355231", "39.899202", 0], ["116.355242", "39.898325", 0], ["116.355259", "39.897530", 0], ["116.355261", "39.897472", 0], ["116.355274", "39.896488", 0], ["116.355281", "39.895299", 0], ["116.355304", "39.894311", 0], ["116.355323", "39.893709", 0], ["116.355338", "39.892896", 0], ["116.355341", "39.892635", 0], ["116.355353", "39.891327", 0], ["116.355379", "39.889328", 0], ["116.355381", "39.888599", 0], ["116.355390", "39.888385", 0], ["116.355420", "39.887638", 0], ["116.355621", "39.885016", 0], ["116.355850", "39.882375", 0], ["116.355826", "39.880801", 0], ["116.355738", "39.880256", 0], ["116.355595", "39.879221", 0], ["116.355499", "39.878504", 0], ["116.355319", "39.876775", 0], ["116.355702", "39.875349", 0], ["116.356837", "39.874460", 0], ["116.360095", "39.874115", 0], ["116.361516", "39.874107", 0], ["116.363561", "39.874081", 0], ["116.365209", "39.874190", 0], ["116.365449", "39.874209", 0], ["116.366479", "39.874306", 0], ["116.366597", "39.874323", 0], ["116.367043", "39.874384", 0], ["116.370755", "39.875016", 0], ["116.375193", "39.875736", 0], ["116.376808", "39.875904", 0], ["116.378011", "39.876030", 0], ["116.381488", "39.876347", 0], ["116.383279", "39.876498", 0], ["116.384578", "39.876610", 0], ["116.384982", "39.876644", 0], ["116.386605", "39.876787", 0], ["116.388015", "39.876910", 0], ["116.390503", "39.877132", 0], ["116.391317", "39.877192", 0], ["116.392350", "39.877279", 0], ["116.394374", "39.877421", 0], ["116.395746", "39.877515", 0], ["116.396180", "39.877545", 0], ["116.396504", "39.877567", 0], ["116.397429", "39.877628", 0], ["116.400260", "39.877775", 0], ["116.401773", "39.877826", 0], ["116.403841", "39.877919", 0], ["116.405912", "39.877982", 0], ["116.407887", "39.878077", 0], ["116.409628", "39.878204", 0], ["116.410613", "39.878253", 0], ["116.411896", "39.878285", 0], ["116.412908", "39.878308", 0], ["116.413621", "39.878328", 0], ["116.414545", "39.878354", 0], ["116.415307", "39.878348", 0], ["116.416517", "39.878369", 0], ["116.418634", "39.878412", 0], ["116.420226", "39.878440", 0], ["116.420545", "39.878448", 0], ["116.421641", "39.878355", 0], ["116.421709", "39.878340", 0], ["116.422258", "39.878123", 0], ["116.423074", "39.877718", 0], ["116.426273", "39.877270", 0], ["116.426727", "39.877289", 0], ["116.427368", "39.877328", 0], ["116.427484", "39.877331", 0], ["116.427622", "39.877338", 0], ["116.428028", "39.877356", 0], ["116.428454", "39.877377", 0], ["116.429088", "39.877411", 0], ["116.429862", "39.877426", 0], ["116.431068", "39.877408", 0], ["116.434706", "39.877210", 0], ["116.436790", "39.877053", 0], ["116.437244", "39.877012", 0], ["116.439287", "39.876871", 0], ["116.439955", "39.876826", 0], ["116.441024", "39.876748", 0], ["116.441403", "39.876726", 0], ["116.441881", "39.876695", 0], ["116.442122", "39.876678", 0], ["116.442315", "39.876664", 0], ["116.443333", "39.876590", 0], ["116.443841", "39.876549", 0], ["116.446124", "39.876387", 0], ["116.447569", "39.876293", 0], ["116.448502", "39.876345", 0], ["116.449349", "39.876593", 0], ["116.449882", "39.876878", 0], ["116.450456", "39.877499", 0], ["116.450527", "39.877617", 0], ["116.450885", "39.878793", 0], ["116.451306", "39.880522", 0], ["116.451387", "39.880748", 0], ["116.451685", "39.881578", 0], ["116.452358", "39.882953", 0], ["116.452613", "39.886537", 0], ["116.452577", "39.886829", 0], ["116.452304", "39.888168", 0], ["116.452246", "39.888527", 0], ["116.452143", "39.889167", 0]];
+
+exports.default = {
+    paths: paths
+};
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * 百度墨卡托投影类
+ */
+function MercatorProjection() {}
+
+function extend(a, b) {
+    for (var key in b) {
+        a[key] = b[key];
+    }
+}
+
+function Point(lng, lat) {
+    this.lng = lng;
+    this.lat = lat;
+}
+
+function Pixel(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+// 静态常量
+extend(MercatorProjection, {
+    EARTHRADIUS: 6370996.81,
+    MCBAND: [12890594.86, 8362377.87, 5591021, 3481989.83, 1678043.12, 0],
+    LLBAND: [75, 60, 45, 30, 15, 0],
+    MC2LL: [[1.410526172116255e-008, 8.983055096488720e-006, -1.99398338163310, 2.009824383106796e+002, -1.872403703815547e+002, 91.60875166698430, -23.38765649603339, 2.57121317296198, -0.03801003308653, 1.733798120000000e+007], [-7.435856389565537e-009, 8.983055097726239e-006, -0.78625201886289, 96.32687599759846, -1.85204757529826, -59.36935905485877, 47.40033549296737, -16.50741931063887, 2.28786674699375, 1.026014486000000e+007], [-3.030883460898826e-008, 8.983055099835780e-006, 0.30071316287616, 59.74293618442277, 7.35798407487100, -25.38371002664745, 13.45380521110908, -3.29883767235584, 0.32710905363475, 6.856817370000000e+006], [-1.981981304930552e-008, 8.983055099779535e-006, 0.03278182852591, 40.31678527705744, 0.65659298677277, -4.44255534477492, 0.85341911805263, 0.12923347998204, -0.04625736007561, 4.482777060000000e+006], [3.091913710684370e-009, 8.983055096812155e-006, 0.00006995724062, 23.10934304144901, -0.00023663490511, -0.63218178102420, -0.00663494467273, 0.03430082397953, -0.00466043876332, 2.555164400000000e+006], [2.890871144776878e-009, 8.983055095805407e-006, -0.00000003068298, 7.47137025468032, -0.00000353937994, -0.02145144861037, -0.00001234426596, 0.00010322952773, -0.00000323890364, 8.260885000000000e+005]],
+    LL2MC: [[-0.00157021024440, 1.113207020616939e+005, 1.704480524535203e+015, -1.033898737604234e+016, 2.611266785660388e+016, -3.514966917665370e+016, 2.659570071840392e+016, -1.072501245418824e+016, 1.800819912950474e+015, 82.5], [8.277824516172526e-004, 1.113207020463578e+005, 6.477955746671608e+008, -4.082003173641316e+009, 1.077490566351142e+010, -1.517187553151559e+010, 1.205306533862167e+010, -5.124939663577472e+009, 9.133119359512032e+008, 67.5], [0.00337398766765, 1.113207020202162e+005, 4.481351045890365e+006, -2.339375119931662e+007, 7.968221547186455e+007, -1.159649932797253e+008, 9.723671115602145e+007, -4.366194633752821e+007, 8.477230501135234e+006, 52.5], [0.00220636496208, 1.113207020209128e+005, 5.175186112841131e+004, 3.796837749470245e+006, 9.920137397791013e+005, -1.221952217112870e+006, 1.340652697009075e+006, -6.209436990984312e+005, 1.444169293806241e+005, 37.5], [-3.441963504368392e-004, 1.113207020576856e+005, 2.782353980772752e+002, 2.485758690035394e+006, 6.070750963243378e+003, 5.482118345352118e+004, 9.540606633304236e+003, -2.710553267466450e+003, 1.405483844121726e+003, 22.5], [-3.218135878613132e-004, 1.113207020701615e+005, 0.00369383431289, 8.237256402795718e+005, 0.46104986909093, 2.351343141331292e+003, 1.58060784298199, 8.77738589078284, 0.37238884252424, 7.45]]
+
+    /**
+     * 根据平面直角坐标计算两点间距离;
+     * @param {Point} point1 平面直角点坐标1
+     * @param {Point} point2 平面直角点坐标2;
+     * @return {Number} 返回两点间的距离
+     */
+
+    , getDistanceByMC: function getDistanceByMC(point1, point2) {
+        if (!point1 || !point2) return 0;
+        var x1, y1, x2, y2;
+        point1 = this.convertMC2LL(point1);
+        if (!point1) return 0;
+        x1 = this.toRadians(point1["lng"]);
+        y1 = this.toRadians(point1["lat"]);
+        point2 = this.convertMC2LL(point2);
+        if (!point2) return 0;
+        x2 = this.toRadians(point2["lng"]);
+        y2 = this.toRadians(point2["lat"]);
+        return this.getDistance(x1, x2, y1, y2);
+    }
+    /**
+     * 根据经纬度坐标计算两点间距离;
+     * @param {Point} point1 经纬度点坐标1
+     * @param {Point} point2 经纬度点坐标2;
+     * @return {Number} 返回两点间的距离
+     */
+
+    , getDistanceByLL: function getDistanceByLL(point1, point2) {
+        if (!point1 || !point2) return 0;
+        point1["lng"] = this.getLoop(point1["lng"], -180, 180);
+        point1["lat"] = this.getRange(point1["lat"], -74, 74);
+        point2["lng"] = this.getLoop(point2["lng"], -180, 180);
+        point2["lat"] = this.getRange(point2["lat"], -74, 74);
+        var x1, x2, y1, y2;
+        x1 = this.toRadians(point1["lng"]);
+        y1 = this.toRadians(point1["lat"]);
+        x2 = this.toRadians(point2["lng"]);
+        y2 = this.toRadians(point2["lat"]);
+        return this.getDistance(x1, x2, y1, y2);
+    }
+    /**
+     * 平面直角坐标转换成经纬度坐标;
+     * @param {Point} point 平面直角坐标
+     * @return {Point} 返回经纬度坐标
+     */
+
+    , convertMC2LL: function convertMC2LL(point) {
+        if (point === null || point === undefined) {
+            return new Point(0, 0);
+        }
+
+        var temp, factor;
+        temp = new Point(Math.abs(point["lng"]), Math.abs(point["lat"]));
+        for (var i = 0; i < this.MCBAND.length; i++) {
+            if (temp["lat"] >= this.MCBAND[i]) {
+                factor = this.MC2LL[i];
+                break;
+            }
+        };
+        var lnglat = this.convertor(point, factor);
+        var point = new Point(lnglat["lng"].toFixed(6), lnglat["lat"].toFixed(6));
+        return point;
+    }
+
+    /**
+     * 经纬度坐标转换成平面直角坐标;
+     * @param {Point} point 经纬度坐标
+     * @return {Point} 返回平面直角坐标
+     */
+
+    , convertLL2MC: function convertLL2MC(point) {
+        if (point === null || point === undefined) {
+            return new Point(0, 0);
+        }
+
+        //添加判断by yansunrong  由于用户可能输入不合理的坐标，导致死循环。
+        if (point["lng"] > 180 || point["lng"] < -180 || point["lat"] > 90 || point["lat"] < -90) {
+            return new Point(0, 0);
+        }
+
+        var temp, factor;
+        point["lng"] = this.getLoop(point["lng"], -180, 180);
+        point["lat"] = this.getRange(point["lat"], -74, 74);
+        temp = new Point(point["lng"], point["lat"]);
+        for (var i = 0; i < this.LLBAND.length; i++) {
+            if (temp["lat"] >= this.LLBAND[i]) {
+                factor = this.LL2MC[i];
+                break;
+            }
+        }
+        if (!factor) {
+            for (var i = 0; i < this.LLBAND.length; i++) {
+                if (temp["lat"] <= -this.LLBAND[i]) {
+                    factor = this.LL2MC[i];
+                    break;
+                }
+            }
+        }
+        var mc = this.convertor(point, factor);
+        var point = new Point(mc["lng"].toFixed(2), mc["lat"].toFixed(2));
+        return point;
+    },
+    convertor: function convertor(fromPoint, factor) {
+        if (!fromPoint || !factor) {
+            return;
+        }
+        var x = factor[0] + factor[1] * Math.abs(fromPoint["lng"]);
+        var temp = Math.abs(fromPoint["lat"]) / factor[9];
+        var y = factor[2] + factor[3] * temp + factor[4] * temp * temp + factor[5] * temp * temp * temp + factor[6] * temp * temp * temp * temp + factor[7] * temp * temp * temp * temp * temp + factor[8] * temp * temp * temp * temp * temp * temp;
+        x *= fromPoint["lng"] < 0 ? -1 : 1;
+        y *= fromPoint["lat"] < 0 ? -1 : 1;
+        return new Point(x, y);
+    },
+
+    getDistance: function getDistance(x1, x2, y1, y2) {
+        return this.EARTHRADIUS * Math.acos(Math.sin(y1) * Math.sin(y2) + Math.cos(y1) * Math.cos(y2) * Math.cos(x2 - x1));
+    },
+
+    toRadians: function toRadians(angdeg) {
+        return Math.PI * angdeg / 180;
+    },
+
+    toDegrees: function toDegrees(angrad) {
+        return 180 * angrad / Math.PI;
+    },
+    getRange: function getRange(v, a, b) {
+        if (a != null) {
+            v = Math.max(v, a);
+        }
+        if (b != null) {
+            v = Math.min(v, b);
+        }
+        return v;
+    },
+    getLoop: function getLoop(v, a, b) {
+        while (v > b) {
+            v -= b - a;
+        }
+        while (v < a) {
+            v += b - a;
+        }
+        return v;
+    }
+});
+
+extend(MercatorProjection.prototype, {
+    /**
+     * 经纬度变换至墨卡托坐标
+     * @param Point 经纬度
+     * @return Point 墨卡托
+     */
+    lngLatToMercator: function lngLatToMercator(point) {
+        return MercatorProjection.convertLL2MC(point);
+    },
+    /**
+     * 球面到平面坐标
+     * @param Point 球面坐标
+     * @return Pixel 平面坐标
+     */
+    lngLatToPoint: function lngLatToPoint(point) {
+        var mercator = MercatorProjection.convertLL2MC(point);
+        return new Pixel(mercator["lng"], mercator["lat"]);
+    },
+    /**
+     * 墨卡托变换至经纬度
+     * @param Point 墨卡托
+     * @returns Point 经纬度
+     */
+    mercatorToLngLat: function mercatorToLngLat(point) {
+        return MercatorProjection.convertMC2LL(point);
+    },
+    /**
+     * 平面到球面坐标
+     * @param Pixel 平面坐标
+     * @returns Point 球面坐标
+     */
+    pointToLngLat: function pointToLngLat(point) {
+        var mercator = new Point(point.x, point.y);
+        return MercatorProjection.convertMC2LL(mercator);
+    },
+    /**
+     * 地理坐标转换至像素坐标
+     * @param Point 地理坐标
+     * @param Number 级别
+     * @param Point 地图中心点，注意为了保证没有误差，这里需要传递墨卡托坐标
+     * @param Size 地图容器大小
+     * @return Pixel 像素坐标
+     */
+    pointToPixel: function pointToPixel(point, zoom, mapCenter, mapSize, curCity) {
+        if (!point) {
+            return;
+        }
+        point = this.lngLatToMercator(point, curCity);
+        var zoomUnits = this.getZoomUnits(zoom);
+        var x = Math.round((point["lng"] - mapCenter["lng"]) / zoomUnits + mapSize.width / 2);
+        var y = Math.round((mapCenter["lat"] - point["lat"]) / zoomUnits + mapSize.height / 2);
+        return new Pixel(x, y);
+    },
+    /**
+     * 像素坐标转换至地理坐标
+     * @param Pixel 像素坐标
+     * @param Number 级别
+     * @param Point 地图中心点，注意为了保证没有误差，这里需要传递墨卡托坐标
+     * @param Size 地图容器大小
+     * @return Point 地理坐标
+     */
+    pixelToPoint: function pixelToPoint(pixel, zoom, mapCenter, mapSize, curCity) {
+        if (!pixel) {
+            return;
+        }
+        var zoomUnits = this.getZoomUnits(zoom);
+        var lng = mapCenter["lng"] + zoomUnits * (pixel.x - mapSize.width / 2);
+        var lat = mapCenter["lat"] - zoomUnits * (pixel.y - mapSize.height / 2);
+        var point = new Point(lng, lat);
+        return this.mercatorToLngLat(point, curCity);
+    },
+    getZoomUnits: function getZoomUnits(zoom) {
+        return Math.pow(2, 18 - zoom);
+    }
+});
+
+exports.default = MercatorProjection;
 
 /***/ })
 /******/ ]);

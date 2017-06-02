@@ -4,13 +4,15 @@ class Belt extends Obj {
     constructor(GL, obj) {
         super(GL, obj);
 
-        this.width = obj.width || 10.0;
         this.height = obj.height || 10.0;
 
         let color = this.color;
         let paths = obj.path;
         this.verticesColors = [];
         paths.forEach((point) => {
+            point[2] = this.height
+            this.verticesColors = this.verticesColors.concat(point.concat(color));
+            point[2] = 0
             this.verticesColors = this.verticesColors.concat(point.concat(color));
         });
         this.verticesColors = new Float32Array(this.verticesColors);
@@ -42,7 +44,7 @@ class Belt extends Obj {
         //
 
         gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-        gl.drawArrays(gl.LINE_STRIP, 0, this.verticesColors.length / 6);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
     }
 }
 

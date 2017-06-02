@@ -9,10 +9,12 @@ class WebGl {
         let Dom = document.getElementById(dom);
         let DomSty = getComputedStyle(Dom);
 
+        // init canvas
         let canvas = document.createElement('canvas');
-        // console.log(DomSty.height)
-        canvas.height = parseInt(DomSty.height);
-        canvas.width = parseInt(DomSty.width);
+        canvas.height = parseInt(DomSty.height) * devicePixelRatio;
+        canvas.width = parseInt(DomSty.width) * devicePixelRatio;
+        canvas.style.height = `${parseInt(DomSty.height)}px`;
+        canvas.style.width = `${parseInt(DomSty.width)}px`;
         Dom.appendChild(canvas);
 
         // init renderlist
@@ -57,7 +59,7 @@ objects.forEach(object => {
         const objClass = require(`./object/${object.path}`).default;
         let objInstance = new objClass(this, obj);
         this.renderList.push(objInstance);
-        return objInstance; 
+        return objInstance;
     }
 });
 

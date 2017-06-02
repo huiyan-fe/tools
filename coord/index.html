@@ -305,42 +305,48 @@
             map.setViewport(pointArrs);
         };
         function morePolygon() {
-            var tex=document.getElementById('more').value;
-            var points=tex.split(",");
-            var pointArr = [];
-            for(var i=0;i<points.length;i+=2){
-                if (points[i] > 10000) {
-                    point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
-                } else {
-                    point = new BMap.Point(points[i], points[i+1]);
+            var tex = document.getElementById('more').value;
+            var polygons = tex.split(";");
+            var allPointArr = [];
+            for (var j = 0; j < polygons.length; j++) {
+                var points = polygons[j].split(",");
+                var pointArr = [];
+                for(var i=0;i < points.length;i+=2){
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMap.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMap.Point(points[i], points[i+1]);
+                    }
+                    pointArr.push(point);
+                    allPointArr.push(point);
                 }
-                pointArr.push(point);
+                var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                map.addOverlay(polygon);
+                var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
+                var opts = {
+                  position : polygon.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+                  offset   : new BMap.Size(30, -30)    //设置文本偏移量
+                }
+                var label = new BMap.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+                    label.setStyle({
+                         color : "red",
+                         fontSize : "12px",
+                         height : "20px",
+                         lineHeight : "20px",
+                         fontFamily:"微软雅黑"
+                     });
+                map.addOverlay(label);
             }
-            map.setViewport(pointArr);
-            var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-            map.addOverlay(polygon);
+
+            
+            map.setViewport(allPointArr);
 
             //polygon.enableEditing();
-            polygon.addEventListener('lineupdate', function () {
-                showResult(polygon);
-            });
+            //polygon.addEventListener('lineupdate', function () {
+             //   showResult(polygon);
+            //});
 
-        console.log(pointArr);
-            var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
-            console.log(area);
-            var opts = {
-              position : polygon.getBounds().getCenter(),    // 指定文本标注所在的地理位置
-              offset   : new BMap.Size(30, -30)    //设置文本偏移量
-            }
-            var label = new BMap.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
-                label.setStyle({
-                     color : "red",
-                     fontSize : "12px",
-                     height : "20px",
-                     lineHeight : "20px",
-                     fontFamily:"微软雅黑"
-                 });
-            map.addOverlay(label); 
+             
         };
 
         function morePointToLngLat(){

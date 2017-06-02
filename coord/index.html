@@ -283,6 +283,7 @@
             var options = {
                 strokeStyle: 'rgba(255, 50, 50, 1)',
                 shadowColor: 'rgba(255, 250, 50, 1)',
+                coordType: coordType,
                 shadowBlur: 20,
                 lineWidth: 3,
                 draw: 'simple'
@@ -293,9 +294,9 @@
             if (item.length > 1) {
                 textLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
                     fillStyle: 'blue',
-                    coordType: coordType,
                     font: "bold 22px Arial",
                     shadowBlur: 20,
+                    coordType: coordType,
                     shadowColor: 'yellow',
                     draw: 'text',
                 });

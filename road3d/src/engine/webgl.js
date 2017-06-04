@@ -23,6 +23,7 @@ class WebGl {
         // init webgl context
         let gl = this.gl = utility.getWebGLContext(canvas);
         gl.buffers = utility.BufferManage;
+        gl.textures = utility.TextureManage;
 
         // init shader
         utility.initShaders(gl, Shaders.VSHADER_SOURCE, Shaders.FSHADER_SOURCE);
@@ -31,8 +32,10 @@ class WebGl {
         this.camera = new Camera(this.gl);
 
         // open depth test and set clear color
-        gl.enable(gl.DEPTH_TEST);
         gl.clearColor(0, 0, 0, 1.0);
+        gl.clearDepth(1.0); // Clear everything
+        gl.enable(gl.DEPTH_TEST); // Enable depth testing
+        gl.depthFunc(gl.LEQUAL);
 
         // auto draw
         (function draw() {
@@ -52,6 +55,9 @@ let objects = [{
 }, {
     name: 'Belt',
     path: 'object-belt.js'
+}, {
+    name: 'HeatMap',
+    path: 'object-heatmap.js'
 }];
 
 objects.forEach(object => {

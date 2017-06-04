@@ -30,7 +30,7 @@ function initShaders(gl, vshader, fshader) {
     }
     gl.useProgram(program);
     gl.program = program;
-    
+
 
     // init shader variable
     gl.uPMatrix = gl.getUniformLocation(program, "uPMatrix");
@@ -38,14 +38,10 @@ function initShaders(gl, vshader, fshader) {
     gl.uNMatrix = gl.getUniformLocation(program, "uNMatrix");
     gl.uSampler = gl.getUniformLocation(program, "uSampler");
     gl.uUseTexture = gl.getUniformLocation(program, "uUseTexture");
+    gl.uniform1i(program.uUseTextures, false);
 
-    gl.uLightPosition = gl.getUniformLocation(program, "uLightPosition");
-    gl.uShininess = gl.getUniformLocation(program, "uShininess");
-    gl.uLightAmbient = gl.getUniformLocation(program, "uLightAmbient");
-    gl.uLightDiffuse = gl.getUniformLocation(program, "uLightDiffuse");
 
     gl.aVertexTextureCoords = gl.getUniformLocation(program, "aVertexTextureCoords");
-    gl.aVertexNormal = gl.getAttribLocation(program, "aVertexNormal");
     gl.aPosition = gl.getAttribLocation(gl.program, 'aPosition');
     gl.aColor = gl.getAttribLocation(gl.program, 'aColor');
 
@@ -58,7 +54,7 @@ function createProgram(gl, vshader, fshader) {
     var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vshader);
     var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fshader);
     // console.log(vertexShader)
-    
+
     if (!vertexShader || !fragmentShader) {
         return null;
     }
@@ -215,6 +211,15 @@ function BufferManage(name) {
     return this._cache.buffers[name];
 }
 
+function TextureManage(name) {
+    this._cache = this._cache || {};
+    this._cache.texture = this._cache.texture || {};
+    if (!this._cache.texture[name]) {
+        this._cache.texture[name] = this.createTexture();
+    }
+    return this._cache.texture[name];
+}
+
 export default {
     getWebGLContext,
     initShaders,
@@ -222,5 +227,6 @@ export default {
     loadShader,
     colorTransform,
     calculateNormals,
-    BufferManage
+    BufferManage,
+    TextureManage
 }

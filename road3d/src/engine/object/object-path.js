@@ -3,7 +3,7 @@ import Obj from './Object.js';
 class Path extends Obj {
     constructor(GL, obj) {
         super(GL, obj);
-        
+
         let color = this.color;
         let paths = obj.path;
         this.verticesColors = [];
@@ -15,7 +15,7 @@ class Path extends Obj {
 
     render() {
         let gl = this.gl;
-        // this.gl.uniform1i(this.gl.uUseTexture, false);
+        gl.uniform1i(this.gl.uUseTexture, false);
         let mvMatrix = this.GL.camera.mvMatrix;
 
         // 顶点/颜色缓冲区操作

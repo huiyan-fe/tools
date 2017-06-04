@@ -53,12 +53,10 @@ window.onload = function () {
             lng: point[0],
             lat: point[1]
         });
-
         min[0] = Math.min(min[0], newPoint.lng);
         min[1] = Math.min(min[1], newPoint.lat);
         max[0] = Math.max(max[0], newPoint.lng);
         max[1] = Math.max(max[1], newPoint.lat);
-
         return [newPoint.lng, newPoint.lat, 0];
     });
     var mid = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2];
@@ -69,8 +67,6 @@ window.onload = function () {
     var newPath = data.paths.map(point => {
         return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale, 0];
     });
-    // parpeat hot data 
-    console.log(hotData);
 
     // color  data
     var canvas = this.canvas = document.createElement('canvas');
@@ -93,23 +89,25 @@ window.onload = function () {
     var canvas = this.canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '2048';
-    canvas.height = '1024';
+    canvas.height = '2048';
     canvas.style.width = '200px';
-    canvas.style.height = '100px';
+    canvas.style.height = '200px';
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.zIndex = '100';
     document.body.appendChild(canvas);
 
-    ctx.fillStyle = 'rgba(255,0,0,0.01)';
-    var preWidth = 1024 / 192;
-    var preHeight = 2048 / 261;
-    hotData.forEach((data) => {
-        for (var i = 0; i < data[2]; i++) {
-            ctx.fillRect(data[0] * preWidth, data[1] * preHeight, preWidth, preHeight)
-        }
-    });
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+    ctx.shadowColor = 'rgba(0,255,0,0.06)';
+    ctx.shadowOffsetX = 2048;
+    ctx.shadowBlur = 100;
+
+    for (var i = 0; i < 100; i++) {
+        ctx.fillRect((Math.random() * 2048 | 0) - 2248, Math.random() * 2048 | 0, Math.random() * 100 + 100, Math.random() * 100 + 100);
+    }
+
     var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var alphaImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var canvasData = imgData.data;
     for (var i = 0; i < canvasData.length; i += 4) {
         var index = Math.min(254, canvasData[i + 3] * 10);
@@ -120,10 +118,9 @@ window.onload = function () {
     }
     ctx.putImageData(imgData, 0, 0);
 
-    //
-    app.Belt({
-        path: newPath,
-        height: 100,
-        texture: canvas
+    // //
+    app.HeatMap({
+        alphaImageData,
+        imgData
     });
 }

@@ -2616,29 +2616,41 @@ var mercatorProjection = new _mercatorPorjection2.default();
 window.onload = function () {
     var app = window.app = new _webgl2.default('canvas');
 
-    // x
-    app.Path({
-        path: [[0, 0, 0], [0, 100, 0]],
-        color: '#f00'
-    });
+    // // x
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [0, 100, 0],
+    //     ],
+    //     color: '#f00'
+    // });
 
-    // y
-    app.Path({
-        path: [[0, 0, 0], [100, 0, 0]],
-        color: '#0f0'
-    });
+    // // y
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [100, 0, 0],
+    //     ],
+    //     color: '#0f0'
+    // });
 
-    // z
-    app.Path({
-        path: [[0, 0, 0], [0, 0, 100]],
-        color: '#00f'
-    });
+    // // z
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [0, 0, 100],
+    //     ],
+    //     color: '#00f'
+    // });
 
-    // z
-    app.Path({
-        path: [[-500, 0, 0], [500, 0, 0]],
-        color: '#fff'
-    });
+    // // z
+    // app.Path({
+    //     path: [
+    //         [-500, 0, 0],
+    //         [500, 0, 0],
+    //     ],
+    //     color: '#fff'
+    // });
 
     // prepare data
     var maxWidth = 1000;

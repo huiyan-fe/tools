@@ -35,7 +35,7 @@ class Belt extends Obj {
                 //
                 this.verticesColors.push(
                     xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3,
-                    obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255
+                    obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255, 0
                 );
                 xIndex += offsetX;
             }
@@ -64,17 +64,8 @@ class Belt extends Obj {
             yIndex += 1;
         }
 
-
-
-        console.log(this.indices);
-        // this.verticesColors = [-500, 500, 0, 1, 0, 0, 500, 500, 0, 0, 1, 0, 500, -500, 0, 0, 1, 0, -500, -500, 0, 1, 1, 1]
-        // this.indices = [0, 11, 11];
-        // 
-
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
-        // console.log(this.verticesColors.length, this.indices.length)
-
     }
 
     render() {
@@ -86,9 +77,9 @@ class Belt extends Obj {
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
         let FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
-        gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
+        gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 7, 0);
         gl.enableVertexAttribArray(gl.aPosition);
-        gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+        gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 7, FSIZE * 3);
         gl.enableVertexAttribArray(gl.aColor);
         vertexColorBuffer = null;
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);

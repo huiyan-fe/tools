@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,7 +79,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utility = __webpack_require__(3);
+var _utility = __webpack_require__(4);
 
 var _utility2 = _interopRequireDefault(_utility);
 
@@ -427,6 +427,140 @@ exports.default = Belt;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Object = __webpack_require__(0);
+
+var _Object2 = _interopRequireDefault(_Object);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Belt = function (_Obj) {
+    _inherits(Belt, _Obj);
+
+    function Belt(GL, obj) {
+        _classCallCheck(this, Belt);
+
+        var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
+
+        _this.obj = obj;
+
+        var color = _this.color;
+        var paths = obj.path;
+        _this.verticesColors = [];
+        _this.indices = [];
+        _this.texture_coords = [];
+        // this.verticesColors.concat(point.concat(color));
+
+        var drawWidth = 1000;
+        var drawHeight = 1000;
+        var offsetX = 10;
+        var offsetY = 10;
+
+        var xIndex = 0;
+        var yIndex = 0;
+        while (yIndex <= drawWidth) {
+            while (xIndex <= drawHeight) {
+                var xPresent = xIndex / drawWidth;
+                var yPresent = yIndex / drawHeight;
+                var xImg = Math.round(obj.alphaImageData.width * xPresent);
+                var yImg = Math.round(obj.alphaImageData.height * yPresent);
+                xImg = Math.min(obj.alphaImageData.width - 1, xImg);
+                yImg = Math.min(obj.alphaImageData.height - 1, yImg);
+                var imgDataIndex = (xImg + yImg * obj.alphaImageData.width) * 4;
+
+                var xPixel = xIndex - drawWidth / 2;
+                var yPixel = drawHeight / 2 - yIndex;
+                //
+                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255, 0);
+                xIndex += offsetX;
+            }
+            xIndex = 0;
+            yIndex += offsetY;
+        }
+
+        var xPointsLength = Math.round(drawWidth / offsetX) + 1;
+        var yPointsLength = Math.round(drawHeight / offsetY) + 1;
+
+        //
+        xIndex = 0;
+        yIndex = 1;
+        while (yIndex < yPointsLength) {
+            while (xIndex < xPointsLength) {
+                if (xIndex === 0) {
+                    _this.indices.push((yIndex - 1) * xPointsLength + xIndex);
+                }
+                _this.indices.push((yIndex - 1) * xPointsLength + xIndex, yIndex * xPointsLength + xIndex);
+                if (xIndex === xPointsLength - 1) {
+                    _this.indices.push(yIndex * xPointsLength + xIndex);
+                }
+                xIndex += 1;
+            }
+            xIndex = 0;
+            yIndex += 1;
+        }
+
+        _this.indices = new Uint16Array(_this.indices);
+        _this.verticesColors = new Float32Array(_this.verticesColors);
+        return _this;
+    }
+
+    _createClass(Belt, [{
+        key: 'render',
+        value: function render() {
+            var gl = this.gl;
+            var mvMatrix = this.GL.camera.mvMatrix;
+
+            // 顶点/颜色缓冲区操作
+            var vertexColorBuffer = this.gl.buffers('vcBuffer');
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
+            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
+            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 7, 0);
+            gl.enableVertexAttribArray(gl.aPosition);
+            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 7, FSIZE * 3);
+            gl.enableVertexAttribArray(gl.aColor);
+            vertexColorBuffer = null;
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+
+            // 顶点索引
+            var indexBuffer = this.gl.buffers('indexBuffer');
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // set mv
+            this.updateOpearte();
+            //
+
+            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
+
+            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        }
+    }]);
+
+    return Belt;
+}(_Object2.default);
+
+exports.default = Belt;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 //get the context
 function getWebGLContext(canvas, err) {
     // bind err
@@ -662,7 +796,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -676,7 +810,7 @@ var hotDate = [["1", 10, "1"], ["1", 11, "1"], ["1", 17, "1"], ["1", 18, "1"], [
 exports.default = hotDate;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -692,7 +826,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -954,7 +1088,7 @@ extend(MercatorProjection.prototype, {
 exports.default = MercatorProjection;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -964,11 +1098,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _utility = __webpack_require__(3);
+var _utility = __webpack_require__(4);
 
 var _utility2 = _interopRequireDefault(_utility);
 
-var _camera = __webpack_require__(8);
+var _camera = __webpack_require__(9);
 
 var _camera2 = _interopRequireDefault(_camera);
 
@@ -976,7 +1110,7 @@ var _objectPath = __webpack_require__(1);
 
 var _objectPath2 = _interopRequireDefault(_objectPath);
 
-var _default = __webpack_require__(9);
+var _default = __webpack_require__(10);
 
 var _default2 = _interopRequireDefault(_default);
 
@@ -1044,7 +1178,7 @@ var objects = [{
 
 objects.forEach(function (object) {
     WebGl.prototype[object.name] = function (obj) {
-        var objClass = __webpack_require__(12)("./" + object.path).default;
+        var objClass = __webpack_require__(13)("./" + object.path).default;
         var objInstance = new objClass(this, obj);
         this.renderList.push(objInstance);
         return objInstance;
@@ -1054,7 +1188,7 @@ objects.forEach(function (object) {
 exports.default = WebGl;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1064,7 +1198,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _glMatrixMin = __webpack_require__(10);
+var _glMatrixMin = __webpack_require__(11);
 
 // import Con from './sys';
 var Con = {
@@ -1191,7 +1325,7 @@ Camera.prototype.computerXYZ = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1212,7 +1346,7 @@ var shaders = {
 exports.default = shaders;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2526,10 +2660,10 @@ THE SOFTWARE. */
     }, t.exports = o;
   }]);
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -2557,7 +2691,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -2565,8 +2699,8 @@ var map = {
 	"./Object.js": 0,
 	"./object-belt": 2,
 	"./object-belt.js": 2,
-	"./object-heatmap": 15,
-	"./object-heatmap.js": 15,
+	"./object-heatmap": 3,
+	"./object-heatmap.js": 3,
 	"./object-path": 1,
 	"./object-path.js": 1
 };
@@ -2584,29 +2718,29 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 12;
+webpackContext.id = 13;
 
 /***/ }),
-/* 13 */,
-/* 14 */
+/* 14 */,
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _webgl = __webpack_require__(7);
+var _webgl = __webpack_require__(8);
 
 var _webgl2 = _interopRequireDefault(_webgl);
 
-var _path = __webpack_require__(5);
+var _path = __webpack_require__(6);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _hot = __webpack_require__(4);
+var _hot = __webpack_require__(5);
 
 var _hot2 = _interopRequireDefault(_hot);
 
-var _mercatorPorjection = __webpack_require__(6);
+var _mercatorPorjection = __webpack_require__(7);
 
 var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
 
@@ -2724,147 +2858,6 @@ window.onload = function () {
         texture: canvas
     });
 };
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Object = __webpack_require__(0);
-
-var _Object2 = _interopRequireDefault(_Object);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Belt = function (_Obj) {
-    _inherits(Belt, _Obj);
-
-    function Belt(GL, obj) {
-        _classCallCheck(this, Belt);
-
-        var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
-
-        _this.obj = obj;
-
-        var color = _this.color;
-        var paths = obj.path;
-        _this.verticesColors = [];
-        _this.indices = [];
-        _this.texture_coords = [];
-        // this.verticesColors.concat(point.concat(color));
-
-        var drawWidth = 1000;
-        var drawHeight = 1000;
-        var offsetX = 10;
-        var offsetY = 10;
-
-        var xIndex = 0;
-        var yIndex = 0;
-        while (yIndex <= drawWidth) {
-            while (xIndex <= drawHeight) {
-                var xPresent = xIndex / drawWidth;
-                var yPresent = yIndex / drawHeight;
-                var xImg = Math.round(obj.alphaImageData.width * xPresent);
-                var yImg = Math.round(obj.alphaImageData.height * yPresent);
-                xImg = Math.min(obj.alphaImageData.width - 1, xImg);
-                yImg = Math.min(obj.alphaImageData.height - 1, yImg);
-                var imgDataIndex = (xImg + yImg * obj.alphaImageData.width) * 4;
-
-                var xPixel = xIndex - drawWidth / 2;
-                var yPixel = drawHeight / 2 - yIndex;
-                //
-                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255);
-                xIndex += offsetX;
-            }
-            xIndex = 0;
-            yIndex += offsetY;
-        }
-
-        var xPointsLength = Math.round(drawWidth / offsetX) + 1;
-        var yPointsLength = Math.round(drawHeight / offsetY) + 1;
-
-        //
-        xIndex = 0;
-        yIndex = 1;
-        while (yIndex < yPointsLength) {
-            while (xIndex < xPointsLength) {
-                if (xIndex === 0) {
-                    _this.indices.push((yIndex - 1) * xPointsLength + xIndex);
-                }
-                _this.indices.push((yIndex - 1) * xPointsLength + xIndex, yIndex * xPointsLength + xIndex);
-                if (xIndex === xPointsLength - 1) {
-                    _this.indices.push(yIndex * xPointsLength + xIndex);
-                }
-                xIndex += 1;
-            }
-            xIndex = 0;
-            yIndex += 1;
-        }
-
-        console.log(_this.indices);
-        // this.verticesColors = [-500, 500, 0, 1, 0, 0, 500, 500, 0, 0, 1, 0, 500, -500, 0, 0, 1, 0, -500, -500, 0, 1, 1, 1]
-        // this.indices = [0, 11, 11];
-        // 
-
-        _this.indices = new Uint16Array(_this.indices);
-        _this.verticesColors = new Float32Array(_this.verticesColors);
-        // console.log(this.verticesColors.length, this.indices.length)
-
-        return _this;
-    }
-
-    _createClass(Belt, [{
-        key: 'render',
-        value: function render() {
-            var gl = this.gl;
-            var mvMatrix = this.GL.camera.mvMatrix;
-
-            // 顶点/颜色缓冲区操作
-            var vertexColorBuffer = this.gl.buffers('vcBuffer');
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
-            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
-            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
-            gl.enableVertexAttribArray(gl.aPosition);
-            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-            gl.enableVertexAttribArray(gl.aColor);
-            vertexColorBuffer = null;
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-
-            // 顶点索引
-            var indexBuffer = this.gl.buffers('indexBuffer');
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            // set mv
-            this.updateOpearte();
-            //
-
-            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-
-            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
-        }
-    }]);
-
-    return Belt;
-}(_Object2.default);
-
-exports.default = Belt;
 
 /***/ })
 /******/ ]);

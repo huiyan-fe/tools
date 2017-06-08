@@ -3,10 +3,12 @@ import data from './data/path.js';
 import hotData from './data/hot.js';
 import MercatorProjection from './engine/tools/mercatorPorjection.js';
 
-var mercatorProjection = new MercatorProjection();
+console.log(data)
+console.log(hotData)
 
-window.onload = function () {
-    let app = window.app = new WebGl('canvas');
+function drawBelt(id, data, hotData) {
+    var mercatorProjection = new MercatorProjection();
+    let app = window.app = new WebGl(id);
 
     // x
     app.Path({
@@ -35,15 +37,6 @@ window.onload = function () {
         color: '#00f'
     });
 
-    // z
-    app.Path({
-        path: [
-            [-500, 0, 0],
-            [500, 0, 0],
-        ],
-        color: '#fff'
-    });
-
     // prepare data
     var maxWidth = 1000;
     var min = [Infinity, Infinity];
@@ -70,10 +63,8 @@ window.onload = function () {
         return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale, 0];
     });
     // parpeat hot data 
-    console.log(hotData);
-
     // color  data
-    var canvas = this.canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '255';
     canvas.height = '1';
@@ -90,7 +81,7 @@ window.onload = function () {
     var colordata = ctx.getImageData(0, 0, 255, 1).data;
 
     //
-    var canvas = this.canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '2048';
     canvas.height = '1024';
@@ -127,3 +118,5 @@ window.onload = function () {
         texture: canvas
     });
 }
+
+drawBelt('canvas', data, hotData);

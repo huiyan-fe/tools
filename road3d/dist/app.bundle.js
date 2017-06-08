@@ -313,50 +313,52 @@ var Belt = function (_Obj) {
         var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
 
         _this.obj = obj;
-        _this.height = obj.height || 10.0;
-
-        var color = _this.color;
-        var paths = obj.path;
-        _this.verticesColors = [];
-        _this.indices = [];
-        _this.texture_coords = [];
-
-        var pathDistances = [];
-        var pathLength = 0;
-        paths.forEach(function (point, index) {
-            // prepare for the pathsDistances
-            if (index > 0) {
-                var start = point;
-                var end = paths[index - 1];
-                var dist = Math.sqrt(Math.pow(start[0] - end[0], 2), Math.pow(start[1] - end[1], 2));
-                pathLength += dist;
-            }
-            pathDistances.push(pathLength);
-            //
-
-            point[2] = _this.height;
-            _this.verticesColors = _this.verticesColors.concat(point.concat(color));
-            point[2] = 0;
-            _this.verticesColors = _this.verticesColors.concat(point.concat(color));
-            //
-            _this.indices.push(index * 2);
-            _this.indices.push(index * 2 + 1);
-        });
-        console.log(pathDistances);
-        pathDistances.forEach(function (dist) {
-            _this.texture_coords.push(dist / pathLength, 1);
-            _this.texture_coords.push(dist / pathLength, 0);
-        });
-        _this.texture_coords = new Float32Array(_this.texture_coords);
-
-        _this.indices = new Uint16Array(_this.indices);
-        _this.verticesColors = new Float32Array(_this.verticesColors);
-        console.log(_this.texture_coords.length, _this.indices.length);
-
+        _this.update(obj);
         return _this;
     }
 
     _createClass(Belt, [{
+        key: 'update',
+        value: function update(obj) {
+            var _this2 = this;
+
+            var color = this.color;
+            var paths = obj.path;
+            this.height = obj.height || 10.0;
+            this.verticesColors = [];
+            this.indices = [];
+            this.texture_coords = [];
+
+            var pathDistances = [];
+            var pathLength = 0;
+            paths.forEach(function (point, index) {
+                // prepare for the pathsDistances
+                if (index > 0) {
+                    var start = point;
+                    var end = paths[index - 1];
+                    var dist = Math.sqrt(Math.pow(start[0] - end[0], 2), Math.pow(start[1] - end[1], 2));
+                    pathLength += dist;
+                }
+                pathDistances.push(pathLength);
+                //
+                point[2] = _this2.height;
+                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
+                point[2] = 0;
+                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
+                //
+                _this2.indices.push(index * 2);
+                _this2.indices.push(index * 2 + 1);
+            });
+            // console.log(pathDistances)
+            pathDistances.forEach(function (dist) {
+                _this2.texture_coords.push(dist / pathLength, 1);
+                _this2.texture_coords.push(dist / pathLength, 0);
+            });
+            this.texture_coords = new Float32Array(this.texture_coords);
+            this.indices = new Uint16Array(this.indices);
+            this.verticesColors = new Float32Array(this.verticesColors);
+        }
+    }, {
         key: 'render',
         value: function render() {
             var gl = this.gl;
@@ -2746,10 +2748,12 @@ var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mercatorProjection = new _mercatorPorjection2.default();
+console.log(_path2.default);
+console.log(_hot2.default);
 
-window.onload = function () {
-    var app = window.app = new _webgl2.default('canvas');
+function drawBelt(id, data, hotData) {
+    var mercatorProjection = new _mercatorPorjection2.default();
+    var app = window.app = new _webgl2.default(id);
 
     // x
     app.Path({
@@ -2769,17 +2773,11 @@ window.onload = function () {
         color: '#00f'
     });
 
-    // z
-    app.Path({
-        path: [[-500, 0, 0], [500, 0, 0]],
-        color: '#fff'
-    });
-
     // prepare data
     var maxWidth = 1000;
     var min = [Infinity, Infinity];
     var max = [-Infinity, -Infinity];
-    _path2.default.paths = _path2.default.paths.map(function (point) {
+    data.paths = data.paths.map(function (point) {
         var newPoint = mercatorProjection.lngLatToMercator({
             lng: point[0],
             lat: point[1]
@@ -2797,14 +2795,12 @@ window.onload = function () {
     var deltaMax = Math.max(delta[0], delta[1]);
 
     var scale = maxWidth / deltaMax;
-    var newPath = _path2.default.paths.map(function (point) {
+    var newPath = data.paths.map(function (point) {
         return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale, 0];
     });
     // parpeat hot data 
-    console.log(_hot2.default);
-
     // color  data
-    var canvas = this.canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '255';
     canvas.height = '1';
@@ -2821,7 +2817,7 @@ window.onload = function () {
     var colordata = ctx.getImageData(0, 0, 255, 1).data;
 
     //
-    var canvas = this.canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '2048';
     canvas.height = '1024';
@@ -2835,7 +2831,7 @@ window.onload = function () {
     ctx.fillStyle = 'rgba(255,0,0,0.01)';
     var preWidth = 1024 / 192;
     var preHeight = 2048 / 261;
-    _hot2.default.forEach(function (data) {
+    hotData.forEach(function (data) {
         for (var i = 0; i < data[2]; i++) {
             ctx.fillRect(data[0] * preWidth, data[1] * preHeight, preWidth, preHeight);
         }
@@ -2857,7 +2853,9 @@ window.onload = function () {
         height: 100,
         texture: canvas
     });
-};
+}
+
+drawBelt('canvas', _path2.default, _hot2.default);
 
 /***/ })
 /******/ ]);

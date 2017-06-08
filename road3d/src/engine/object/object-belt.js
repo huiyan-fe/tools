@@ -4,10 +4,13 @@ class Belt extends Obj {
     constructor(GL, obj) {
         super(GL, obj);
         this.obj = obj;
-        this.height = obj.height || 10.0;
+        this.update(obj);
+    }
 
+    update(obj) {
         let color = this.color;
         let paths = obj.path;
+        this.height = obj.height || 10.0;
         this.verticesColors = [];
         this.indices = [];
         this.texture_coords = [];
@@ -24,7 +27,6 @@ class Belt extends Obj {
             }
             pathDistances.push(pathLength);
             //
-
             point[2] = this.height
             this.verticesColors = this.verticesColors.concat(point.concat(color));
             point[2] = 0
@@ -33,18 +35,14 @@ class Belt extends Obj {
             this.indices.push(index * 2);
             this.indices.push(index * 2 + 1);
         });
-        console.log(pathDistances)
+        // console.log(pathDistances)
         pathDistances.forEach(dist => {
             this.texture_coords.push(dist / pathLength, 1);
             this.texture_coords.push(dist / pathLength, 0);
         });
         this.texture_coords = new Float32Array(this.texture_coords);
-
-
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
-        console.log(this.texture_coords.length, this.indices.length)
-
     }
 
     render() {
@@ -89,7 +87,6 @@ class Belt extends Obj {
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         }
-
 
         // set mv
         this.updateOpearte();

@@ -7,6 +7,7 @@ import Shaders from './shaders/default.js';
 class WebGl {
     constructor(dom, config) {
         let Dom = document.getElementById(dom);
+        console.log(dom, Dom)
         let DomSty = getComputedStyle(Dom);
 
         // init canvas

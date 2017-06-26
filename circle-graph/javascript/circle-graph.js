@@ -20,14 +20,13 @@ class circleGraph {
 
         // config
         this.system();
+        this.drawTitle();
         // draw
         let heatImg = this.drawHeatCurve();
         this.drawLegend();
         this.drawBar();
         this.drawCurve();
-
         this.drawIcons();
-
     }
 
     system() {
@@ -46,6 +45,13 @@ class circleGraph {
         ctx.fillRect(0, 0, 100, 1);
         this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;
         ctx.restore();
+    }
+
+    drawTitle() {
+        this.ctx.font = '16px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(this.option.title || '', this.width / 2, this.height / 2);
     }
 
     drawLegend() {
@@ -86,7 +92,7 @@ class circleGraph {
         if (!barData) {
             return false;
         }
-        let barDataStratRadius = 20;
+        let barDataStratRadius = 50;
         let barDataEndRadius = ((this.borderWidth - 100) / 2 - 20) * .6;
         let barDataRadiusDelta = barDataEndRadius - barDataStratRadius;
         let maxValue = -Infinity;

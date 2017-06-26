@@ -7,6 +7,7 @@ let meter = new FPSMeter({
 console.log(data.data.curve[201705]);
 //
 new circleGraph(document.getElementById('content'), {
+    title: '二环',
     data: [
         data.data.curve[201705].map(item => item.congestLength),
         data.data.curve[201705].map(item => item.speed),

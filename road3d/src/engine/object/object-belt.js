@@ -18,7 +18,6 @@ class Belt extends Obj {
         let pathDistances = [];
         let pathLength = 0;
         paths.forEach((point, index) => {
-            // prepare for the pathsDistances
             if (index > 0) {
                 let start = point;
                 let end = paths[index - 1];
@@ -43,6 +42,7 @@ class Belt extends Obj {
         this.texture_coords = new Float32Array(this.texture_coords);
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
+        // console.log(this.texture_coords, this.indices, this.verticesColors)
     }
 
     render() {
@@ -96,7 +96,7 @@ class Belt extends Obj {
         // gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
         // console.log(this.indices.length)
 
-        gl.drawElements(gl.TRIANGLE_STRIP, 516 || this.indices.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
     }
 }
 

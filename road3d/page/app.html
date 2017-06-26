@@ -30,6 +30,15 @@
 <body>
     <div id="canvas"></div>
     <script src="../dist/app.bundle.js"></script>
+    <script src="../src/data/hot.js"></script>
+    <script src="../src/data/path.js"></script>
+    <script>
+        var belt = Engin.Belt('canvas', {
+            paths: paths,
+            hotData: hotDate
+        });
+        // console.log(belt)
+    </script>
 </body>
 
 </html>

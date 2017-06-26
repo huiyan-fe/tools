@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -798,9 +798,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1062,7 +1060,7 @@ extend(MercatorProjection.prototype, {
 exports.default = MercatorProjection;
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1076,7 +1074,7 @@ var _utility = __webpack_require__(4);
 
 var _utility2 = _interopRequireDefault(_utility);
 
-var _camera = __webpack_require__(9);
+var _camera = __webpack_require__(7);
 
 var _camera2 = _interopRequireDefault(_camera);
 
@@ -1084,7 +1082,7 @@ var _objectPath = __webpack_require__(1);
 
 var _objectPath2 = _interopRequireDefault(_objectPath);
 
-var _default = __webpack_require__(10);
+var _default = __webpack_require__(8);
 
 var _default2 = _interopRequireDefault(_default);
 
@@ -1153,7 +1151,7 @@ var objects = [{
 
 objects.forEach(function (object) {
     WebGl.prototype[object.name] = function (obj) {
-        var objClass = __webpack_require__(13)("./" + object.path).default;
+        var objClass = __webpack_require__(11)("./" + object.path).default;
         var objInstance = new objClass(this, obj);
         this.renderList.push(objInstance);
         return objInstance;
@@ -1163,7 +1161,7 @@ objects.forEach(function (object) {
 exports.default = WebGl;
 
 /***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1173,7 +1171,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _glMatrixMin = __webpack_require__(11);
+var _glMatrixMin = __webpack_require__(9);
 
 // import Con from './sys';
 var Con = {
@@ -1300,7 +1298,7 @@ Camera.prototype.computerXYZ = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 10 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1321,7 +1319,7 @@ var shaders = {
 exports.default = shaders;
 
 /***/ }),
-/* 11 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2635,10 +2633,10 @@ THE SOFTWARE. */
     }, t.exports = o;
   }]);
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ }),
-/* 12 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -2666,7 +2664,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 13 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -2693,36 +2691,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 13;
+webpackContext.id = 11;
 
 /***/ }),
-/* 14 */,
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _appBelt = __webpack_require__(16);
-
-Object.defineProperty(exports, 'Belt', {
-  enumerable: true,
-  get: function get() {
-    return _interopRequireDefault(_appBelt).default;
-  }
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-global.Engin = module.exports;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
-
-/***/ }),
-/* 16 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2732,11 +2704,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _webgl = __webpack_require__(8);
+var _webgl = __webpack_require__(6);
 
 var _webgl2 = _interopRequireDefault(_webgl);
 
-var _mercatorPorjection = __webpack_require__(7);
+var _mercatorPorjection = __webpack_require__(5);
 
 var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
 
@@ -2874,7 +2846,9 @@ function drawBelt(id, data, hotData) {
 exports.default = drawBelt;
 
 /***/ }),
-/* 17 */
+/* 13 */,
+/* 14 */,
+/* 15 */
 /***/ (function(module, exports) {
 
 var g;
@@ -2899,6 +2873,32 @@ try {
 
 module.exports = g;
 
+
+/***/ }),
+/* 16 */,
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _appBelt = __webpack_require__(12);
+
+Object.defineProperty(exports, 'Belt', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_appBelt).default;
+  }
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+global.Engin = module.exports;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)))
 
 /***/ })
 /******/ ]);

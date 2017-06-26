@@ -259,6 +259,6 @@ const paths = [
     ["116.452143", "39.889167", 0]
 ];
 
-// export default {
-//     paths
-// }
+export default {
+    paths
+}

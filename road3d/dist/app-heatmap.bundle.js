@@ -2749,13 +2749,36 @@ var mercatorProjection = new _mercatorPorjection2.default();
 
 var app = void 0;
 var heatMap = void 0;
+var thumbnailCanvas = void 0;
+
+var maxX = -Infinity;
+var minX = Infinity;
+var maxY = -Infinity;
+var minY = Infinity;
+var usePerPixel = 0;
 window.onload = function () {
     app = window.app = new _webgl2.default('canvas');
+    // x
+    app.Path({
+        path: [[520, 520, 0], [520, 100 + 520, 0]],
+        color: '#f00'
+    });
+
+    // y
+    app.Path({
+        path: [[520, 520, 0], [100 + 520, 520, 0]],
+        color: '#0f0'
+    });
+
+    // z
+    app.Path({
+        path: [[520, 520, 0], [520, 520, 100]],
+        color: '#00f'
+    });
     draw();
 };
 
-function draw(data, isMct) {
-    // color  data
+function getColorData() {
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = '255';
@@ -2771,6 +2794,12 @@ function draw(data, isMct) {
     ctx.fillStyle = grandient;
     ctx.fillRect(0, 0, 255, 1);
     var colordata = ctx.getImageData(0, 0, 255, 1).data;
+    return colordata;
+}
+
+function draw(data, isMct) {
+    // color  data
+    var colordata = getColorData();
 
     // otherdata 
     var canvas = document.createElement('canvas');
@@ -2782,7 +2811,10 @@ function draw(data, isMct) {
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.zIndex = '100';
+    canvas.className = 'thumbnailCanvas';
     document.body.appendChild(canvas);
+    thumbnailCanvas && document.body.removeChild(thumbnailCanvas);
+    thumbnailCanvas = canvas;
 
     ctx.fillStyle = 'rgba(255,255,255,1)';
     ctx.shadowColor = 'rgba(0,0,0, 0.05)';
@@ -2794,10 +2826,10 @@ function draw(data, isMct) {
             ctx.fillRect((Math.random() * 512 | 0) - 10000, Math.random() * 512 | 0, Math.random() * 18 + 8, Math.random() * 18 + 8);
         }
     } else {
-        var maxX = -Infinity;
-        var minX = Infinity;
-        var maxY = -Infinity;
-        var minY = Infinity;
+        maxX = -Infinity;
+        minX = Infinity;
+        maxY = -Infinity;
+        minY = Infinity;
         data.forEach(function (item) {
             maxX = Math.max(maxX, item.x);
             minX = Math.min(minX, item.x);
@@ -2806,7 +2838,7 @@ function draw(data, isMct) {
         });
         var preX = 512 / (maxX - minX);
         var preY = 512 / (maxY - minY);
-        var usePerPixel = Math.min(preX, preY);
+        usePerPixel = Math.min(preX, preY);
         // by graph
         var graph = {};
 
@@ -2821,22 +2853,15 @@ function draw(data, isMct) {
             };
             graph[x + '_' + y].value++;
             graphMax = Math.max(graphMax, graph[x + '_' + y].value);
-            // (item.x - minX) * usePerPixel - 2248, (item.y - minY) * usePerPixel
-            // console.log((item.x - minX) * usePerPixel)
-            // ctx.fillRect((item.x - minX) * usePerPixel - 2248, (item.y - minY) * usePerPixel, 100, 100);
         });
         Object.keys(graph).forEach(function (key) {
             var basic = 0;
             var level = graph[key].value - basic < 0 ? 0 : (graph[key].value - basic) / (graphMax - basic);
-            level = Math.max(0.1, level
-            // let level = (graph[key].value) / (graphMax);
-            // console.log(level)
-            );ctx.fillStyle = 'rgba(255,255,255,' + level + ')';
+            level = Math.max(0.1, level);
+            ctx.fillStyle = 'rgba(255,255,255,' + level + ')';
             ctx.beginPath();
             ctx.fillRect(graph[key].x - 10000, graph[key].y, ctx.shadowBlur, ctx.shadowBlur);
         });
-        console.log(graph, graphMax);
-        // console.log(maxX, minX, maxY, minY, usePerPixel)
     }
 
     // img data
@@ -2907,6 +2932,64 @@ function updateList() {
 document.getElementById('ul').onclick = function (e) {
     // console.log(datas[e.target.dataset.id]);
     draw(datas[e.target.dataset.id].datas, true);
+};
+
+// for draw area
+var pickCanvas = document.createElement('canvas');
+var pickCanvasCtx = pickCanvas.getContext('2d');
+pickCanvas.style.position = 'absolute';
+pickCanvas.style.top = pickCanvas.style.left = 0;
+pickCanvas.width = pickCanvas.height = 512;
+pickCanvas.style.width = pickCanvas.style.height = '512px';
+pickCanvas.style.display = 'none';
+pickCanvas.style.zIndex = '10000';
+var pickPoints = [];
+
+document.body.appendChild(pickCanvas);
+document.body.onclick = function (e) {
+    if (e.target == thumbnailCanvas) {
+        thumbnailCanvas.style.width = '512px';
+        thumbnailCanvas.style.height = '512px';
+        pickCanvas.style.display = 'block';
+        pickPoints = [];
+        drawPick();
+    }
+};
+
+pickCanvas.onclick = function (e) {
+    pickPoints.push([e.offsetX, e.offsetY]);
+    drawPick();
+};
+
+function drawPick() {
+    var ctx = pickCanvasCtx;
+    if (!ctx) return false;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 4;
+    pickPoints.forEach(function (point, index) {
+        if (index === 0) {
+            ctx.moveTo(point[0], point[1]);
+        } else {
+            ctx.lineTo(point[0], point[1]);
+        }
+    });
+    ctx.stroke();
+}
+
+window.onkeyup = function (e) {
+    if (e.keyCode === 27 && pickPoints.length > 1) {
+        var mc = [];
+        for (var i = 0; i < pickPoints.length; i++) {
+            mc.push(minX + pickPoints[i][0] / usePerPixel, minY + pickPoints[i][1] / usePerPixel);
+        }
+        location.hash = mc.join(',');
+        pickPoints = [];
+        pickCanvas.style.display = 'none';
+        thumbnailCanvas.style.width = '200px';
+        thumbnailCanvas.style.height = '200px';
+    }
 };
 
 /***/ })

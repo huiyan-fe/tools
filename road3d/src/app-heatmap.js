@@ -128,7 +128,7 @@ function draw(data, isMct) {
             level = Math.max(0.1, level);
             ctx.fillStyle = `rgba(255,255,255,${level})`;
             ctx.beginPath();
-            ctx.fillRect(graph[key].x - 10000, graph[key].y, ctx.shadowBlur, ctx.shadowBlur);
+            ctx.fillRect(graph[key].x - 10000, 512 - graph[key].y, ctx.shadowBlur, ctx.shadowBlur);
         });
     }
 
@@ -251,7 +251,7 @@ window.onkeyup = e => {
     if (e.keyCode === 27 && pickPoints.length > 1) {
         let mc = [];
         for (let i = 0; i < pickPoints.length; i++) {
-            mc.push(minX + pickPoints[i][0] / usePerPixel, minY + pickPoints[i][1] / usePerPixel);
+            mc.push(minX + pickPoints[i][0] / usePerPixel, minY + (512 - pickPoints[i][1]) / usePerPixel);
         }
         location.hash = mc.join(',');
         pickPoints = [];

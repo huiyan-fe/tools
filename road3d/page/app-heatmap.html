@@ -24,10 +24,35 @@
             width: 100%;
             height: 100%;
         }
+
+        .upload {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            max-width: 600px;
+            color: #fff;
+            z-index: 999;
+        }
+
+        ul {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            display: inline-block;
+            margin-right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
+    <div class="upload">
+        上传的文件：
+        <ul id="ul"></ul>
+    </div>
     <div id="canvas"></div>
     <script src="../dist/app-heatmap.bundle.js"></script>
 </body>

@@ -1,8 +1,10 @@
 import Obj from './Object.js';
 
-class Belt extends Obj {
+class Heatmap extends Obj {
+
     constructor(GL, obj) {
         super(GL, obj);
+        this.GL = GL;
         this.obj = obj;
 
         let color = this.color;
@@ -33,9 +35,15 @@ class Belt extends Obj {
                 let xPixel = xIndex - drawWidth / 2;
                 let yPixel = drawHeight / 2 - yIndex;
                 //
+                let r = obj.imgData.data[imgDataIndex] / 255;
+                let g = obj.imgData.data[imgDataIndex + 1] / 255;
+                let b = obj.imgData.data[imgDataIndex + 2] / 255;
+                if (obj.alphaImageData.data[imgDataIndex + 3] === 0) {
+                    r = g = b = 0.1;
+                }
                 this.verticesColors.push(
                     xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3,
-                    obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255, 0
+                    r, g, b, 0
                 );
                 xIndex += offsetX;
             }
@@ -68,6 +76,10 @@ class Belt extends Obj {
         this.verticesColors = new Float32Array(this.verticesColors);
     }
 
+    update(obj) {
+        this.constructor(this.GL, obj)
+    }
+
     render() {
         let gl = this.gl;
         let mvMatrix = this.GL.camera.mvMatrix;
@@ -96,9 +108,8 @@ class Belt extends Obj {
         //
 
         gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-
         gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
     }
 }
 
-export default Belt;
+export default Heatmap;

@@ -444,14 +444,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Belt = function (_Obj) {
-    _inherits(Belt, _Obj);
+var Heatmap = function (_Obj) {
+    _inherits(Heatmap, _Obj);
 
-    function Belt(GL, obj) {
-        _classCallCheck(this, Belt);
+    function Heatmap(GL, obj) {
+        _classCallCheck(this, Heatmap);
 
-        var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
+        var _this = _possibleConstructorReturn(this, (Heatmap.__proto__ || Object.getPrototypeOf(Heatmap)).call(this, GL, obj));
 
+        _this.GL = GL;
         _this.obj = obj;
 
         var color = _this.color;
@@ -481,7 +482,13 @@ var Belt = function (_Obj) {
                 var xPixel = xIndex - drawWidth / 2;
                 var yPixel = drawHeight / 2 - yIndex;
                 //
-                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, obj.imgData.data[imgDataIndex] / 255, obj.imgData.data[imgDataIndex + 1] / 255, obj.imgData.data[imgDataIndex + 2] / 255, 0);
+                var r = obj.imgData.data[imgDataIndex] / 255;
+                var g = obj.imgData.data[imgDataIndex + 1] / 255;
+                var b = obj.imgData.data[imgDataIndex + 2] / 255;
+                if (obj.alphaImageData.data[imgDataIndex + 3] === 0) {
+                    r = g = b = 0.1;
+                }
+                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, r, g, b, 0);
                 xIndex += offsetX;
             }
             xIndex = 0;
@@ -514,7 +521,12 @@ var Belt = function (_Obj) {
         return _this;
     }
 
-    _createClass(Belt, [{
+    _createClass(Heatmap, [{
+        key: 'update',
+        value: function update(obj) {
+            this.constructor(this.GL, obj);
+        }
+    }, {
         key: 'render',
         value: function render() {
             var gl = this.gl;
@@ -543,15 +555,14 @@ var Belt = function (_Obj) {
             //
 
             gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-
             gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
         }
     }]);
 
-    return Belt;
+    return Heatmap;
 }(_Object2.default);
 
-exports.default = Belt;
+exports.default = Heatmap;
 
 /***/ }),
 /* 4 */

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2706,8 +2706,7 @@ webpackContext.id = 11;
 
 /***/ }),
 /* 12 */,
-/* 13 */,
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2723,8 +2722,8 @@ exports.default = {
 };
 
 /***/ }),
-/* 15 */,
-/* 16 */
+/* 14 */,
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2734,7 +2733,7 @@ var _webgl = __webpack_require__(6);
 
 var _webgl2 = _interopRequireDefault(_webgl);
 
-var _path = __webpack_require__(14);
+var _path = __webpack_require__(13);
 
 var _path2 = _interopRequireDefault(_path);
 
@@ -2791,8 +2790,8 @@ function draw(data, isMct) {
     ctx.shadowBlur = 8;
 
     if (!data) {
-        for (var i = 0; i < 100; i++) {
-            ctx.fillRect((Math.random() * 512 | 0) - 2248, Math.random() * 512 | 0, Math.random() * 100 + 100, Math.random() * 100 + 100);
+        for (var i = 0; i < 500; i++) {
+            ctx.fillRect((Math.random() * 512 | 0) - 10000, Math.random() * 512 | 0, Math.random() * 18 + 8, Math.random() * 18 + 8);
         }
     } else {
         var maxX = -Infinity;

@@ -48,8 +48,8 @@ function draw(data, isMct) {
     ctx.shadowBlur = 8;
 
     if (!data) {
-        for (var i = 0; i < 100; i++) {
-            ctx.fillRect((Math.random() * 512 | 0) - 2248, Math.random() * 512 | 0, Math.random() * 100 + 100, Math.random() * 100 + 100);
+        for (var i = 0; i < 500; i++) {
+            ctx.fillRect((Math.random() * 512 | 0) - 10000, Math.random() * 512 | 0, Math.random() * 18 + 8, Math.random() * 18 + 8);
         }
     } else {
         let maxX = -Infinity;

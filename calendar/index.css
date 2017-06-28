@@ -85,6 +85,10 @@ body {
     color: #ffe3e3 !important;
 }
 
+#body {
+    padding: 10px 20px;
+}
+
 .info {
     background: #fffec0;
     padding: 10px;

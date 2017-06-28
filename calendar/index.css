@@ -1,0 +1,101 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Open Sans, Tahoma, Arial, Roboto, ”Droid Sans”, ”Helvetica Neue”, ”Droid Sans Fallback”, ”Heiti SC”, ”Hiragino Sans GB”, Simsun, sans-self;
+    font-size: 14px;
+    color: #333;
+}
+
+.month {
+    float: left;
+    width: 350px;
+    margin-bottom: 40px;
+    margin-right: 20px;
+}
+
+.month .month-head .block {
+    height: 18px;
+    line-height: 18px;
+}
+
+.block {
+    /*text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);*/
+    overflow: hidden;
+}
+
+.block img {
+    margin-top: 3px;
+    -webkit-filter: drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.8));
+    filter: drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.8));
+}
+
+.month .block {
+    font-size: 12px;
+    width: 50px;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #fff;
+    box-sizing: border-box;
+    border-top: none;
+    border-left: none;
+    float: left;
+}
+
+.month .weekend {
+    color: #666;
+}
+
+.month .disable {
+    color: #ccc;
+}
+
+.month-title {
+    font-size: 18px;
+    padding: 10px;
+}
+
+.month-head {
+    color: #666;
+}
+
+.level-1 {
+    background: #fffacd;
+    color: #f9b104 !important;
+}
+
+.level-2 {
+    background: #fff6a1;
+    color: #ed7807 !important;
+}
+
+.level-3 {
+    background: #ffde93;
+    color: #e05a04 !important;
+}
+
+.level-4 {
+    background: #fda5a2;
+    color: #fff3f3 !important;
+}
+
+.level-5 {
+    background: #fd7d78;
+    color: #ffe3e3 !important;
+}
+
+.info {
+    background: #fffec0;
+    padding: 10px;
+    margin-bottom: 50px;
+}
+
+.info h1 {
+    padding: 0;
+    margin: 0;
+}
+
+.info p {
+    margin: 0;
+}

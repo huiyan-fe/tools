@@ -44,11 +44,33 @@ class Thumbnail {
 
     drawTitle() {
         let padding = 10;
+
+        //edeef0
+        this.ctx.save();
+        this.ctx.fillStyle = '#eee';
+        this.ctx.fillRect(0, 40, this.width, 1);
+        this.ctx.fillRect(0, this.height - 81, this.width, 1)
+        this.ctx.fillStyle = '#f1f7fd';
+        this.ctx.fillRect(0, this.height - 80, this.width, 80)
+        this.ctx.restore();
+        //
+
+        this.ctx.font = '16px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillStyle = '#333';
+        this.ctx.fillText(this.obj.title, this.width / 2, 15 + padding);
+
         this.ctx.font = '14px sans-serif';
-        this.ctx.fillText(this.obj.title, padding, 10 + padding);
-        this.ctx.fillText(`拥堵里程：${this.obj.length} km`, padding, this.height - 40 - padding);
-        this.ctx.fillText(`拥堵指数：${this.obj.index}`, padding, this.height - 20 - padding);
-        this.ctx.fillText(`平均速度：${this.obj.speed} km/h`, padding, this.height - padding);
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText(`拥堵里程`, padding + 5, this.height - 46 - padding);
+        this.ctx.fillText(`拥堵指数`, padding + 5, this.height - 23 - padding);
+        this.ctx.fillText(`平均速度`, padding + 5, this.height - padding);
+
+        this.ctx.fillStyle = 'red';
+        this.ctx.textAlign = 'right';
+        this.ctx.fillText(`${this.obj.length} km`, this.width - padding - 5, this.height - 46 - padding);
+        this.ctx.fillText(`${this.obj.index}`, this.width - padding - 5, this.height - 23 - padding);
+        this.ctx.fillText(`${this.obj.speed} km/h`, this.width - padding - 5, this.height - padding);
     }
 
     drawMap() {
@@ -81,7 +103,7 @@ class Thumbnail {
         });
 
         let padding = [40, 20, 80, 20];
-        let useHeight = this.height - padding[0] - padding[2];
+        let useHeight = this.height - padding[0] - padding[2] - 20;
         let useWidth = this.width - padding[1] - padding[3];
 
         let borderInfo = {
@@ -96,12 +118,14 @@ class Thumbnail {
         }
         let usePreRatio = Math.min(borderInfo.preX, borderInfo.preY);
 
+
         let offsetX = (usePreRatio * borderInfo.deltaX - useWidth) / 2;
-        let offsetY = (usePreRatio * borderInfo.deltaY - useHeight) / 2;
+        let offsetY = (usePreRatio * borderInfo.deltaY - useHeight) / 2 + 10;
+        console.log(borderInfo, offsetX, offsetY)
 
         newPoints.forEach((item, index) => {
             this.ctx.beginPath();
-            this.ctx.lineWidth = 6;
+            this.ctx.lineWidth = 4;
 
             let present = (this.obj.speeds[index] - minSpeed) / (maxSpeed - minSpeed);
             let colorIndex = Math.min(254, parseInt(present * 255, 10));
@@ -109,7 +133,7 @@ class Thumbnail {
             this.ctx.strokeStyle = color;
 
             item.forEach((point, pointIndx) => {
-                let x = (point.x - borderInfo.startX) * usePreRatio + offsetX;
+                let x = (point.x - borderInfo.startX) * usePreRatio - offsetX;
                 let y = useHeight - (point.y - borderInfo.startY) * usePreRatio + offsetY;
                 if (pointIndx === 0) {
                     this.ctx.moveTo(x + padding[3], y + padding[0]);

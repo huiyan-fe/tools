@@ -332,6 +332,7 @@ var Belt = function (_Obj) {
             var pathDistances = [];
             var pathLength = 0;
             paths.forEach(function (point, index) {
+                // if(index>10) return false;
                 if (index > 0) {
                     var start = point;
                     var end = paths[index - 1];
@@ -348,15 +349,13 @@ var Belt = function (_Obj) {
                 _this2.indices.push(index * 2);
                 _this2.indices.push(index * 2 + 1);
             });
-            // console.log(pathDistances)
-            pathDistances.forEach(function (dist) {
+            pathDistances.forEach(function (dist, index) {
                 _this2.texture_coords.push(dist / pathLength, 1);
                 _this2.texture_coords.push(dist / pathLength, 0);
             });
             this.texture_coords = new Float32Array(this.texture_coords);
             this.indices = new Uint16Array(this.indices);
             this.verticesColors = new Float32Array(this.verticesColors);
-            // console.log(this.texture_coords, this.indices, this.verticesColors)
         }
     }, {
         key: 'render',
@@ -382,6 +381,12 @@ var Belt = function (_Obj) {
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+            // gl.bindTexture(gl.TEXTURE_2D, texture);
+            // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            // gl.bindTexture(gl.TEXTURE_2D, null);
+
             if (this.obj.texture) {
                 this.gl.uniform1i(this.gl.uUseTexture, true);
                 // texture
@@ -394,12 +399,13 @@ var Belt = function (_Obj) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
                 gl.uniform1i(gl.uSampler, 0);
                 // // texture coordinate
+                // console.log(this.texture_coords)
                 var textureBufferObject = this.gl.buffers('textureBuffer');
                 gl.bindBuffer(gl.ARRAY_BUFFER, textureBufferObject);
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.texture_coords), gl.STATIC_DRAW);
+                gl.bufferData(gl.ARRAY_BUFFER, this.texture_coords, gl.STATIC_DRAW);
                 gl.vertexAttribPointer(gl.aVertexTextureCoords, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(gl.aVertexTextureCoords);
-                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                // gl.bindBuffer(gl.ARRAY_BUFFER, null);
             }
 
             // set mv
@@ -411,6 +417,7 @@ var Belt = function (_Obj) {
             // console.log(this.indices.length)
 
             gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+            window.gl = gl;
         }
     }]);
 
@@ -1131,7 +1138,7 @@ var WebGl = function WebGl(dom, config) {
     this.camera = new _camera2.default(this.gl);
 
     // open depth test and set clear color
-    gl.clearColor(0, 0, 0, 1.0);
+    gl.clearColor(.1, .1, .1, 1.0);
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
     gl.depthFunc(gl.LEQUAL);
@@ -1139,6 +1146,7 @@ var WebGl = function WebGl(dom, config) {
     // auto draw
     (function draw() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        // console.log(renderList)
         for (var i in renderList) {
             renderList[i].render();
         }

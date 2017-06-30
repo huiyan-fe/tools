@@ -10,14 +10,22 @@
 
         .thumbnail {
             float: left;
-            height: 520px;
-            width: 400px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            height: 404px;
+            width: 250px;
+            margin: 10px;
+            /*border: 1px solid #ccc;*/
+            /*border-radius: 2px;*/
+            background: white;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .2);
         }
 
         #main {
             overflow: hidden;
+            padding: 10px;
+        }
+
+        body {
+            background: #ececec;
         }
     </style>
 </head>
@@ -25,17 +33,7 @@
 <body>
     <div id="main"></div>
     <div>
-        <p>数据格式要求</p>
-        <table>
-            <tr>
-                <td>道路名称-时间</td>
-                <td>links(单条link用之间用,分割，多条之间用;分割)</td>
-                <td>速度（每条link之间用分号分割）</td>
-                <td>拥堵里程</td>
-                <td>拥堵指数</td>
-                <td>平均速度</td>
-            </tr>
-        </table>
+        <p><a href="data/data.json">数据格式要求</a</p>
     </div>
     <script src="mercatorProjection.js"></script>
     <script src="app.js"></script>

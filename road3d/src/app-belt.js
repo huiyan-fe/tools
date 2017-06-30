@@ -11,32 +11,32 @@ function drawBelt(id, data, hotData) {
     let app = window.app = new WebGl(id);
     let dom = document.getElementById(id);
 
-    // x
-    app.Path({
-        path: [
-            [0, 0, 0],
-            [0, 100, 0],
-        ],
-        color: '#f00'
-    });
+    // // x
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [0, 100, 0],
+    //     ],
+    //     color: '#f00'
+    // });
 
-    // y
-    app.Path({
-        path: [
-            [0, 0, 0],
-            [100, 0, 0],
-        ],
-        color: '#0f0'
-    });
+    // // y
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [100, 0, 0],
+    //     ],
+    //     color: '#0f0'
+    // });
 
-    // z
-    app.Path({
-        path: [
-            [0, 0, 0],
-            [0, 0, 100],
-        ],
-        color: '#00f'
-    });
+    // // z
+    // app.Path({
+    //     path: [
+    //         [0, 0, 0],
+    //         [0, 0, 100],
+    //     ],
+    //     color: '#00f'
+    // });
 
     // prepare data
     var maxWidth = 1000;

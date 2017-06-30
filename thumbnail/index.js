@@ -8,5 +8,35 @@ let datas = [{
 }];
 
 datas.forEach(data => {
-    new Thumbnail(data)
+    new Thumbnail(data);
 });
+
+
+new Thumbnail({"title":"万丰路-南向北-莲宝路至莲花池西路辅路_131_morning","length":0.597,"index":"3.821649072","speed":"21.7355087","speeds":["6.334921158","5.772431947","6.334921158","5.292845798"],"locations":["116.301532,39.895817,116.301533,39.895907","116.301503,39.902545,116.301473,39.903108","116.301533,39.895907,116.301523,39.897397","116.301523,39.897397,116.301522,39.897478,116.30151,39.899241,116.301527,39.900615"]})
+
+
+
+
+
+// for drop
+window.ondragover = (e) => {
+    e.preventDefault();
+}
+
+window.ondragend = e => {
+    e.preventDefault();
+}
+
+window.ondrop = e => {
+    e.preventDefault();
+    let files = e.dataTransfer.files;
+
+    Object.keys(files).forEach(id => {
+        let read = new FileReader();
+        read.onload = (e) => {
+            let jsonData = JSON.parse(e.target.result);
+            new Thumbnail(jsonData)
+        }
+        read.readAsText(files[id]);
+    });
+}

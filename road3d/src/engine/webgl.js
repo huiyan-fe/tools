@@ -33,7 +33,7 @@ class WebGl {
         this.camera = new Camera(this.gl);
 
         // open depth test and set clear color
-        gl.clearColor(0, 0, 0, 1.0);
+        gl.clearColor(.1, .1, .1, 1.0);
         gl.clearDepth(1.0); // Clear everything
         gl.enable(gl.DEPTH_TEST); // Enable depth testing
         gl.depthFunc(gl.LEQUAL);
@@ -41,6 +41,7 @@ class WebGl {
         // auto draw
         (function draw() {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            // console.log(renderList)
             for (let i in renderList) {
                 renderList[i].render();
             }

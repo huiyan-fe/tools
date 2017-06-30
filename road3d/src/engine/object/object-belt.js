@@ -18,6 +18,7 @@ class Belt extends Obj {
         let pathDistances = [];
         let pathLength = 0;
         paths.forEach((point, index) => {
+            // if(index>10) return false;
             if (index > 0) {
                 let start = point;
                 let end = paths[index - 1];
@@ -34,15 +35,13 @@ class Belt extends Obj {
             this.indices.push(index * 2);
             this.indices.push(index * 2 + 1);
         });
-        // console.log(pathDistances)
-        pathDistances.forEach(dist => {
+        pathDistances.forEach((dist, index) => {
             this.texture_coords.push(dist / pathLength, 1);
             this.texture_coords.push(dist / pathLength, 0);
         });
         this.texture_coords = new Float32Array(this.texture_coords);
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
-        // console.log(this.texture_coords, this.indices, this.verticesColors)
     }
 
     render() {
@@ -67,6 +66,13 @@ class Belt extends Obj {
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+
+        // gl.bindTexture(gl.TEXTURE_2D, texture);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        // gl.bindTexture(gl.TEXTURE_2D, null);
+
         if (this.obj.texture) {
             this.gl.uniform1i(this.gl.uUseTexture, true);
             // texture
@@ -79,13 +85,13 @@ class Belt extends Obj {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.uniform1i(gl.uSampler, 0);
             // // texture coordinate
+            // console.log(this.texture_coords)
             let textureBufferObject = this.gl.buffers('textureBuffer');
             gl.bindBuffer(gl.ARRAY_BUFFER, textureBufferObject);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.texture_coords), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, this.texture_coords, gl.STATIC_DRAW);
             gl.vertexAttribPointer(gl.aVertexTextureCoords, 2, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(gl.aVertexTextureCoords);
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
+            // gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
 
         // set mv
@@ -97,6 +103,7 @@ class Belt extends Obj {
         // console.log(this.indices.length)
 
         gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        window.gl = gl;
     }
 }
 

@@ -38,7 +38,7 @@ class Thumbnail {
         // grandient.addColorStop(1, "rgb(250,0,0)");
         grandient.addColorStop(0, "yellow");
         grandient.addColorStop(1, "rgb(250,0,0)");
-        document.body.appendChild(canvas); 
+        document.body.appendChild(canvas);
         ctx.fillStyle = grandient;
         ctx.fillRect(0, 0, 255, 1);
         var colordata = ctx.getImageData(0, 0, 255, 1).data;

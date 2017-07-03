@@ -13,6 +13,7 @@
             padding: 0;
             margin: 0;
             overflow: hidden;
+            background: black;
         }
 
         #canvas {
@@ -20,24 +21,70 @@
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
+            bottom: 40px;
             width: 100%;
-            height: 100%;
+        }
+
+        .tips {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            color: white;
+        }
+
+        .tips a {
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div id="canvas"></div>
+
+    <div class="tips">备注：window下可能无法使用，后续会进行适配，另<a href="../src/data/beltRoad.json" target="_blank">数据格式，点击这里查看</a></div>
     <script src="../dist/app.bundle.js"></script>
-    <script src="../src/data/hot.js"></script>
-    <script src="../src/data/path.js"></script>
+    <script src="../src/data/beltRoad.js"></script>
     <script>
-        var belt = Engin.Belt('canvas', {
-            paths: paths,
-            hotData: hotDate
-        });
-        // console.log(belt)
+        function draw(road) {
+            let canvas = document.getElementById('canvas');
+            if (canvas) {
+                document.removeChild(canvas);
+            }
+            canvas = document.createElement('div');
+            canvas.id = 'canvas';
+            document.body.appendChild(canvas);
+            canvas.innerHTML = '';
+
+            var belt = Engin.Belt('canvas', {
+                paths: road.paths,
+                hotData: road.hotData
+            });
+        }
+
+         draw(road)
+
+        // for drop
+        window.ondragover = (e) => {
+            e.preventDefault();
+        }
+
+        window.ondragend = e => {
+            e.preventDefault();
+        }
+
+        window.ondrop = e => {
+            e.preventDefault();
+            let files = e.dataTransfer.files;
+
+            Object.keys(files).forEach(id => {
+                let read = new FileReader();
+                read.onload = (e) => {
+                    let jsonData = JSON.parse(e.target.result);
+                    draw(jsonData)
+                    // console.log(jsonData)
+                }
+                read.readAsText(files[id]);
+            });
+        }
     </script>
 </body>
 

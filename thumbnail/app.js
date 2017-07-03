@@ -32,10 +32,13 @@ class Thumbnail {
         canvas.style.top = '0';
         canvas.style.zIndex = '100';
         var grandient = ctx.createLinearGradient(0, 0, 255, 0);
-        grandient.addColorStop(.25, "rgb(0,0,255)");
-        grandient.addColorStop(0.5, "rgb(0,255,0)");
-        grandient.addColorStop(0.75, "yellow");
+        // grandient.addColorStop(.25, "rgb(0,0,255)");
+        // grandient.addColorStop(0.5, "rgb(0,255,0)");
+        // grandient.addColorStop(0.75, "yellow");
+        // grandient.addColorStop(1, "rgb(250,0,0)");
+        grandient.addColorStop(0, "yellow");
         grandient.addColorStop(1, "rgb(250,0,0)");
+        document.body.appendChild(canvas); 
         ctx.fillStyle = grandient;
         ctx.fillRect(0, 0, 255, 1);
         var colordata = ctx.getImageData(0, 0, 255, 1).data;

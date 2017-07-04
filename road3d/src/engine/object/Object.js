@@ -1,8 +1,11 @@
 import utility from '../tools/utility';
 
+let id = 0;
+
 class OBJ {
     constructor(GL, obj) {
         this.GL = GL;
+        this.id = ++id;
         this.gl = GL.gl;
         this.obj = obj = obj || {}
         this.operate = [];

@@ -19,7 +19,7 @@ class Path extends Obj {
         let mvMatrix = this.GL.camera.mvMatrix;
 
         // 顶点/颜色缓冲区操作
-        let vertexColorBuffer = this.gl.buffers('vcBuffer');
+        let vertexColorBuffer = this.gl.buffers(`vcBuffer${this.id}`);
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
         //

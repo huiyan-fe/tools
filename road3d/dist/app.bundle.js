@@ -87,11 +87,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var id = 0;
+
 var OBJ = function () {
     function OBJ(GL, obj) {
         _classCallCheck(this, OBJ);
 
         this.GL = GL;
+        this.id = ++id;
         this.gl = GL.gl;
         this.obj = obj = obj || {};
         this.operate = [];
@@ -139,9 +142,9 @@ var OBJ = function () {
             }
 
             if (_axis) {
-                var id = this.opearteID = this.opearteID;
+                var _id = this.opearteID = this.opearteID;
                 this.operate.push({
-                    id: id++,
+                    id: _id++,
                     name: 'rotate',
                     value: [rad, _axis]
                 });
@@ -251,7 +254,7 @@ var Path = function (_Obj) {
             var mvMatrix = this.GL.camera.mvMatrix;
 
             // 顶点/颜色缓冲区操作
-            var vertexColorBuffer = this.gl.buffers('vcBuffer');
+            var vertexColorBuffer = this.gl.buffers('vcBuffer' + this.id);
             gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
             //

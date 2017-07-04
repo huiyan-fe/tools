@@ -41,7 +41,7 @@ function initShaders(gl, vshader, fshader) {
     gl.uniform1i(program.uUseTextures, false);
 
 
-    gl.aVertexTextureCoords = gl.getUniformLocation(program, "aVertexTextureCoords");
+    gl.aVertexTextureCoords = gl.getAttribLocation(program, "aVertexTextureCoords");
     gl.aPosition = gl.getAttribLocation(gl.program, 'aPosition');
     gl.aColor = gl.getAttribLocation(gl.program, 'aColor');
 

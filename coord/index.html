@@ -387,8 +387,11 @@ var overlaycomplete = function(e){
     overlays.push(e.overlay);
     var overlay = e.overlay;
     if (e.overlay.toString() == '[object Marker]') {
-        var point  =e.overlay.getPosition();
-        document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + point.lng + "," + point.lat + "</p></div>";
+        var point  = e.overlay.getPosition();
+        var pixel = project.lngLatToPoint(point);
+        var html = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + point.lng + "," + point.lat + "</p></div>";
+        html += "<div><span>墨卡托：</span><button class='btn'>复制</button><p class='copyText'>" + pixel.x + "," + pixel.y + "</p></div>";
+        document.getElementById('result').innerHTML = html;
     }
 
     if (e.overlay.toString() == '[object Circle]') {

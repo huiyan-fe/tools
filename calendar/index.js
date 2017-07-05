@@ -24,7 +24,7 @@ function createMonth(inputTime, datas) {
         });
     });
     console.log(dataMin, dataMax)
-    //
+        //
 
     let timeArr = inputTime.split('/');
 
@@ -86,8 +86,15 @@ function createMonth(inputTime, datas) {
             day = i - lastMonthLastDay + 1;
             let precent = 0;
             if (data[day]) {
-                precent = Math.ceil((data[day] - dataMin) / (dataMax - dataMin) / .2);
+                let realPresent = (data[day] - dataMin) / (dataMax - dataMin);
+                precent = Math.ceil(realPresent / .2);
                 precent = Math.max(precent, 1);
+
+                precent = realPresent < 0.2 ? 1 :
+                    realPresent < 0.6 ? 2 :
+                    realPresent < 0.8 ? 3 :
+                    realPresent < 0.9 ? 4 : 5;
+
                 className += ` level-${precent} `;
             }
             let dateStr = `${time.getFullYear()}${('0'+(time.getMonth()+1)).slice(-2)}${('0'+day).slice(-2)}`;

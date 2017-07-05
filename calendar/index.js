@@ -1,31 +1,124 @@
 let param = {};
+
+let datas = {
+    3: {
+        5: 1,
+        10: 2,
+        12: 3,
+        18: 4,
+        19: 5
+    },
+    1: {
+        1: 10,
+        5: 10,
+        15: 10,
+        3: 10,
+        16: 10
+    }
+}
+
+
 location.search.slice(1).split('&').map(item => {
     let kv = item.split('=');
     param[kv[0]] = kv[1];
-})
+});
 
 let citycode = param.city || 131
-
 let cityWeather = weather[citycode];
-console.log(weathermap)
 
-function createMonth(inputTime, datas) {
-    //
-    // 
+// levels 
+let levels1 = param.levels1 || 20;
+let levels2 = param.levels2 || 40;
+let levels3 = param.levels3 || 20;
+let levels4 = param.levels4 || 10;
+let levels5 = param.levels5 || 10;
+
+formatData();
+
+
+
+let cityDom = document.getElementById('city');
+cityDom.value = citycode;
+cityDom.onkeyup = (e) => {
+    citycode = parseInt(e.target.value);
+    history.pushState({}, '', `?city=${citycode}&levels1=${levels1}&levels2=${levels2}&levels3=${levels3}&levels4=${levels4}&levels5=${levels5}`);
+    cityWeather = weather[citycode];
+
+    dom.innerHTML = '';
+    for (var i = 1; i <= 12; i++) {
+        dom.appendChild(createMonth(`2017/${i}`));
+    }
+}
+
+let index = [levels1, levels2, levels3, levels4, levels5]
+for (let i = 0; i < 5; i++) {
+    let inputDom = document.getElementById(`levels${i+1}`);
+    inputDom.value = index[i]
+
+    inputDom.onkeyup = (e) => {
+        index[i] = e.target.value;
+        history.pushState({}, '', `?city=${citycode}&levels1=${levels1}&levels2=${levels2}&levels3=${levels3}&levels4=${levels4}&levels5=${levels5}`);
+    }
+}
+
+// console.log(weathermap)
+
+function formatData() {
     let dataMin = Infinity;
     let dataMax = -Infinity;
-
+    let rankByValue = [];
     Object.keys(datas).forEach(key => {
         let data = datas[key];
-
         Object.keys(data).forEach(key => {
-            dataMin = Math.min(dataMin, data[key]);
-            dataMax = Math.max(dataMax, data[key]);
+            let value = data[key].value || data[key];
+            dataMin = Math.min(dataMin, value);
+            dataMax = Math.max(dataMax, value);
+            data[key] = { value };
+            rankByValue.push({
+                value,
+                item: data[key]
+            })
         });
     });
-    console.log(dataMin, dataMax)
-        //
+    // rank
+    // freerank
+    Object.keys(datas).forEach(key => {
+        let data = datas[key];
+        Object.keys(data).forEach(key => {
+            let value = data[key].value;
+            let realPresent = (value - dataMin) / (dataMax - dataMin);
+            precent = Math.ceil(realPresent / .2);
+            precent = Math.max(precent, 1);
+            data[key].level = precent;
+        });
+    });
 
+    //
+    if (document.getElementsByName('heattype')[1].checked) {
+        // limited rank
+        rankByValue.sort((a, b) =>
+            b.value - a.value
+        ).forEach((item, index) => {
+            let precent = index / rankByValue.length;
+            if (precent <= (levels5 / 100)) {
+                item.item.level = 5;
+            } else if (precent <= ((levels5 + levels4) / 100)) {
+                item.item.level = 4;
+            } else if (precent <= ((levels5 + levels4 + levels3) / 100)) {
+                item.item.level = 3;
+            } else if (precent <= ((levels5 + levels4 + levels3 + levels2) / 100)) {
+                item.item.level = 2;
+            } else {
+                item.item.level = 1;
+            }
+            console.log(precent, item.item);
+        });
+    }
+    console.log(rankByValue);
+}
+
+
+function createMonth(inputTime) {
     let timeArr = inputTime.split('/');
 
     let dom = document.createElement('div');
@@ -86,18 +179,7 @@ function createMonth(inputTime, datas) {
             day = i - lastMonthLastDay + 1;
             let precent = 0;
             if (data[day]) {
-                let realPresent = (data[day] - dataMin) / (dataMax - dataMin);
-                precent = Math.ceil(realPresent / .2);
-                precent = Math.max(precent, 1);
-
-                precent = realPresent < 0.2 ? 1 :
-                    realPresent < 0.6 ? 2 :
-                    realPresent < 0.8 ? 3 :
-                    realPresent < 0.9 ? 4 : 5;
-
-                console.log(thisMonth + 1 + '/' + day, data[day], 'max:' + dataMax, 'min:' + dataMin, realPresent);
-
-                className += ` level-${precent} `;
+                className += ` level-${data[day].level} `;
             }
             let dateStr = `${time.getFullYear()}${('0'+(time.getMonth()+1)).slice(-2)}${('0'+day).slice(-2)}`;
             let dayWeather = cityWeather && cityWeather[dateStr];
@@ -119,26 +201,25 @@ function createMonth(inputTime, datas) {
     return dom;
 }
 
-let datas = {
-    3: {
-        5: 1,
-        10: 2,
-        12: 3,
-        18: 4,
-        19: 5
-    },
-    1: {
-        1: 1,
-        5: 1
-    }
-}
+
 
 let dom = document.getElementById('body');
-
 dom.innerHTML = '';
 for (var i = 1; i <= 12; i++) {
     dom.appendChild(createMonth(`2017/${i}`, datas))
 }
+
+
+document.getElementsByName('heattype').forEach(item => {
+    item.onclick = (e) => {
+        let dom = document.getElementById('body');
+        formatData();
+        dom.innerHTML = '';
+        for (var i = 1; i <= 12; i++) {
+            dom.appendChild(createMonth(`2017/${i}`, datas))
+        }
+    }
+})
 
 
 
@@ -159,11 +240,12 @@ window.ondrop = e => {
     // Object.keys(files).forEach(id => {
     let read = new FileReader();
     read.onload = (e) => {
-        let jsonData = JSON.parse(e.target.result);
+        datas = JSON.parse(e.target.result);
+        formatData();
 
         dom.innerHTML = '';
         for (var i = 1; i <= 12; i++) {
-            dom.appendChild(createMonth(`2017/${i}`, jsonData))
+            dom.appendChild(createMonth(`2017/${i}`))
         }
     }
     read.readAsText(files[0]);

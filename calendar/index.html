@@ -5,12 +5,33 @@
     <title>日历工具</title>
     <meta charset="utf-8" />
     <link href="index.css" rel="stylesheet" type="text/css">
+
 </head>
 
 <body>
     <div class="info">
         <h1>日历热力图工具</h1>
         <p>拖拽数据到当前页面即可，地址栏后面可以通过?city=xxx来选择不同city的天气，<a href="data/data.json" target="_blank">数据格式参考</a></p>
+        <hr/>
+        <div>
+            <p>↓你好，我是工具条↓是的，我是一个很简陋的个工具条↓</p>
+            <p>
+                city: <input value="131" id="city" style="width: 50px; text-align:center;" />
+            </p>
+            <p>
+                <label><input type="radio" name="heattype" value="0" />默认比例</label>
+            </p>
+            <p>
+                <label></label>
+                <input type="radio" name="heattype" value="1" checked="checked"  />
+                <input value="20" style="width: 30px; text-align:center;" class="type1" id="levels1" />%
+                <input value="40" style="width: 30px; text-align:center;" class="type2" id="levels2" />%
+                <input value="20" style="width: 30px; text-align:center;" class="type3" id="levels3" />%
+                <input value="10" style="width: 30px; text-align:center;" class="type4" id="levels4" />%
+                <input value="10" style="width: 30px; text-align:center;" class="type5" id="levels5" />%
+            </p>
+
+        </div>
     </div>
     <div id="body"></div>
     <script src="./data/weather.js"></script>

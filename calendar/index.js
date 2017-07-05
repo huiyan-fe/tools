@@ -95,6 +95,8 @@ function createMonth(inputTime, datas) {
                     realPresent < 0.8 ? 3 :
                     realPresent < 0.9 ? 4 : 5;
 
+                console.log(thisMonth + 1 + '/' + day, data[day], 'max:' + dataMax, 'min:' + dataMin, realPresent);
+
                 className += ` level-${precent} `;
             }
             let dateStr = `${time.getFullYear()}${('0'+(time.getMonth()+1)).slice(-2)}${('0'+day).slice(-2)}`;

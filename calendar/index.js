@@ -103,12 +103,14 @@ function formatData() {
 
     for (let i = 0; i < 5; i++) {
         let inputDom = document.getElementById(`levels${i+1}`);
-        window[`levels${i+1}`] = inputDom.value;
+        window[`levels${i+1}`] = parseInt(inputDom.value);
+
     }
 
 
     if (document.getElementsByName('heattype')[1].checked) {
-        // limited rank
+        console.log(levels1, levels2, levels3, levels4, levels5)
+            // limited rank
         rankByValue.sort((a, b) =>
             b.value - a.value
         ).forEach((item, index) => {

@@ -27,11 +27,11 @@ let citycode = param.city || 131
 let cityWeather = weather[citycode];
 
 // levels 
-let levels1 = param.levels1 || 20;
-let levels2 = param.levels2 || 40;
-let levels3 = param.levels3 || 20;
-let levels4 = param.levels4 || 10;
-let levels5 = param.levels5 || 10;
+var levels1 = param.levels1 || 20;
+var levels2 = param.levels2 || 40;
+var levels3 = param.levels3 || 20;
+var levels4 = param.levels4 || 10;
+var levels5 = param.levels5 || 10;
 
 formatData();
 
@@ -56,8 +56,14 @@ for (let i = 0; i < 5; i++) {
     inputDom.value = index[i]
 
     inputDom.onkeyup = (e) => {
-        index[i] = e.target.value;
+        window[`levels${i+1}`] = e.target.value;
+        // console.log(window[`levels${i+1}`] )
         history.pushState({}, '', `?city=${citycode}&levels1=${levels1}&levels2=${levels2}&levels3=${levels3}&levels4=${levels4}&levels5=${levels5}`);
+        formatData();
+        dom.innerHTML = '';
+        for (var i = 1; i <= 12; i++) {
+            dom.appendChild(createMonth(`2017/${i}`));
+        }
     }
 }
 
@@ -94,6 +100,13 @@ function formatData() {
     });
 
     //
+
+    for (let i = 0; i < 5; i++) {
+        let inputDom = document.getElementById(`levels${i+1}`);
+        window[`levels${i+1}`] = inputDom.value;
+    }
+
+
     if (document.getElementsByName('heattype')[1].checked) {
         // limited rank
         rankByValue.sort((a, b) =>
@@ -111,7 +124,7 @@ function formatData() {
             } else {
                 item.item.level = 1;
             }
-            console.log(precent, item.item);
+            // console.log(precent, item.item);
         });
     }
     console.log(rankByValue);

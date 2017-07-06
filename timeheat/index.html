@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>时间热力图</title>
+    <style>
+        input {
+            width: 50px;
+            text-align: center;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <label>R:<input value="0.0" max=1 min=0.0 name="r"></label>
+        <label>G:<input value="0.3" max=1 min=0.0 name="g"></label>
+        <label>B:<input value="1.0" max=1 min=0.0 name="b"></label>
+        <label>Height:<input value="300" name="height"></label>
+        <label>Width:<input value="780" name="width"></label>
+    </div>
+    <div id="chart"></div>
+    <script src="data/data.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

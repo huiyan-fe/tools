@@ -47,7 +47,7 @@
         function draw(road) {
             let canvas = document.getElementById('canvas');
             if (canvas) {
-                document.removeChild(canvas);
+                document.body.removeChild(canvas);
             }
             canvas = document.createElement('div');
             canvas.id = 'canvas';

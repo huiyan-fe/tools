@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    <meta charset="utf-8"></meta>
+    <title>曲线工具</title>
+</head>
+
+<body>
+    <div id="content"></div>
+    <script src="data/data.js"></script>
+    <script src="index.js"></script>
+    <script>
+        let dom = document.getElementById('content');
+        new Chart(dom, datas);
+
+
+        // for drop
+        window.ondragover = (e) => {
+            e.preventDefault();
+        }
+
+        window.ondragend = e => {
+            e.preventDefault();
+        }
+
+        window.ondrop = e => {
+            e.preventDefault();
+            let files = e.dataTransfer.files;
+
+            // Object.keys(files).forEach(id => {
+            let read = new FileReader();
+            read.onload = (e) => {
+                datas = JSON.parse(e.target.result);
+                new Chart(dom, datas);
+            }
+            read.readAsText(files[0]);
+            // });
+        }
+    </script>
+</body>
+
+</html>

@@ -78,7 +78,7 @@ class Chart {
             let y = this.height - this.padding[2] - this.yStep * this.dist[item[0]];
             this.itemWidth = this.xStep;
             this.itemHeight = (this.dist[item[0]] - (this.dist[item[0] - 1] || 0)) * this.yStep;
-            ctx.fillStyle = `rgba(0, 0, 0, ${0.10 * ((item[2]-this.valueMin)/(this.valueMax-this.valueMin))})`;
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.10 * ((this.valueMax-item[2])/(this.valueMax-this.valueMin))})`;
             ctx.fillRect(x, y, this.itemWidth, this.itemHeight);
         });
         ctx.closePath();

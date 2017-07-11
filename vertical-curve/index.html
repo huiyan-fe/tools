@@ -31,6 +31,7 @@
             // Object.keys(files).forEach(id => {
             let read = new FileReader();
             read.onload = (e) => {
+                dom.innerHTML = '';
                 datas = JSON.parse(e.target.result);
                 new Chart(dom, datas);
             }

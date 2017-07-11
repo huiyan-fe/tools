@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>热力-时间-图</title>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div id="content"></div>
+    <script src="mercatorProjection.js"></script>
+    <script src="dat.gui.min.js"></script>
+    <script src="data/chaoyang_bei_20170606_9to16.js"></script>
+    <!--<script src="data/chaoyang_20170704_9to16.js"></script>-->
+
+    <script src="index.js"></script>
+    <script>
+        let dom = document.getElementById('content');
+
+
+
+        // for drop
+        window.ondragover = (e) => {
+            e.preventDefault();
+        }
+
+        window.ondragend = e => {
+            e.preventDefault();
+        }
+
+        window.ondrop = e => {
+            e.preventDefault();
+            let files = e.dataTransfer.files;
+
+            // Object.keys(files).forEach(id => {
+            let read = new FileReader();
+            read.onload = (e) => {
+                dom.innerHTML = '';
+                data = JSON.parse(e.target.result);
+
+                let valueMax = 0;
+                let valueMin = Infinity;
+                data.hotData.forEach(item => {
+                    valueMax = Math.max(valueMax, item[2]);
+                    valueMin = Math.min(valueMin, item[2]);
+                });
+                text.max = valueMax;
+                text.min = valueMin;
+                for (var i in gui.__controllers) {
+                    gui.__controllers[i].updateDisplay();
+                }
+
+                new Chart(dom, data);
+            }
+            read.readAsText(files[0]);
+            // });
+        }
+    </script>
+
+    <script>
+        var FizzyText = function() {
+            this.min = 0;
+            this.max = 10;
+        };
+
+        window.onload = function() {
+            window.text = new FizzyText();
+            window.gui = new dat.GUI();
+            let min = gui.add(text, 'min', 0, 100);
+            let max = gui.add(text, 'max', 0, 100);
+
+            min.onFinishChange(function(value) {
+                dom.innerHTML = '';
+                new Chart(dom, data);
+            });
+            max.onFinishChange(function(value) {
+                // console.log(value);
+                dom.innerHTML = '';
+                new Chart(dom, data);
+            });
+
+            new Chart(dom, data);
+        };
+    </script>
+</body>
+
+</html>

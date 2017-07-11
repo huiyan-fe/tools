@@ -5,7 +5,7 @@ class Chart {
         let paddig = this.padding = [20, 20, 80, 20];
         let canvas = document.createElement('canvas');
         let ctx = this.ctx = canvas.getContext('2d');
-        this.data = data.filter((item, index) => index < 10);
+        // this.data = data.filter((item, index) => index < 10);
         canvas.width = width * 2;
         canvas.height = height * 2;
         canvas.style.width = width + 'px';

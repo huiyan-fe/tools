@@ -19,6 +19,7 @@
             this.width = 1000;
             this.height = 600;
             this.fontSize = 10;
+            this.paddingLeft = 50;
         };
 
         function change() {
@@ -32,10 +33,12 @@
             let min = gui.add(text, 'width');
             let max = gui.add(text, 'height');
             let fontSize = gui.add(text, 'fontSize');
+            let paddingLeft = gui.add(text, 'paddingLeft');
 
             min.onFinishChange(change);
             max.onFinishChange(change);
             fontSize.onFinishChange(change);
+            paddingLeft.onFinishChange(change);
 
             new Chart(dom, datas);
         };

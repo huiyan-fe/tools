@@ -8,12 +8,35 @@
 <body>
     <div id="content"></div>
     <a href="data/data.json">数据格式</a>
+    <script src="dat.gui.js"></script>
     <script src="data/data.js"></script>
     <script src="index.js"></script>
     <script>
         let dom = document.getElementById('content');
-        new Chart(dom, datas);
+        
 
+        var FizzyText = function() {
+            this.width = 1000;
+            this.height = 600;
+        };
+
+        window.onload = function() {
+            window.text = new FizzyText();
+            window.gui = new dat.GUI();
+            let min = gui.add(text, 'width');
+            let max = gui.add(text, 'height');
+
+            min.onFinishChange(function(value) {
+                dom.innerHTML = '';
+                new Chart(dom, datas);
+            });
+            max.onFinishChange(function(value) {
+                dom.innerHTML = '';
+                new Chart(dom, datas);
+            });
+
+            new Chart(dom, datas);
+        };
 
         // for drop
         window.ondragover = (e) => {

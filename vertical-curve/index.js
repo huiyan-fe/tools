@@ -1,7 +1,7 @@
 class Chart {
     constructor(dom, data) {
-        let width = this.width = 1000;
-        let height = this.height = 600;
+        let width = this.width = text.width;
+        let height = this.height = text.height;
         let paddig = this.padding = [20, 20, 80, 20];
         let canvas = document.createElement('canvas');
         let ctx = this.ctx = canvas.getContext('2d');

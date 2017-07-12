@@ -249,15 +249,15 @@ class Thumbnail {
 
         this.ctx.font = '14px sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(`拥堵里程`, padding + 5, this.height - 46 - padding);
+        this.ctx.fillText(`路段长度`, padding + 5, this.height - 46 - padding);
         this.ctx.fillText(`拥堵指数`, padding + 5, this.height - 23 - padding);
         this.ctx.fillText(`平均速度`, padding + 5, this.height - padding);
 
         this.ctx.fillStyle = 'red';
         this.ctx.textAlign = 'right';
-        this.ctx.fillText(`${this.obj.length.toFixed(2)} km`, this.width - padding - 5, this.height - 46 - padding);
-        this.ctx.fillText(`${Number(this.obj.index).toFixed(4)}`, this.width - padding - 5, this.height - 23 - padding);
-        this.ctx.fillText(`${Number(this.obj.speed).toFixed(2)} km/h`, this.width - padding - 5, this.height - padding);
+        this.ctx.fillText(`${this.obj.length.toFixed(3)} km`, this.width - padding - 5, this.height - 46 - padding);
+        this.ctx.fillText(`${Number(this.obj.index).toFixed(3)}`, this.width - padding - 5, this.height - 23 - padding);
+        this.ctx.fillText(`${Number(this.obj.speed).toFixed(3)} km/h`, this.width - padding - 5, this.height - padding);
     }
 
     drawMap() {

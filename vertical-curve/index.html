@@ -13,27 +13,29 @@
     <script src="index.js"></script>
     <script>
         let dom = document.getElementById('content');
-        
+
 
         var FizzyText = function() {
             this.width = 1000;
             this.height = 600;
+            this.fontSize = 10;
         };
+
+        function change() {
+            dom.innerHTML = '';
+            new Chart(dom, datas);
+        }
 
         window.onload = function() {
             window.text = new FizzyText();
             window.gui = new dat.GUI();
             let min = gui.add(text, 'width');
             let max = gui.add(text, 'height');
+            let fontSize = gui.add(text, 'fontSize');
 
-            min.onFinishChange(function(value) {
-                dom.innerHTML = '';
-                new Chart(dom, datas);
-            });
-            max.onFinishChange(function(value) {
-                dom.innerHTML = '';
-                new Chart(dom, datas);
-            });
+            min.onFinishChange(change);
+            max.onFinishChange(change);
+            fontSize.onFinishChange(change);
 
             new Chart(dom, datas);
         };

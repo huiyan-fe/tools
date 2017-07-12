@@ -56,6 +56,7 @@ class Chart {
         ctx.stroke();
 
         //
+        ctx.font = `${text.fontSize}px sans-serif`;
         ctx.textBaseline = 'top';
         ctx.textAlign = 'center';
         this.max = -Infinity;

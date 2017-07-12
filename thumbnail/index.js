@@ -12,10 +12,10 @@ datas.forEach(data => {
 });
 
 
-new Thumbnail({"title":"万丰路-南向北-莲宝路至莲花池西路辅路_131_morning","length":0.597,"index":"3.821649072","speed":"21.7355087","speeds":["6.334921158","5.772431947","6.334921158","5.292845798"],"locations":["116.301532,39.895817,116.301533,39.895907","116.301503,39.902545,116.301473,39.903108","116.301533,39.895907,116.301523,39.897397","116.301523,39.897397,116.301522,39.897478,116.30151,39.899241,116.301527,39.900615"]})
+new Thumbnail({ "title": "万丰路-南向北-莲宝路至莲花池西路辅路_131_morning", "length": 0.597, "index": "3.821649072", "speed": "21.7355087", "speeds": ["6.334921158", "5.772431947", "6.334921158", "5.292845798"], "locations": ["116.301532,39.895817,116.301533,39.895907", "116.301503,39.902545,116.301473,39.903108", "116.301533,39.895907,116.301523,39.897397", "116.301523,39.897397,116.301522,39.897478,116.30151,39.899241,116.301527,39.900615"] })
 
 
-console.log(1)
+// console.log(1)
 
 
 // for drop
@@ -34,8 +34,31 @@ window.ondrop = e => {
     Object.keys(files).forEach(id => {
         let read = new FileReader();
         read.onload = (e) => {
-            let jsonData = JSON.parse(e.target.result);
-            new Thumbnail(jsonData)
+            let datas = e.target.result.split('\n').slice(1).map(item => item.split('\t'));
+            let retObj = {}
+            datas.forEach(dataArr => {
+                retObj[dataArr[0]] = retObj[dataArr[0]] || {}
+                let retObjFather = retObj[dataArr[0]];
+                retObjFather.title = dataArr[10];
+                retObjFather.length = Number(retObjFather.length || 0) + Number(dataArr[5]);
+                retObjFather.index = dataArr[8];
+                retObjFather.speed = dataArr[9];
+                retObjFather.speeds = retObjFather.speeds || [];
+                retObjFather.speeds.push(dataArr[3])
+                retObjFather.locations = retObjFather.locations || [];
+                retObjFather.locations.push(dataArr[2]);
+            });
+
+
+            console.log(datas);
+            console.log(retObj)
+            //     // let jsonData = JSON.parse(e.target.result);
+            document.getElementById('main').innerHTML = '';
+
+            Object.keys(retObj).forEach(key => {
+                new Thumbnail(retObj[key]);
+            });
+
         }
         read.readAsText(files[id]);
     });

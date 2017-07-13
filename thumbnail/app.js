@@ -327,11 +327,20 @@ class Thumbnail {
         let offsetX = (usePreRatio * borderInfo.deltaX - useWidth) / 2;
         let offsetY = (usePreRatio * borderInfo.deltaY - useHeight) / 2 + 10;
 
+        // console.log()
         newPoints.forEach((item, index) => {
             this.ctx.beginPath();
             this.ctx.lineWidth = 6;
 
+
             let present = (this.obj.speeds[index] - minSpeed) / (maxSpeed - minSpeed);
+            console.log(present)
+            if (text.inversion) {
+                present = (maxSpeed - this.obj.speeds[index]) / (maxSpeed - minSpeed);
+            }
+            console.log(present)
+
+
             let colorIndex = Math.min(254, parseInt(present * 255, 10));
             let color = `rgb(${this.colordata[colorIndex*4]},${this.colordata[colorIndex*4+1]},${this.colordata[colorIndex*4+2]})`
             this.ctx.strokeStyle = color;

@@ -6,6 +6,10 @@
     <meta charset="UTF-8">
 
     <style type="text/css">
+        .dg.ac {
+            z-index: 999 !important;
+        }
+        
         html,
         body {
             height: 100%;
@@ -15,7 +19,7 @@
             overflow: hidden;
             background: black;
         }
-
+        
         #canvas {
             position: absolute;
             top: 0;
@@ -24,14 +28,14 @@
             bottom: 40px;
             width: 100%;
         }
-
+        
         .tips {
             position: absolute;
             bottom: 0;
             left: 0;
             color: white;
         }
-
+        
         .tips a {
             color: white;
         }
@@ -41,10 +45,15 @@
 <body>
 
     <div class="tips">备注：window下可能无法使用，后续会进行适配，另<a href="../src/data/beltRoad.json" target="_blank">数据格式，点击这里查看</a></div>
+    <script src="../src/lib/dat.gui.min.js"></script>
     <script src="../dist/app.bundle.js"></script>
     <script src="../src/data/beltRoad.js"></script>
     <script>
-        function draw(road) {
+        let max = null;
+        let min = null;
+        let strength = 0.1;
+
+        function draw() {
             let canvas = document.getElementById('canvas');
             if (canvas) {
                 document.body.removeChild(canvas);
@@ -56,14 +65,16 @@
 
             var belt = Engin.Belt('canvas', {
                 paths: road.paths,
-                hotData: road.hotData
+                hotData: road.hotData,
+                max: text.max,
+                min: text.min
             });
         }
 
-         draw(road)
+
 
         // for drop
-        window.ondragover = (e) => {
+        window.ondragover = e => {
             e.preventDefault();
         }
 
@@ -78,13 +89,61 @@
             Object.keys(files).forEach(id => {
                 let read = new FileReader();
                 read.onload = (e) => {
-                    let jsonData = JSON.parse(e.target.result);
-                    draw(jsonData)
-                    // console.log(jsonData)
+                    let jsonData = road = JSON.parse(e.target.result);
+                    let dataMaxValue = 0;
+                    let dataMinValue = Infinity;
+                    road.hotData.forEach(data => {
+                        dataMaxValue = Math.max(dataMaxValue, data[2]);
+                        dataMinValue = Math.min(dataMinValue, data[2]);
+                    });
+                    text.max = dataMaxValue;
+                    text.min = dataMinValue;
+                    gui.__controllers.forEach(e => {
+                        e.updateDisplay()
+                    })
+                    draw(road);
                 }
                 read.readAsText(files[id]);
             });
         }
+
+        //
+        var FizzyText = function() {
+            this.max = max || 0;
+            this.min = min || 0;
+            this.strength = 0.1;
+        };
+
+        function change() {
+            draw();
+            // new Chart(dom, datas);
+        }
+
+        window.onload = function() {
+            window.text = new FizzyText();
+            window.gui = new dat.GUI();
+            let min = gui.add(text, 'min');
+            let max = gui.add(text, 'max');
+            let strength = gui.add(text, 'strength', 0, 1);
+
+            min.onFinishChange(change);
+            max.onFinishChange(change);
+            strength.onFinishChange(change);
+
+            let dataMaxValue = 0;
+            let dataMinValue = Infinity;
+            road.hotData.forEach(data => {
+                dataMaxValue = Math.max(dataMaxValue, data[2]);
+                dataMinValue = Math.min(dataMinValue, data[2]);
+            });
+            text.max = dataMaxValue;
+            text.min = dataMinValue;
+            gui.__controllers.forEach(e => {
+                e.updateDisplay()
+            })
+
+            draw();
+        };
     </script>
 </body>
 

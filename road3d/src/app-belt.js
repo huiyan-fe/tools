@@ -6,37 +6,37 @@ import MercatorProjection from './engine/tools/mercatorPorjection.js';
 // console.log(data)
 // console.log(hotData)
 
-function drawBelt(id, data, hotData) {
+function drawBelt(id, data, hotData, max, min) {
     var mercatorProjection = new MercatorProjection();
     let app = window.app = new WebGl(id);
     let dom = document.getElementById(id);
 
-    // // x
-    // app.Path({
-    //     path: [
-    //         [0, 0, 0],
-    //         [0, 100, 0],
-    //     ],
-    //     color: '#f00'
-    // });
+    // x
+    app.Path({
+        path: [
+            [0, 0, 0],
+            [0, 100, 0],
+        ],
+        color: '#f00'
+    });
 
-    // // y
-    // app.Path({
-    //     path: [
-    //         [0, 0, 0],
-    //         [100, 0, 0],
-    //     ],
-    //     color: '#0f0'
-    // });
+    // y
+    app.Path({
+        path: [
+            [0, 0, 0],
+            [100, 0, 0],
+        ],
+        color: '#0f0'
+    });
 
-    // // z
-    // app.Path({
-    //     path: [
-    //         [0, 0, 0],
-    //         [0, 0, 100],
-    //     ],
-    //     color: '#00f'
-    // });
+    // z
+    app.Path({
+        path: [
+            [0, 0, 0],
+            [0, 0, 100],
+        ],
+        color: '#00f'
+    });
 
     // prepare data
     var maxWidth = 1000;
@@ -64,8 +64,8 @@ function drawBelt(id, data, hotData) {
     });
     // console.log(JSON.stringify(newPath));
     // console.log(newPath)
-    // parpeat hot data 
 
+    // parpeat hot data 
     // color  data
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
@@ -85,10 +85,17 @@ function drawBelt(id, data, hotData) {
 
     let dataMaxWidth = 0;
     let dataMaxHeight = 0;
+    let dataMaxValue = 0;
+    let dataMinValue = Infinity;
     data.hotData.forEach(data => {
         dataMaxWidth = Math.max(dataMaxWidth, data[0]);
         dataMaxHeight = Math.max(dataMaxHeight, data[1]);
+        dataMaxValue = Math.max(dataMaxValue, data[2]);
+        dataMinValue = Math.min(dataMinValue, data[2]);
     });
+
+    dataMaxValue = text.max;
+    dataMinValue = text.min;
     //
     let canvasWidth = 1024;
     let canvasHeight = 512;
@@ -104,20 +111,23 @@ function drawBelt(id, data, hotData) {
     canvas.style.top = '0';
     canvas.style.left = '0';
     canvas.style.zIndex = '10000';
+    canvas.style.background = 'white';
     dom.appendChild(canvas);
 
-    ctx.fillStyle = 'rgba(255,0,0,0.01)';
+
     // get the maxwidth,and the maxheight
 
 
     var preWidth = canvasWidth / dataMaxWidth;
     var preHeight = canvasHeight / dataMaxHeight;
-    // console.log(dataMaxWidth, dataMaxHeight, preWidth, preHeight)
     data.hotData.forEach((data) => {
-        for (var i = 0; i < data[2]; i++) {
-            ctx.fillRect(data[0] * preWidth, data[1] * preHeight, preWidth, preHeight)
-        }
+        // for (var i = 0; i < data[2]; i++) {
+        let precent = (data[2] - dataMinValue) / (dataMaxValue - dataMinValue);
+        ctx.fillStyle = `rgba(255,0,0,${text.strength *precent})`;
+        ctx.fillRect(data[0] * preWidth, data[1] * preHeight, preWidth, preHeight)
+            // }
     });
+
     var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var canvasData = imgData.data;
     for (var i = 0; i < canvasData.length; i += 4) {

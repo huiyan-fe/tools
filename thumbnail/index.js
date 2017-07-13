@@ -31,7 +31,7 @@ window.ondrop = e => {
     Object.keys(files).forEach(id => {
         let read = new FileReader();
         read.onload = (e) => {
-            let datas = e.target.result.split('\n').slice(1).map(item => item.split('\t'));
+            datas = e.target.result.split('\n').slice(1).map(item => item.split('\t'));
             let retObj = {}
             datas.forEach(dataArr => {
                 retObj[dataArr[0]] = retObj[dataArr[0]] || {}

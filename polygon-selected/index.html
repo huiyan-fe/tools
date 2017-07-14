@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            left: 300px;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #panel {
+            width: 300px;
+            height: 100%;
+            overflow: auto;
+        }
+
+        textarea {
+            width: 290px;
+            height: 100px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        #dragzone {
+            left: 5px;
+            z-index: 100;
+            top: 10px;
+            padding: 10px;
+            font-size: 12px;
+            height: 30px;
+            line-height: 30px;
+            background: rgba(255, 255, 55, 0.8);
+            border: 1px dashed #999;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+    <div id="panel">
+        <h1>多边形选取工具</h1>
+        <div id="dragzone">数据csv文件拖放到此，导入</div>
+        <a href="examples.csv">示例数据</a>
+        <textarea id="textarea">萧宏墓石刻遗址公园|13239082.11,3752693.47,13239088.12,3752695.95,13239239.64,3752473.4,13239237.08,3752466.46,13239116.61,3752430.51,13239109.04,3752431.95,13239124.63,3752533.42,13239120.06,3752549.89,13239063.07,3752605.99,13239082.11,3752693.47;老行当博物馆|13213721.24,3741427.16,13213691.18,3741388.1,13213604.26,3741472.62,13213634.76,3741502.15,13213721.24,3741427.16</textarea>
+        <button id="showDataBtn">显示数据</button>
+        <ul id="list">
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="//apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script type="text/javascript" src="mapv.js"></script>
+
+<script type="text/javascript">
+
+        // 百度地图API功能
+        var map = new BMap.Map("map", {
+            enableMapClick: false
+        });    // 创建Map实例
+
+
+        map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5);  // 初始化地图,设置中心点坐标和地图级别
+        map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+
+        var projection = map.getMapType().getProjection();
+
+        var dataSet = new mapv.DataSet([]);
+
+        var options = {
+            fillStyle: 'rgba(0, 0, 255, 0.3)',
+            lineWidth: 1,
+            strokeStyle: 'rgba(0, 0, 255, 0.5)',
+            coordType: 'bd09mc',
+            draw: 'simple'
+        }
+
+        var polygonLayer = new mapv.baiduMapLayer(map, dataSet, options);
+
+        var pointDataSet = new mapv.DataSet([]);
+
+        var options = {
+            fillStyle: 'rgba(255, 50, 50, 1)',
+            shadowColor: 'rgba(55, 50, 50, 0.5)',
+            font: '18px Arial',
+            shadowBlur: 10,
+            coordType: 'bd09mc',
+            draw: 'text'
+        }
+
+        var pointLayer = new mapv.baiduMapLayer(map, pointDataSet, options);
+
+var dropTargetEle = document.getElementById("dragzone");
+dropTargetEle.addEventListener("dragenter", dragHandle, false);
+dropTargetEle.addEventListener("dragover", dragHandle, false);
+dropTargetEle.addEventListener("drop", dragHandle, false);
+
+function dragHandle(event) {
+    var info = "",
+        files, i, len;
+    event.preventDefault();
+    if(event.type == "drop") {
+        files = event.dataTransfer.files;
+        var fr = new FileReader() ;
+
+        fr.readAsText(files[0]);
+
+        fr.onload = function() {
+            var rs = this.result;
+            parseData(rs);
+        }
+    }
+}
+
+function parseData(rs) {
+    var inputData = mapv.csv.getDataSet(rs);
+    ShowDataList(inputData.get());
+}
+
+$('#showDataBtn').bind('click', function () {
+    var val = $('#textarea').val();
+    var data = mapv.csv.getDataSet(val, "\t").get();
+    console.log(data);
+
+    /*
+    var data = [];
+    val = val.split(";");
+    for (var i = 0; i < val.length; i++) {
+        var item = val[i].split('|');
+        data.push({
+            name: item[0],
+            path: item[1]
+        });
+    }
+    */
+    ShowDataList(data);
+});
+
+var allData = [];
+function ShowDataList(rs) {
+
+    allData = rs;
+    var data = [];
+    var pointData = [];
+
+    var listHtml = [];
+    for (var i = 0; i < allData.length; i++) {
+        var path = allData[i]['面数据'].split(',');
+        var coordinates = [];
+        for (var j = 0; j < path.length; j+=2) {
+            coordinates.push([path[j], path[j + 1]]);
+        }
+        data.push({
+            geometry: {
+                type: 'Polygon',
+                coordinates: [coordinates]
+            },
+            text: allData[i]['名称']
+        });
+        pointData.push({
+            geometry: {
+                type: 'Point',
+                coordinates: coordinates[0]
+            },
+            text: allData[i]['名称']
+        });
+
+        listHtml.push('<li>' + allData[i]['名称'] + '</li>');
+
+    }
+    $('#list').html(listHtml);
+
+    $('#list').delegate('li', 'click', function () {
+        var name = $(this).html();
+        var item = dataSet.get({
+            filter: function(item) {
+                return item.text == name;
+            }
+        })
+        var points = [];
+        var coord = item[0].geometry.coordinates[0];
+        coord.map(function (p) {
+            var point = projection.pointToLngLat(new BMap.Pixel(p[0], p[1])); 
+            points.push(point);
+        });
+        map.setViewport(points);
+    });
+
+    dataSet.set(data);
+    pointDataSet.set(pointData);
+
+}
+
+</script>
+    
+</body>
+</html>

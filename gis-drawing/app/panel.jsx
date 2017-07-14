@@ -62,6 +62,30 @@ class App extends React.Component {
     componentDidMount() {
     }
 
+    showBoundary() {
+        var val = this.refs.boundary.value.split(',');
+        for (var i= 0; i < val.length; i++) {
+            this.getBoundary(val[i]);
+        }
+    }
+
+    getBoundary(city) {       
+        var bdary = new BMap.Boundary();
+        bdary.get(city, function(rs){       //获取行政区域
+            var count = rs.boundaries.length; //行政区域的点有多少个
+            if (count === 0) {
+                alert('未能获取当前输入行政区域');
+                return ;
+            }
+            var pointArray = [];
+            for (var i = 0; i < count; i++) {
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeStyle: 'solid', strokeOpacity: '1', fillOpacity: '0', fillColor: 'red', strokeColor: "red"}); //建立多边形覆盖物
+                map.addOverlay(ply);  //添加覆盖物
+                pointArray = pointArray.concat(ply.getPath());
+            }    
+        });   
+    }
+
     addData() {
         var self = this;
         var project = map.getMapType().getProjection();
@@ -429,7 +453,7 @@ class App extends React.Component {
         return (
             <div className="panel">
                 <div className="inner">
-                    <textarea ref="textarea" style={{height: '100px',width:'100%',border:'1px solid #999'}} className="" placeholder="116.330484,40.031406,116.33124,40.029496,116.33124,40.029496|高速公路"></textarea>
+                    <textarea ref="textarea" style={{height: '100px',width:'100%',border:'1px solid #999'}} className="" placeholder="116.330484,40.031406,116.33124,40.029496,116.33124,40.029496|高速公路;116.330484,40.031406,116.33124,40.029496,116.33124,40.029496|高速公路"></textarea>
                     <a className="waves-effect waves-light btn" onClick={this.addData.bind(this)}>添加道路或点数据</a>
                 </div>
                 <div className="switch">
@@ -487,6 +511,9 @@ class App extends React.Component {
                     </p>
                 </div>
                 <RouteList data={this.state.data} updateDataByIndex={this.updateDataByIndex}/>
+                <div className="inner">
+                    <input ref="boundary" className="" value="北京市,河北省,天津市"/><a className="waves-effect waves-light btn" onClick={this.showBoundary.bind(this)}>添加边界</a>
+                </div>
             </div>
         )
     }

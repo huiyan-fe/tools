@@ -79,7 +79,7 @@ class App extends React.Component {
             }
             var pointArray = [];
             for (var i = 0; i < count; i++) {
-                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeStyle: 'solid', strokeOpacity: '1', fillOpacity: '0', fillColor: 'red', strokeColor: "red"}); //建立多边形覆盖物
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeStyle: 'solid', strokeOpacity: '0', fillOpacity: '0.1', fillColor: 'red', strokeColor: "red"}); //建立多边形覆盖物
                 map.addOverlay(ply);  //添加覆盖物
                 pointArray = pointArray.concat(ply.getPath());
             }    
@@ -512,7 +512,7 @@ class App extends React.Component {
                 </div>
                 <RouteList data={this.state.data} updateDataByIndex={this.updateDataByIndex}/>
                 <div className="inner">
-                    <input ref="boundary" className="" value="北京市,河北省,天津市"/><a className="waves-effect waves-light btn" onClick={this.showBoundary.bind(this)}>添加边界</a>
+                    <input ref="boundary" className="" defaultValue="北京市,河北省,天津市"/><a className="waves-effect waves-light btn" onClick={this.showBoundary.bind(this)}>添加边界</a>
                 </div>
             </div>
         )

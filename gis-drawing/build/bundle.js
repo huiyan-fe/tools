@@ -22044,7 +22044,7 @@
 	                }
 	                var pointArray = [];
 	                for (var i = 0; i < count; i++) {
-	                    var ply = new BMap.Polygon(rs.boundaries[i], { strokeWeight: 1, strokeStyle: 'solid', strokeOpacity: '1', fillOpacity: '0', fillColor: 'red', strokeColor: "red" }); //建立多边形覆盖物
+	                    var ply = new BMap.Polygon(rs.boundaries[i], { strokeWeight: 2, strokeStyle: 'solid', strokeOpacity: '0', fillOpacity: '0.1', fillColor: 'red', strokeColor: "red" }); //建立多边形覆盖物
 	                    map.addOverlay(ply); //添加覆盖物
 	                    pointArray = pointArray.concat(ply.getPath());
 	                }
@@ -22515,7 +22515,7 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'inner' },
-	                    _react2.default.createElement('input', { ref: 'boundary', className: '', value: '\u5317\u4EAC\u5E02,\u6CB3\u5317\u7701,\u5929\u6D25\u5E02' }),
+	                    _react2.default.createElement('input', { ref: 'boundary', className: '', defaultValue: '\u5317\u4EAC\u5E02,\u6CB3\u5317\u7701,\u5929\u6D25\u5E02' }),
 	                    _react2.default.createElement(
 	                        'a',
 	                        { className: 'waves-effect waves-light btn', onClick: this.showBoundary.bind(this) },

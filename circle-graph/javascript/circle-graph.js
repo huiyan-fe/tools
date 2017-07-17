@@ -52,8 +52,9 @@ class circleGraph {
         this.drawBar();
         this.drawTitle();
 
-        this.drawHeatCurve();
         this.drawCurve();
+        this.drawHeatCurve();
+
         this.drawIcons();
     }
 
@@ -71,7 +72,8 @@ class circleGraph {
         gradient.addColorStop(0, "#000BFF");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 100, 1);
-        this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;
+        this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;    
+        //
         ctx.restore();
     }
 
@@ -164,6 +166,7 @@ class circleGraph {
         let index = 1;
         let perWidth = barDataEndRadius / delatValue;
         this.ctx.setLineDash([5, 5]);
+        this.ctx.textAlign = 'center';
         while (index < maxValue) {
             let indexRedius = index * perWidth;
             // console.log(indexRedius, barDataEndRadius)
@@ -367,7 +370,6 @@ class circleGraph {
                 topMin.top = top;
             }
 
-
             if (index === 0) {
                 startPoint = [0, -top];
                 this.ctx.moveTo(0, -top)
@@ -376,11 +378,40 @@ class circleGraph {
             }
             this.ctx.rotate(rotateOffset);
         });
+
         this.ctx.lineTo(0, startPoint[1])
         this.ctx.fillStyle = 'white';
         this.ctx.fill();
         this.ctx.restore();
         let imgUrl = this.canvas.toDataURL();
+
+        //
+        this.ctx.save();
+        let index = 1;
+        let perWidth = curveDataRadiusDelta / delatValue;
+        this.ctx.font = '10px sans-serif';
+        
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.setLineDash([5, 5]);
+        while (index < maxValue) {
+            let present = (index - minValue) / delatValue;
+            let top = curveDataStratRadius + 5 + (curveDataRadiusDelta - 10) * present;
+
+            //
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.width / 2 + top, this.height / 2);
+            this.ctx.fillText(index.toFixed(1), this.width / 2, this.height / 2 - top);
+            this.ctx.arc(this.width / 2, this.height / 2, top, 0, Math.PI * 2);
+            this.ctx.stroke();
+            this.ctx.closePath();
+            index++;
+        }
+        this.ctx.fillStyle = 'rgba(0,0,0,.6)';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(maxValue.toFixed(1), this.width / 2, this.height / 2 - curveDataEndRadius);
+        this.ctx.restore();
+        //
 
         //
         let oldImg = new Image();
@@ -408,11 +439,12 @@ class circleGraph {
         this.ctx.textBaseline = 'top';
         this.ctx.fillText(topMin.value, 0, -topMin.top);
         this.ctx.restore();
+
+
         return imgUrl;
     }
 
     drawIcons() {
-        console.log();
 
         let icons = this.option.weather;
         let raduis = (this.borderWidth - 100) / 2;

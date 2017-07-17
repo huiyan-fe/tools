@@ -72,7 +72,7 @@ class circleGraph {
         gradient.addColorStop(0, "#000BFF");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 100, 1);
-        this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;    
+        this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;
         //
         ctx.restore();
     }
@@ -300,6 +300,17 @@ class circleGraph {
         this.ctx.font = '10px sans-serif';
         this.ctx.fillText(topMin.value, 0, -topMin.top);
         this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.strokeStyle = '#666';
+        this.ctx.moveTo(this.width - 200, this.height - 170 + 20);
+        this.ctx.lineTo(this.width - 180, this.height - 180 + 20);
+        this.ctx.lineTo(this.width - 160, this.height - 174 + 20);
+        this.ctx.lineTo(this.width - 140, this.height - 180 + 20);
+        this.ctx.lineTo(this.width - 120, this.height - 175 + 20);
+        this.ctx.lineTo(this.width - 100, this.height - 171 + 20);
+        this.ctx.stroke();
+        this.ctx.restore();
     }
 
     drawHeatCurve() {
@@ -336,6 +347,7 @@ class circleGraph {
         this.ctx.arc(0, 0, curveDataEndRadius, 0, Math.PI * 2);
         this.ctx.fillStyle = gradient;
         this.ctx.fill();
+        // for legent
         //
         this.ctx.globalCompositeOperation = 'destination-out';
         this.ctx.beginPath();
@@ -390,7 +402,7 @@ class circleGraph {
         let index = 1;
         let perWidth = curveDataRadiusDelta / delatValue;
         this.ctx.font = '10px sans-serif';
-        
+
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
         this.ctx.setLineDash([5, 5]);
@@ -440,7 +452,12 @@ class circleGraph {
         this.ctx.fillText(topMin.value, 0, -topMin.top);
         this.ctx.restore();
 
-
+        // for legent 
+        gradient = this.ctx.createLinearGradient(this.width - 200, this.height - 200, this.width - 100, this.height - 180);
+        gradient.addColorStop(0, "#F00");
+        gradient.addColorStop(0.9, "#FFFC00");
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(this.width - 200, this.height - 200, 100, 20);
         return imgUrl;
     }
 

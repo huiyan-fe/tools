@@ -1,3 +1,26 @@
+let weathermap = {
+    '晴': 'images/d00.png',
+    '多云': 'images/d01.png',
+    '阴': 'images/d02.png',
+    '阵雨': 'images/d03.png',
+    '雷阵雨': 'images/d04.png',
+    '雨夹雪': 'images/d06.png',
+    '小雨': 'images/d07.png',
+    '中雨': 'images/d08.png',
+    '大雨': 'images/d09.png',
+    '暴雨': 'images/d10.png',
+    '阵雪': 'images/d14.png',
+    '小雪': 'images/d15.png',
+    '中雪': 'images/d15.png',
+    '大雪': 'images/d16.png',
+    '浮尘': 'images/d19.png',
+    '小到中雨': 'images/d21.png',
+    '中到大雨': 'images/d22.png',
+    '大到暴雨': 'images/d23.png',
+    '霾': 'images/d55.png',
+    '雨': 'images/d301.png',
+}
+
 class circleGraph {
     constructor(dom, option) {
         this.dom = dom;
@@ -20,11 +43,16 @@ class circleGraph {
 
         // config
         this.system();
-        this.drawTitle();
+        this.prepareData();
+
         // draw
-        let heatImg = this.drawHeatCurve();
+
+
         this.drawLegend();
         this.drawBar();
+        this.drawTitle();
+
+        this.drawHeatCurve();
         this.drawCurve();
         this.drawIcons();
     }
@@ -45,6 +73,24 @@ class circleGraph {
         ctx.fillRect(0, 0, 100, 1);
         this.colorRangeData = ctx.getImageData(0, 0, 100, 1).data;
         ctx.restore();
+    }
+
+    prepareData() {
+        let barData = this.option.data[0];
+        if (!barData) {
+            return false;
+        }
+
+        let maxValue = -Infinity;
+        let minValue = Infinity;
+        barData.forEach(item => {
+            maxValue = Math.max(maxValue, item);
+            minValue = Math.min(minValue, item);
+        });
+        this.data = {
+            hotMax: maxValue,
+            hotMin: minValue
+        }
     }
 
     drawTitle() {
@@ -77,8 +123,8 @@ class circleGraph {
 
             this.ctx.lineWidth = 4;
             this.ctx.globalCompositeOperation = 'destination-out';
-            this.ctx.moveTo(0, -raduis + 10);
-            this.ctx.lineTo(0, -raduis - 10);
+            this.ctx.moveTo(0, -raduis + 5);
+            this.ctx.lineTo(0, -raduis - 5);
             this.ctx.stroke();
 
             this.ctx.restore();
@@ -105,16 +151,43 @@ class circleGraph {
         });
         delatValue = maxValue - minValue;
 
+
         // bars
+        this.ctx.save();
         this.ctx.beginPath();
         this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-        this.ctx.save();
-        this.ctx.arc(this.width / 2, this.height / 2, barDataStratRadius, 0, Math.PI * 2);
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.textAlign = 'cetner';
+        this.ctx.textBaseline = 'top';
+
+        let index = 1;
+        let perWidth = barDataEndRadius / delatValue;
+        this.ctx.setLineDash([5, 5]);
+        while (index < maxValue) {
+            let indexRedius = index * perWidth;
+            // console.log(indexRedius, barDataEndRadius)
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.width / 2 + indexRedius, this.height / 2);
+            this.ctx.fillText(index.toFixed(1), this.width / 2, this.height / 2 - indexRedius);
+            this.ctx.arc(this.width / 2, this.height / 2, indexRedius, 0, Math.PI * 2);
+            this.ctx.stroke();
+            this.ctx.closePath();
+            index++;
+        }
+        //
+        this.ctx.beginPath();
+        this.ctx.setLineDash([0, 0]);
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, .6)';
         this.ctx.moveTo(this.width / 2 + barDataEndRadius, this.height / 2);
+        this.ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        this.ctx.fillText(maxValue.toFixed(1), this.width / 2, this.height / 2 - barDataEndRadius);
         this.ctx.arc(this.width / 2, this.height / 2, barDataEndRadius, 0, Math.PI * 2);
         this.ctx.stroke();
+        this.ctx.closePath();
+        this.ctx.restore();
 
+        // bar chart
         this.ctx.save();
         this.ctx.translate(this.width / 2, this.height / 2);
         let rotate = 0;
@@ -131,19 +204,19 @@ class circleGraph {
         });
         this.ctx.restore();
 
-        // center
+
+        // clear the center
+        this.ctx.save();
         this.ctx.globalCompositeOperation = 'destination-out';
         this.ctx.fillStyle = 'red';
         this.ctx.beginPath();
         this.ctx.arc(this.width / 2, this.height / 2, barDataStratRadius, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.restore();
-
-        //
-        console.log(barData);
     }
 
     drawCurve(obj) {
+        // return false;
         let curveData = this.option.data[1];
         if (!curveData) {
             return false;
@@ -162,10 +235,11 @@ class circleGraph {
         });
         delatValue = maxValue - minValue;
 
-
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.beginPath();
         this.ctx.arc(this.width / 2, this.height / 2, curveDataEndRadius, 0, Math.PI * 2);
         this.ctx.stroke();
+        this.ctx.closePath();
 
         this.ctx.save();
         this.ctx.translate(this.width / 2, this.height / 2);
@@ -173,11 +247,28 @@ class circleGraph {
         let rotateOffset = (1 / curveData.length) * Math.PI * 2;
         this.ctx.beginPath();
         this.ctx.strokeStyle = '#000';
+
         let startPoint;
         let topTemp = null;
+        let topMax = { value: -Infinity };
+        let topMin = { value: Infinity };
+
         curveData.forEach((item, index) => {
             let present = (item - minValue) / delatValue;
             let top = curveDataStratRadius + 5 + (curveDataRadiusDelta - 10) * present;
+
+            if (Number(item) > topMax.value) {
+                topMax.value = item;
+                topMax.index = index;
+                topMax.top = top;
+            }
+
+            if (Number(item) < topMin.value) {
+                topMin.value = item;
+                topMin.index = index;
+                topMin.top = top;
+            }
+
             if (index === 0) {
                 startPoint = [0, -top];
                 this.ctx.moveTo(0, -top)
@@ -186,9 +277,25 @@ class circleGraph {
             }
             this.ctx.rotate(rotateOffset);
         });
-        this.ctx.lineTo(0, startPoint[1])
+        this.ctx.lineTo(0, startPoint[1]);
         this.ctx.stroke();
+        this.ctx.restore();
 
+
+        this.ctx.save();
+        this.ctx.translate(this.width / 2, this.height / 2);
+        this.ctx.rotate(rotateOffset * topMax.index);
+        this.ctx.textBaseline = 'bottom';
+        this.ctx.font = '10px sans-serif';
+        this.ctx.fillText(topMax.value, 0, -topMax.top);
+        this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.translate(this.width / 2, this.height / 2);
+        this.ctx.rotate(rotateOffset * topMin.index);
+        this.ctx.textBaseline = 'top';
+        this.ctx.font = '10px sans-serif';
+        this.ctx.fillText(topMin.value, 0, -topMin.top);
         this.ctx.restore();
     }
 
@@ -223,8 +330,6 @@ class circleGraph {
         let gradient = this.ctx.createRadialGradient(0, 0, curveDataStratRadius, 0, 0, curveDataEndRadius);
         gradient.addColorStop(0.9, "#F00");
         gradient.addColorStop(0, "#FFFC00");
-        // gradient.addColorStop(0, "#00FF1D");
-        // gradient.addColorStop(0, "#000BFF");
         this.ctx.arc(0, 0, curveDataEndRadius, 0, Math.PI * 2);
         this.ctx.fillStyle = gradient;
         this.ctx.fill();
@@ -242,9 +347,27 @@ class circleGraph {
         let rotateOffset = (1 / heatCurveData.length) * Math.PI * 2;
         let startPoint;
         let topTemp = null;
+
+        let topMax = { value: -Infinity };
+        let topMin = { value: Infinity };
+
         heatCurveData.forEach((item, index) => {
             let present = (item - minValue) / delatValue;
             let top = curveDataStratRadius + 5 + (curveDataRadiusDelta - 10) * present;
+
+            if (Number(item) > topMax.value) {
+                topMax.value = item;
+                topMax.index = index;
+                topMax.top = top;
+            }
+
+            if (Number(item) < topMin.value) {
+                topMin.value = item;
+                topMin.index = index;
+                topMin.top = top;
+            }
+
+
             if (index === 0) {
                 startPoint = [0, -top];
                 this.ctx.moveTo(0, -top)
@@ -267,20 +390,44 @@ class circleGraph {
         }
         this.ctx.closePath();
         this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.translate(this.width / 2, this.height / 2);
+        this.ctx.rotate(rotateOffset * topMax.index);
+        this.ctx.fillStyle = 'red';
+        this.ctx.font = '10px sans-serif';
+        this.ctx.textBaseline = 'bottom';
+        this.ctx.fillText(topMax.value, 0, -topMax.top);
+        this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.translate(this.width / 2, this.height / 2);
+        this.ctx.rotate(rotateOffset * topMin.index);
+        this.ctx.fillStyle = '#c3c124';
+        this.ctx.font = '10px sans-serif';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(topMin.value, 0, -topMin.top);
+        this.ctx.restore();
         return imgUrl;
     }
 
     drawIcons() {
-        let icons = ['images/moon.png', 'images/weather.png', 'images/sun.png', 'images/weather2.png'];
+        console.log();
+
+        let icons = this.option.weather;
         let raduis = (this.borderWidth - 100) / 2;
         icons.forEach((icon, index) => {
             let img = new Image();
-            img.src = icon;
+            let src = weathermap[icon];
+            if (index < 6 || index > 17) {
+                src = src.replace('d', 'n')
+            }
+            img.src = src;
             img.onload = () => {
                 this.ctx.save();
                 this.ctx.translate(this.width / 2, this.height / 2);
-                this.ctx.rotate((index / 4) * Math.PI * 2)
-                this.ctx.drawImage(img, -18, -raduis + 15)
+                this.ctx.rotate((index / 24) * Math.PI * 2)
+                this.ctx.drawImage(img, -18, -raduis + 15, 30, 30)
                 this.ctx.restore();
             }
         });

@@ -111,7 +111,7 @@ function updateMax() {
     });
 
     datas.data[1].forEach(item => {
-        console.log(item)
+        // console.log(item)
         data2Max = Math.max(data2Max, item);
         data2Min = Math.min(data2Min, item);
     });

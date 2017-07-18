@@ -56,6 +56,8 @@ class circleGraph {
         this.drawHeatCurve();
 
         this.drawIcons();
+
+        this.bindEvent();
     }
 
     system() {
@@ -486,5 +488,45 @@ class circleGraph {
                 this.ctx.restore();
             }
         });
+    }
+
+    bindEvent() {
+        this.ctx.canvas.onmousemove = (e) => {
+            let width = document.documentElement.clientWidth;
+            let height = document.documentElement.clientHeight;
+            let centerX = width / 2;
+            let centerY = height / 2;
+            let mouseD = Math.sqrt((e.clientX - centerX) ** 2 + (e.clientY - centerY) ** 2);
+            let arc = Math.acos((e.clientY - centerY) / mouseD);
+            if (e.clientX > centerX) {
+                arc = Math.PI - arc;
+            }
+            let precent = 0;
+            if (e.clientX > centerX) {
+                precent = 0.5 * arc / Math.PI
+            } else {
+                precent = (1 - (Math.PI - arc) / Math.PI) * .5 + .5;
+            }
+
+            let data0 = datas.data[0];
+            let data0Value = data0[Math.round(data0.length * precent)];
+            let data1 = datas.data[1];
+            let data1Value = data1[Math.round(data0.length * precent)];
+            let data2 = datas.data[2];
+            let data2Value = data2[Math.round(data0.length * precent)];
+
+            this.ctx.clearRect(0, this.height, 400, -20);
+            this.ctx.textBaseline = 'bottom';
+            this.ctx.textAlign = 'left';
+            this.ctx.font = '10px sans-serif';
+            this.ctx.fillText(`v1: ${data0Value} , v2: ${data1Value} , v3: ${data2Value}`, 10, this.height);
+            // console.log(data0Value, data1Value, data2Value);
+
+            // console.log(arc, );
+            // console.log((Math.PI - arc) / (Math.PI));
+
+            // let arc = Math.
+            // console.log(e.clientX, e.clientY, window.body.offsetWidth)
+        }
     }
 }

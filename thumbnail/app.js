@@ -36,7 +36,7 @@ var Merge = {
     },
 
     uniqueRoadPath(roadPath) {
-        var tmpRoadPath = roadPath.map(function(line) {
+        var tmpRoadPath = roadPath.map(function (line) {
             return new Polyline(line.split(','));
         });
 
@@ -57,7 +57,7 @@ var Merge = {
         }
 
         var newRoadPath = [];
-        tmpRoadPath.map(function(line) {
+        tmpRoadPath.map(function (line) {
             if (line) {
                 newRoadPath.push(line.getPoints().join(','));
             }
@@ -92,11 +92,11 @@ function Polyline(pts) {
 
 }
 
-Polyline.prototype.getPoints = function() {
+Polyline.prototype.getPoints = function () {
     return this.polyline;
 }
 
-Polyline.prototype.isInBound = function(point) {
+Polyline.prototype.isInBound = function (point) {
     if (point.lng > this.minX && point.lat > this.minY && point.lng < this.maxX && point.lat < this.maxY) {
         return true;
     } else {
@@ -105,7 +105,7 @@ Polyline.prototype.isInBound = function(point) {
 }
 
 
-Polyline.prototype.isInclude = function(polyline) {
+Polyline.prototype.isInclude = function (polyline) {
     if (!(polyline.minX > this.minX && polyline.minY > this.minY && polyline.maxX < this.maxX && polyline.maxY < this.maxY)) {
         return false;
     }
@@ -133,7 +133,7 @@ Polyline.prototype.isInclude = function(polyline) {
  * @param {Polyline} polyline 折线对象
  * @returns {Boolean} 点在折线上返回true,否则返回false
  */
-Polyline.prototype.isPointOnPolyline = function(point, polyline) {
+Polyline.prototype.isPointOnPolyline = function (point, polyline) {
     var pts = polyline.getPoints();
 
     if (!polyline.isInBound(point)) {
@@ -173,9 +173,6 @@ Polyline.prototype.isPointOnPolyline = function(point, polyline) {
 
 // export default App;
 
-
-
-
 class Thumbnail {
     constructor(objects) {
         this.obj = objects;
@@ -184,15 +181,17 @@ class Thumbnail {
         document.querySelector('#main').appendChild(this.dom);
         this.canvas = document.createElement('canvas');
         let domStyle = getComputedStyle(this.dom);
-        this.height = parseInt(domStyle.height);
-        this.width = parseInt(domStyle.width);
-        this.canvas.height = parseInt(domStyle.height) * 2;
-        this.canvas.width = parseInt(domStyle.width) * 2;
-        this.canvas.style.height = domStyle.height;
-        this.canvas.style.width = domStyle.width;
+        this.height = parseInt(domStyle.height) - 80;
+        this.width = parseInt(domStyle.width) - 80;
+        this.canvas.height = this.height * 2;
+        this.canvas.width = this.width * 2;
+        this.canvas.style.height = this.height + 'px';
+        this.canvas.style.width = this.width + 'px';
         this.dom.appendChild(this.canvas);
         this.ctx = this.canvas.getContext('2d');
         this.ctx.scale(2, 2);
+        //
+
 
         //
         this.system();
@@ -217,6 +216,31 @@ class Thumbnail {
         ctx.fillRect(0, 0, 255, 1);
         var colordata = ctx.getImageData(0, 0, 255, 1).data;
         this.colordata = colordata;
+
+        //
+        let type = this.obj.type;
+        let number = this.obj.number;
+        console.log(type, '@@', number)
+        if (number) {
+            let numberDom = document.createElement('div')
+            numberDom.className = 'cardNumber';
+            numberDom.innerHTML = number;
+            let numberDom2 = document.createElement('div')
+            numberDom2.className = 'cardNumber2';
+            numberDom2.innerHTML = number;
+            this.dom.appendChild(numberDom)
+            this.dom.appendChild(numberDom2)
+        }
+        this.dom.className = 'thumbnail cardType' + type;
+
+        let logo = document.createElement('div');
+        logo.className = 'thumbnail-logo';
+        this.dom.appendChild(logo);
+
+        let logo2 = document.createElement('div');
+        logo2.className = 'thumbnail-logo2';
+        this.dom.appendChild(logo2);
+        // this.document.appendChild()
     }
 
     drawTitle() {
@@ -232,17 +256,24 @@ class Thumbnail {
         this.ctx.restore();
         //
 
+        // road title
         this.ctx.font = '16px sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.fillStyle = '#333';
-        this.ctx.fillText(this.obj.title.split(' ')[0].split('-')[0] + ' - ' + this.obj.title.split(' ')[1], this.width / 2, 15 + padding);
+        let roadName = this.obj.title.split(' ')[0].split('-')[0];
+        let roadDir = this.obj.title.split(' ')[1];
+        let roadTitle = roadName + (roadDir ? ' - ' + roadDir : '');
+        this.ctx.fillText(roadTitle, this.width / 2, 15 + padding);
 
+        // road name 
         this.ctx.save();
         this.ctx.fillStyle = '#999';
         this.ctx.font = '12px sans-serif';
         this.ctx.textAlign = 'left';
-        this.ctx.fillText(this.obj.title.split(' ')[0].split('-')[2] +
-            '-' + this.obj.title.split(' ')[0].split('-')[1], 10, this.height - 90);
+        let roadSTime = this.obj.title.split(' ')[0].split('-')[2];
+        let roadETime = this.obj.title.split(' ')[0].split('-')[1];
+        let timeTitle = roadSTime ? roadSTime + ' - ' + roadETime : '';
+        this.ctx.fillText(timeTitle, 10, this.height - 90);
         this.ctx.textAlign = 'right';
         // this.ctx.fillText(this.obj.title.split(' ')[1], this.width - 10, this.height - 90);
         this.ctx.restore();
@@ -334,11 +365,11 @@ class Thumbnail {
 
 
             let present = (this.obj.speeds[index] - minSpeed) / (maxSpeed - minSpeed);
-            console.log(present)
+            // console.log(present)
             if (text.inversion) {
                 present = (maxSpeed - this.obj.speeds[index]) / (maxSpeed - minSpeed);
             }
-            console.log(present)
+            // console.log(present)
 
 
             let colorIndex = Math.min(254, parseInt(present * 255, 10));

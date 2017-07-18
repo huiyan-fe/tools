@@ -121,7 +121,7 @@ class circleGraph {
             this.ctx.lineWidth = 1;
             this.ctx.translate(this.width / 2, this.height / 2);
             this.ctx.rotate((hour / 24) * Math.PI * 2);
-            this.ctx.font = '12px sans-serif';
+            this.ctx.font = '18px sans-serif';
             this.ctx.fillStyle = '#999';
             this.ctx.fillText(`${hour}:00`, 0, -raduis - 10);
 
@@ -295,16 +295,16 @@ class circleGraph {
         this.ctx.translate(this.width / 2, this.height / 2);
         this.ctx.rotate(rotateOffset * topMax.index);
         this.ctx.textBaseline = 'bottom';
-        this.ctx.font = '10px sans-serif';
-        this.ctx.fillText(topMax.value, 0, -topMax.top);
+        this.ctx.font = '16px sans-serif';
+        this.ctx.fillText(Number(topMax.value).toFixed(2), 0, -topMax.top);
         this.ctx.restore();
 
         this.ctx.save();
         this.ctx.translate(this.width / 2, this.height / 2);
         this.ctx.rotate(rotateOffset * topMin.index);
         this.ctx.textBaseline = 'top';
-        this.ctx.font = '10px sans-serif';
-        this.ctx.fillText(topMin.value, 0, -topMin.top);
+        this.ctx.font = '16px sans-serif';
+        this.ctx.fillText(Number(topMin.value).toFixed(2), 0, -topMin.top);
         this.ctx.restore();
 
         this.ctx.save();
@@ -446,18 +446,18 @@ class circleGraph {
         this.ctx.translate(this.width / 2, this.height / 2);
         this.ctx.rotate(rotateOffset * topMax.index);
         this.ctx.fillStyle = 'red';
-        this.ctx.font = '10px sans-serif';
+        this.ctx.font = '16px sans-serif';
         this.ctx.textBaseline = 'bottom';
-        this.ctx.fillText(topMax.value, 0, -topMax.top);
+        this.ctx.fillText(Number(topMax.value).toFixed(2), 0, -topMax.top);
         this.ctx.restore();
 
         this.ctx.save();
         this.ctx.translate(this.width / 2, this.height / 2);
         this.ctx.rotate(rotateOffset * topMin.index);
         this.ctx.fillStyle = '#c3c124';
-        this.ctx.font = '10px sans-serif';
+        this.ctx.font = '16px sans-serif';
         this.ctx.textBaseline = 'top';
-        this.ctx.fillText(topMin.value, 0, -topMin.top);
+        this.ctx.fillText(Number(topMin.value).toFixed(2), 0, -topMin.top);
         this.ctx.restore();
 
         // for legent 

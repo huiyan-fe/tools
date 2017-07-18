@@ -52,12 +52,12 @@ window.ondrop = e => {
 
 
 var FizzyText = function () {
-    this.val1Max = 0;
-    this.val1Min = 0;
-    this.val2Max = 0;
-    this.val2Min = 0;
-    this.val3Max = 0;
-    this.val3Min = 0;
+    this.val1Max = 0.0;
+    this.val1Min = .0;
+    this.val2Max = .0;
+    this.val2Min = .0;
+    this.val3Max = .0;
+    this.val3Min = .0;
 };
 
 window.onload = () => {
@@ -66,18 +66,18 @@ window.onload = () => {
 
     var f1 = gui.addFolder('value1');
     f1.open();
-    f1.add(text, 'val1Min');
-    f1.add(text, 'val1Max');
+    f1.add(text, 'val1Min').step(0.01);
+    f1.add(text, 'val1Max').step(0.01);
 
     var f2 = gui.addFolder('value2');
     f2.open();
-    f2.add(text, 'val2Min');
-    f2.add(text, 'val2Max');
+    f2.add(text, 'val2Min').step(0.01);
+    f2.add(text, 'val2Max').step(0.01);
 
     var f3 = gui.addFolder('value3');
     f3.open();
-    f3.add(text, 'val3Min');
-    let a = f3.add(text, 'val3Max');
+    f3.add(text, 'val3Min').step(0.01);
+    let a = f3.add(text, 'val3Max').step(0.01);
 
     for (var i in gui.__folders) {
         for (var j in gui.__folders[i].__controllers) {
@@ -128,6 +128,7 @@ function updateMax() {
     text.val2Min = data2Min;
     text.val3Max = data3Max;
     text.val3Min = data3Min;
+    console.log(text)
     for (var j in gui.__folders) {
         for (var i in gui.__folders[j].__controllers) {
             gui.__folders[j].__controllers[i].updateDisplay();

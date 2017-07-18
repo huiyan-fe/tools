@@ -90,8 +90,8 @@ class circleGraph {
             minValue = Math.min(minValue, item);
         });
         this.data = {
-            hotMax: maxValue,
-            hotMin: minValue
+            hotMax: text.val1Max || maxValue,
+            hotMin: text.val1Min || minValue
         }
     }
 
@@ -151,6 +151,8 @@ class circleGraph {
             maxValue = Math.max(maxValue, item);
             minValue = Math.min(minValue, item);
         });
+        maxValue = text.val1Max;
+        minValue = text.val1Min;
         delatValue = maxValue - minValue;
 
 
@@ -236,6 +238,8 @@ class circleGraph {
             maxValue = Math.max(maxValue, item);
             minValue = Math.min(minValue, item);
         });
+        maxValue = text.val2Max;
+        minValue = text.val2Min;
         delatValue = maxValue - minValue;
 
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
@@ -335,6 +339,8 @@ class circleGraph {
             maxValue = Math.max(maxValue, item);
             minValue = Math.min(minValue, item);
         });
+        maxValue = text.val3Max;
+        minValue = text.val3Min;
         delatValue = maxValue - minValue;
 
         // for the color 

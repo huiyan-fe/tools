@@ -181,8 +181,8 @@ class Thumbnail {
         document.querySelector('#main').appendChild(this.dom);
         this.canvas = document.createElement('canvas');
         let domStyle = getComputedStyle(this.dom);
-        this.height = parseInt(domStyle.height) - 80;
-        this.width = parseInt(domStyle.width) - 80;
+        this.height = parseInt(domStyle.height) - (text.isCard ? 80 : 0);
+        this.width = parseInt(domStyle.width) - (text.isCard ? 80 : 0);
         this.canvas.height = this.height * 2;
         this.canvas.width = this.width * 2;
         this.canvas.style.height = this.height + 'px';
@@ -218,29 +218,30 @@ class Thumbnail {
         this.colordata = colordata;
 
         //
-        let type = this.obj.type;
-        let number = this.obj.number;
-        console.log(type, '@@', number)
-        if (number) {
-            let numberDom = document.createElement('div')
-            numberDom.className = 'cardNumber';
-            numberDom.innerHTML = number;
-            let numberDom2 = document.createElement('div')
-            numberDom2.className = 'cardNumber2';
-            numberDom2.innerHTML = number;
-            this.dom.appendChild(numberDom)
-            this.dom.appendChild(numberDom2)
+        if (text.isCard) {
+            let type = this.obj.type;
+            let number = this.obj.number;
+            if (number) {
+                let numberDom = document.createElement('div')
+                numberDom.className = 'cardNumber';
+                numberDom.innerHTML = number;
+                let numberDom2 = document.createElement('div')
+                numberDom2.className = 'cardNumber2';
+                numberDom2.innerHTML = number;
+                this.dom.appendChild(numberDom)
+                this.dom.appendChild(numberDom2)
+            }
+            this.dom.className = 'thumbnail card cardType' + type;
+
+            let logo = document.createElement('div');
+            logo.className = 'thumbnail-logo';
+            this.dom.appendChild(logo);
+
+            let logo2 = document.createElement('div');
+            logo2.className = 'thumbnail-logo2';
+            this.dom.appendChild(logo2);
+            // this.document.appendChild()
         }
-        this.dom.className = 'thumbnail cardType' + type;
-
-        let logo = document.createElement('div');
-        logo.className = 'thumbnail-logo';
-        this.dom.appendChild(logo);
-
-        let logo2 = document.createElement('div');
-        logo2.className = 'thumbnail-logo2';
-        this.dom.appendChild(logo2);
-        // this.document.appendChild()
     }
 
     drawTitle() {

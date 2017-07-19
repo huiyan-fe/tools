@@ -11,18 +11,29 @@
         .thumbnail {
             float: left;
             height: 404px;
-            width: 288px;
+            width: 258px;
             margin: 10px;
             /*border: 1px solid #ccc;*/
             /*border-radius: 2px;*/
             background: white;
-            box-shadow: 0 0 1px rgba(0, 0, 0, .2);
+            box-shadow: 0 0 6px rgba(0, 0, 0, .2);
             text-align: center;
             line-height: 404px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+        }
+        
+        .thumbnail.card {
+            border-radius: 10px;
+            height: 404px;
+            width: 288px;
+        }
+        
+        .thumbnail.card canvas {
+            border: 1px solid #eee;
+            border-radius: 4px;
         }
         
         .thumbnail-logo,
@@ -36,7 +47,7 @@
             left: 10px;
             z-index: 999;
             background-size: cover;
-            opacity: 0.5;
+            opacity: 0.2;
         }
         
         .thumbnail-logo2 {
@@ -47,10 +58,7 @@
             transform: rotate(180deg);
         }
         
-        .thumbnail canvas {
-            border: 1px solid #eee;
-            border-radius: 4px;
-        }
+        .thumbnail canvas {}
         
         #main {
             margin-top: 40px;

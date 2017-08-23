@@ -341,10 +341,10 @@
             
             map.setViewport(allPointArr);
 
-            //polygon.enableEditing();
-            //polygon.addEventListener('lineupdate', function () {
-             //   showResult(polygon);
-            //});
+            polygon.enableEditing();
+            polygon.addEventListener('lineupdate', function () {
+                showResult(polygon);
+            });
 
              
         };
@@ -538,7 +538,15 @@ var styleOptions = {
             for (var i = 0; i < count; i++) {
                 var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
                 map.addOverlay(ply);  //添加覆盖物
-                pointArray = pointArray.concat(ply.getPath());
+                showResult(ply);
+                var path = ply.getPath();
+                var rs = [];
+                for (var j = 0; j < path.length; j++) {
+                    var px = project.lngLatToPoint(path[j]);
+                    rs.push(px.x + ',' + px.y);
+                }
+                console.log(rs.join(';'));
+                pointArray = pointArray.concat(path);
             }    
             map.setViewport(pointArray);    //调整视野                 
         });   

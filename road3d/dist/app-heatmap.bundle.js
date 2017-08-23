@@ -2847,6 +2847,7 @@ function draw(data, isMct) {
             maxY = Math.max(maxY, item.y);
             minY = Math.min(minY, item.y);
         });
+        console.log(maxX);
         var preX = 512 / (maxX - minX);
         var preY = 512 / (maxY - minY);
         usePerPixel = Math.min(preX, preY);
@@ -2920,6 +2921,7 @@ window.ondrop = function (e) {
         var read = new FileReader();
         read.onload = function (e) {
             var jsonData = JSON.parse(e.target.result).filter(function (item) {
+                console.log(item);
                 return item.x > 10 && item.y > 10;
             });
             datas.push({

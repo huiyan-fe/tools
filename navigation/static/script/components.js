@@ -307,6 +307,8 @@ var LabelList = Vue.extend({
                 '#263238',
                 '#000',
                 '#fff',
+                '#999',
+                '#666',
             ],
             tips: []
         }

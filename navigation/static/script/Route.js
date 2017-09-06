@@ -51,6 +51,7 @@ function Route(options) {
         '#fff',
         '#999',
         '#666',
+        '#ccc',
     ];
     this.weights = [
         3, 5, 8, 10, 12

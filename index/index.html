@@ -85,7 +85,7 @@ $.get('./tool.csv?t=2', function (rs) {
 			} else {
 				var pic = item['图片编号'] + '.png';
 			}
-			html += '<div class="col-xs-3"><a href="' + item['地址'] + '" target="_blank" class="btn btn-block btn-lg btn-primary"><img src="./picture/' + pic + '" /><span>' + item['名称'] + '</span></a><p class="description">' + item['描述'].replace(/"/g, '') + '</p></div>';
+			html += '<div class="col-xs-3"><a href="' + item['地址'] + '" target="_blank" class="btn btn-block btn-lg btn-primary"><img src="./picture/' + pic + '" /><span>' + item['名称'] + '</span></a><p class="description">' + item['描述'].replace(/"/g, '').replace("\n", "<br />") + '</p></div>';
 		});
 		html += '</div>';
 	}

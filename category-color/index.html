@@ -663,6 +663,10 @@
                     textData.push(item);
                 }
             }
+            data = data.sort(function (a, b) {
+                return b.number - a.number;
+            });
+            console.log(data);
             dataSet.set(data);
             textSet.set(textData);
             finished();

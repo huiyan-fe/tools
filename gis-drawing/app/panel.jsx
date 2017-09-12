@@ -140,6 +140,7 @@ class App extends React.Component {
                 strokeColor: 'red',
                 strokeWeight: 3,
                 tipColor: '#ee5d5b',
+                index: j + 1,
                 isNumberLeft: true,
                 textPoint: pointArr[~~(pointArr.length / 2)],
                 startPoint: pointArr[0],
@@ -223,7 +224,7 @@ class App extends React.Component {
                             map: map,
                             point: data[i].textPoint,
                             name: data[i].name,
-                            index: i + 1,
+                            index: data[i].index,
                             color: data[i].tipColor,
                             change: function() {
                                 data[i].textPoint = tip.point;

@@ -23,6 +23,13 @@ class App extends React.Component {
         });
     }
 
+    changeIndex(index, flag) {
+        var value = this.refs['index' + index].value;
+        this.props.updateDataByIndex(index, {
+            index: value
+        });
+    }
+
     changeName(index, flag) {
         var value = this.refs['name' + index].value;
         this.props.updateDataByIndex(index, {
@@ -71,7 +78,7 @@ class App extends React.Component {
         var self = this;
         var list = this.props.data.map(function (item, index) {
             return <div className="route-list-item" key={index}>
-                <div>{index + 1}.  <input type="text" ref={"name" + index} defaultValue={item.name} onChange={self.changeName.bind(self, index)}/></div>
+                <div><input type="text" ref={"index" + index} defaultValue={item.index} onChange={self.changeIndex.bind(self, index)}/><input type="text" ref={"name" + index} defaultValue={item.name} onChange={self.changeName.bind(self, index)}/></div>
                 <div>
                   <div className="switch">
                     <label>
@@ -106,7 +113,7 @@ class App extends React.Component {
                     </label>
                   </div>
                     标注颜色
-                    <ColorList colors={['#ee5d5b', '#ff9625', '#6caeca']} changeColor={self.changeTipColor.bind(self, index)}/>
+                    <ColorList changeColor={self.changeTipColor.bind(self, index)}/>
                     线颜色
                     <ColorList changeColor={self.changeColor.bind(self, index)}/>
                     线宽

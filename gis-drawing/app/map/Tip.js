@@ -67,7 +67,7 @@ Tip.prototype.initialize = function(map){
     div.appendChild(arrow);
 
     var number = this._number = document.createElement("div");
-    number.style.background = "#f15e5c";
+    number.style.background = this.color || "#f15e5c";
     number.style.color = "#fff";
     number.style.position = "absolute";
     number.style.top = "3px";

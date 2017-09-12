@@ -22106,6 +22106,7 @@
 	                    strokeColor: 'red',
 	                    strokeWeight: 3,
 	                    tipColor: '#ee5d5b',
+	                    index: j + 1,
 	                    isNumberLeft: true,
 	                    textPoint: pointArr[~~(pointArr.length / 2)],
 	                    startPoint: pointArr[0],
@@ -22192,7 +22193,7 @@
 	                                map: map,
 	                                point: data[i].textPoint,
 	                                name: data[i].name,
-	                                index: i + 1,
+	                                index: data[i].index,
 	                                color: data[i].tipColor,
 	                                change: function change() {
 	                                    data[i].textPoint = tip.point;
@@ -22628,6 +22629,14 @@
 	            });
 	        }
 	    }, {
+	        key: 'changeIndex',
+	        value: function changeIndex(index, flag) {
+	            var value = this.refs['index' + index].value;
+	            this.props.updateDataByIndex(index, {
+	                index: value
+	            });
+	        }
+	    }, {
 	        key: 'changeName',
 	        value: function changeName(index, flag) {
 	            var value = this.refs['name' + index].value;
@@ -22689,8 +22698,7 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        null,
-	                        index + 1,
-	                        '.  ',
+	                        _react2.default.createElement('input', { type: 'text', ref: "index" + index, defaultValue: item.index, onChange: self.changeIndex.bind(self, index) }),
 	                        _react2.default.createElement('input', { type: 'text', ref: "name" + index, defaultValue: item.name, onChange: self.changeName.bind(self, index) })
 	                    ),
 	                    _react2.default.createElement(
@@ -22745,7 +22753,7 @@
 	                            )
 	                        ),
 	                        '\u6807\u6CE8\u989C\u8272',
-	                        _react2.default.createElement(_colorlist2.default, { colors: ['#ee5d5b', '#ff9625', '#6caeca'], changeColor: self.changeTipColor.bind(self, index) }),
+	                        _react2.default.createElement(_colorlist2.default, { changeColor: self.changeTipColor.bind(self, index) }),
 	                        '\u7EBF\u989C\u8272',
 	                        _react2.default.createElement(_colorlist2.default, { changeColor: self.changeColor.bind(self, index) }),
 	                        '\u7EBF\u5BBD',
@@ -22977,7 +22985,7 @@
 	    div.appendChild(arrow);
 
 	    var number = this._number = document.createElement("div");
-	    number.style.background = "#f15e5c";
+	    number.style.background = this.color || "#f15e5c";
 	    number.style.color = "#fff";
 	    number.style.position = "absolute";
 	    number.style.top = "3px";

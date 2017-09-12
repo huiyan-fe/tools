@@ -615,6 +615,7 @@
 
         function show () {
             var dataInput = $('#dataInput').val();
+            dataInput = dataInput.replace(/\n|\r/g, '');
             dataInput = dataInput.split(';');
             data = [];
             textData = [];

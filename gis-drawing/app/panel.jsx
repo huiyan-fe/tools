@@ -94,6 +94,9 @@ class App extends React.Component {
         var data = this.state.data;
         var point = null;
         var lines = tex.split(";");
+        if (tex.split(";;").length > 1) {
+            lines = tex.split(";;");
+        }
         for (var j = 0; j < lines.length; j++) {
             var item = lines[j].split("|");
             var list = item[0];

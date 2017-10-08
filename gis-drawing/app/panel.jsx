@@ -100,6 +100,7 @@ class App extends React.Component {
         for (var j = 0; j < lines.length; j++) {
             var item = lines[j].split("|");
             var list = item[0];
+            list = list.replace(/;/g, ',');
             var points = list.split(",");
             var pointArr = [];
             var coordinates = [];

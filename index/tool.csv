@@ -1,5 +1,5 @@
 分类,名称,地址,描述,备注,图片编号nnnnnn
-通用工具,多边形画区域,http://huiyan-fe.github.io/tools/coord/,"1> 多边形区域画取，支持节点拖动修改，可复制经纬度和摩卡托坐标
+通用工具,多边形画区域,http://huiyan.baidu.com/github/tools/coord/,"1> 多边形区域画取，支持节点拖动修改，可复制经纬度和摩卡托坐标
 2> 画线可显示长度，支持复制经纬度和摩卡托坐标
 3> 支持坐标集打点、画线、画面，支持画面后拖动节点修改边界
 4> 支持经纬度坐标和摩卡托坐标转换
@@ -8,15 +8,15 @@
 2> 支持POI点坐标显示
 3> 坐标鼠标跟随显示
 4> 支持坐标反查地址",直接集成,4.pngnnnnnn
-通用工具,导航路径绘制,http://huiyan-fe.github.io/tools/navigation/,"1> 支持右键选取起终点，可依照出行类型画出不同路线，支持个性化底图配置
+通用工具,导航路径绘制,http://huiyan.baidu.com/github/tools/navigation/,"1> 支持右键选取起终点，可依照出行类型画出不同路线，支持个性化底图配置
 2> 支持保留每个方案并调节路线颜色和宽度
 3> 可应用于画绕行路线",直接集成,5.pngnnnnnn
-报告工具,文本绘路,http://huiyan-fe.github.io/tools/gis-drawing/,"1> 将 道路经纬度坐标|道路名称 用分号间隔粘贴进左上角的文本框，可以在地图上打出道路线路和道路名称，并按顺序编号。主要应用于十大拥堵道路打图。
+报告工具,文本绘路,http://huiyan.baidu.com/github/tools/gis-drawing/,"1> 将 道路经纬度坐标|道路名称 用分号间隔粘贴进左上角的文本框，可以在地图上打出道路线路和道路名称，并按顺序编号。主要应用于十大拥堵道路打图。
 2> 支持调节每条道路的粗细、颜色、是否显示箭头、是否显示文本、调整文本方向和位置
 3> 可用于打点排名",箭头不带小尾巴，支持添加任意省份、城市边界，边界可支持面颜色调整,6.pngnnnnnn
-报告工具,Top城市打点,http://huiyan-fe.github.io/tools/category-color/,"1> 输入城市名称和权重值，显示城市位置和编号，可以调整圆圈颜色大小
+报告工具,Top城市打点,http://huiyan.baidu.com/github/tools/category-color/,"1> 输入城市名称和权重值，显示城市位置和编号，可以调整圆圈颜色大小
 2> 用于标记城市排名",直接集成,7.pngnnnnnn
-报告工具,省份排行显示,http://huiyan-fe.github.io/mapv/examples/province.html,"1> 输入省份名称和权重值显示省份权重热力
+报告工具,省份排行显示,http://huiyan.baidu.com/github/mapv/examples/province.html,"1> 输入省份名称和权重值显示省份权重热力
 2> 用于显示省份排行",直接集成,8.pngnnnnnn
-报告工具,城市热力图，城市群,http://huiyan-fe.github.io/mapv/examples/baidu-map-point-datgui.html,"1> 拖入csv文件，经度、纬度、权重，可以打点、画热力图
+报告工具,城市热力图，城市群,http://huiyan.baidu.com/github/mapv/examples/baidu-map-point-datgui.html,"1> 拖入csv文件，经度、纬度、权重，可以打点、画热力图
 2> 可以显示省份、城市边界",提供数据文件示例,9.png

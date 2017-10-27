@@ -356,6 +356,20 @@
             maxOpacity: 0.8,
             globalAlpha: 1,
             lineWidth: 0,
+            splitListstr: JSON.stringify([
+                {
+                    start: 0,
+                    end: 2,
+                    value: 'red'
+                },{
+                    start: 2,
+                    end: 4,
+                    value: 'yellow'
+                },{
+                    start: 4,
+                    value: 'blue'
+                }
+            ]),
             gradient: { 
                 0.25: "rgba(0, 0, 255, 1)",
                 0.55: "rgba(0, 255, 0, 1)",
@@ -401,6 +415,7 @@
         var textLayer1 = new mapv.baiduMapLayer(map, textSet, textOptions);
 
         function finished() {
+			options.splitList = JSON.parse(options.splitListstr);
             mapvLayer.update({
                 options: options 
             });
@@ -601,6 +616,9 @@
                     gui.addGradient(options, 'gradient', gradientOptions).onFinishChange(finished);
                     gui.add(options, 'maxSize', 0, 100).onFinishChange(finished);
                     gui.add(options, 'minSize', 0, 100).onFinishChange(finished);
+                    break;
+                case 'choropleth':
+                    gui.add(options, 'splitListstr').onFinishChange(finished);
                     break;
             }
             

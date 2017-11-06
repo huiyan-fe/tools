@@ -34,7 +34,7 @@ class App extends React.Component {
                     "featureType": "all",
                     "elementType": "all",
                     "stylers": {
-                              "lightness": 61,
+                              "lightness": 40,
                               "saturation": -70
                     }
           },

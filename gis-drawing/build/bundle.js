@@ -21897,7 +21897,7 @@
 	                    "featureType": "all",
 	                    "elementType": "all",
 	                    "stylers": {
-	                        "lightness": 61,
+	                        "lightness": 40,
 	                        "saturation": -70
 	                    }
 	                }, {
@@ -22312,7 +22312,7 @@
 	                            "featureType": "all",
 	                            "elementType": "all",
 	                            "stylers": {
-	                                "lightness": 70,
+	                                "lightness": 40,
 	                                "saturation": -70
 	                            }
 	                        }, {
@@ -22335,7 +22335,7 @@
 	                            "featureType": "all",
 	                            "elementType": "all",
 	                            "stylers": {
-	                                "lightness": 70,
+	                                "lightness": 40,
 	                                "saturation": -70
 	                            }
 	                        }, {

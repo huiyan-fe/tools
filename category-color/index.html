@@ -104,6 +104,10 @@
         文本标签：
         <button onclick="showText()">显示</button>
         <button onclick="hideText()">隐藏</button>
+        <br />
+        地图背景：
+        <button onclick="setSimpleStyle()">简单</button>
+        <button onclick="setDetailStyle()">详细</button>
         </div>
         </div>
     </div>
@@ -239,18 +243,49 @@
         });
         */
 
-        map.setMapStyle({
-            styleJson: [
-          {
-                    "featureType": "all",
-                    "elementType": "all",
-                    "stylers": {
-                              "visibility": "off"
-                    }
-          }
-        ]
-        });
+		setSimpleStyle();
+		function setSimpleStyle() {
+			chinaLayer && chinaLayer.show();
+			map.setMapStyle({
+				styleJson: [
+			  {
+						"featureType": "all",
+						"elementType": "labels",
+						"stylers": {
+								  "visibility": "off"
+						}
+			  },
+			  {
+						"featureType": "all",
+						"elementType": "geometry",
+						"stylers": {
+								  "color": "#ffffffff",
+								  "visibility": "off"
+						}
+			  },
+			  {
+						"featureType": "background",
+						"elementType": "all",
+						"stylers": {
+								  "visibility": "on"
+						}
+			  }
+			]
+			});
+		}
+
+
+		function setDetailStyle() {
+			chinaLayer.hide();
+			map.setMapStyle({
+				style: 'lightgray'
+			});
+		}
+ 		
+        
         map.getContainer().style.background = '#fff';
+
+		var chinaLayer = null;
 
         $.get('china.json', function(geojson) {
 
@@ -268,7 +303,7 @@
                 draw: 'simple'
             }
 
-            var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+            chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
 
         });
 

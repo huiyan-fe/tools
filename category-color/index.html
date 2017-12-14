@@ -278,8 +278,24 @@
 		function setDetailStyle() {
 			chinaLayer.hide();
 			map.setMapStyle({
-				style: 'lightgray'
-			});
+                styleJson: [
+              {
+                        "featureType": "all",
+                        "elementType": "all",
+                        "stylers": {
+                                  "lightness": 40,
+                                  "saturation": -70
+                        }
+              },
+              {
+                        "featureType": "road",
+                        "elementType": "labels",
+                        "stylers": {
+                                  "visibility": "on"
+                        }
+              }
+            ]
+            });
 		}
  		
         

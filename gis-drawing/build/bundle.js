@@ -22073,11 +22073,22 @@
 	var jiuduanwidth = 408;
 	var jiuduanheight = 563;
 	var scale = 4.5;
-	var myIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
+
+	var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
 	    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
 	});
+
+	var jiuduanDarkIcon = new BMap.Icon("./static/images/jiuduanxian_dark.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
+	    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
+	});
+
 	var jiuduanxianMarker = new BMap.Marker(pt, {
-	    icon: myIcon,
+	    icon: jiuduanIcon,
+	    enableMassClear: false
+	}); // 创建标注
+
+	var jiuduanxianDark = new BMap.Marker(pt, {
+	    icon: jiuduanDarkIcon,
 	    enableMassClear: false
 	}); // 创建标注
 
@@ -22477,6 +22488,8 @@
 	                    }
 	                }
 	            }
+
+	            this.showJiuduan();
 	        }
 	    }, {
 	        key: 'changeText',
@@ -22519,12 +22532,21 @@
 	            this.setState({
 	                isShowJiuduan: flag
 	            }, function () {
-	                if (this.state.isShowJiuduan) {
-	                    map.addOverlay(jiuduanxianMarker);
-	                } else {
-	                    map.removeOverlay(jiuduanxianMarker);
-	                }
+	                this.showJiuduan();
 	            });
+	        }
+	    }, {
+	        key: 'showJiuduan',
+	        value: function showJiuduan() {
+	            map.removeOverlay(jiuduanxianMarker);
+	            map.removeOverlay(jiuduanxianDark);
+	            if (this.state.isShowJiuduan) {
+	                if (this.state.isDark) {
+	                    map.addOverlay(jiuduanxianDark);
+	                } else {
+	                    map.addOverlay(jiuduanxianMarker);
+	                }
+	            }
 	        }
 	    }, {
 	        key: 'changeStrokeWeight',

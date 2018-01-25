@@ -311,6 +311,14 @@ class App extends React.Component {
         }, this.changeMapStyle.bind(this));
     }
 
+    changeBackground(flag) {
+        var self = this;
+
+        this.setState({
+            isDark: flag
+        }, this.changeMapStyle.bind(this));
+    }
+
     showChina(flag) {
         var self = this;
 
@@ -336,61 +344,71 @@ class App extends React.Component {
             chinaLayer && chinaLayer.show();
         } else {
             chinaLayer && chinaLayer.hide();
-            if (this.state.isShowRoadLabel) {
+            if (this.state.isDark) {
                 map.setMapStyle({
-                    styleJson: [
-                  {
-                            "featureType": "all",
-                            "elementType": "all",
-                            "stylers": {
-                                      "lightness": 40,
-                                      "saturation": -70
-                            }
-                  },
-                  {
-                            "featureType": "road",
-                            "elementType": "labels",
-                            "stylers": {
-                                      "visibility": "on"
-                            }
-                  },
-                  {
-                            "featureType": "poi",
-                            "elementType": "all",
-                            "stylers": {
-                                      "visibility": "off"
-                            }
-                  }
-                ]
+                    style: 'midnight'
                 });
             } else {
-                map.setMapStyle({
-                    styleJson: [
-                  {
-                            "featureType": "all",
-                            "elementType": "all",
-                            "stylers": {
-                                      "lightness": 40,
-                                      "saturation": -70
-                            }
-                  },
-                  {
-                            "featureType": "road",
-                            "elementType": "labels",
-                            "stylers": {
-                                      "visibility": "off"
-                            }
-                  },
-                  {
-                            "featureType": "poi",
-                            "elementType": "all",
-                            "stylers": {
-                                      "visibility": "off"
-                            }
-                  }
-                ]
-                });
+                if (this.state.isShowRoadLabel) {
+                    map.setMapStyle({
+                        styleJson: [
+                      {
+                                "featureType": "all",
+                                "elementType": "all",
+                                "stylers": {
+                                          "lightness": 40,
+                                          "saturation": -70
+                                }
+                      },
+                      {
+                                "featureType": "road",
+                                "elementType": "labels",
+                                "stylers": {
+                                          "visibility": "on"
+                                }
+                      },
+                      {
+                                "featureType": "poi",
+                                "elementType": "all",
+                                "stylers": {
+                                          "visibility": "off"
+                                }
+                      }
+                    ]
+                    });
+                } else {
+                    map.setMapStyle({
+                        styleJson: [
+                      {
+                                "featureType": "all",
+                                "elementType": "all",
+                                "stylers": {
+                                          "lightness": 40,
+                                          "saturation": -70
+                                }
+                      },
+                      {
+                                "featureType": "road",
+                                "elementType": "labels",
+                                "stylers": {
+                                          "visibility": "off"
+                                }
+                      },
+                      {
+                                "featureType": "poi",
+                                "elementType": "all",
+                                "stylers": {
+                                          "visibility": "off"
+                                }
+                      }
+                    ]
+                    });
+                }
+
+
+
             }
+            
         }
         
     }
@@ -454,6 +472,7 @@ class App extends React.Component {
         });
     }
 
+
     render() {
         return (
             <div className="panel">
@@ -467,6 +486,14 @@ class App extends React.Component {
                       <input type="checkbox" checked={this.state.isShowChina} onClick={this.showChina.bind(this, !this.state.isShowChina)}/>
                       <span className="lever"></span>
                       显示全国地图
+                    </label>
+                </div>
+                <div className="switch">
+                    <label>
+                      浅色底图
+                      <input type="checkbox" checked={this.state.isDark} onClick={this.changeBackground.bind(this, !this.state.isDark)}/>
+                      <span className="lever"></span>
+                      深色底图
                     </label>
                 </div>
                 <div className="switch">

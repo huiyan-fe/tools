@@ -398,6 +398,7 @@
         var options = {
             draw: 'simple',
             max: 100,
+            coordType: 'bd09ll',
             min: 0,
             size: 10,
             symbol: 'circle',
@@ -578,6 +579,7 @@
                 nameMap: {
                     draw: '绘制方法',
                     unit: '单位',
+                    coordType: '坐标单位',
                     size: '大小',
                     fillStyle: '颜色',
                     symbol: '形状',
@@ -612,6 +614,14 @@
             gui.add(options, 'unit', {
                 '像素': 'px',
                 '米': 'm'
+            }).onFinishChange(function () {
+                initGui();
+                finished();
+            });
+
+            gui.add(options, 'coordType', {
+                '经纬度': 'bd09ll',
+                '墨卡托': 'bd09mc'
             }).onFinishChange(function () {
                 initGui();
                 finished();

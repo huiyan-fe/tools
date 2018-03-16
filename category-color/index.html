@@ -733,22 +733,24 @@
                     }
                 }
                 console.log(line[0], line[0].length, cityCenter);
-                var item = {
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [cityCenter.lng, cityCenter.lat]
-                    },
-                    text: line[0],
-                    number: (i + 1),
-                    fillStyle: line[2]
-                }
-                if (line[1]) {
-                    //item.size = intensity.getSize(line[1]);
-                    item.count = parseFloat(line[1]);
-                }
-                data.push(item);
-                if (line[3] !== 'nolabel') {
-                    textData.push(item);
+                if (cityCenter) {
+                    var item = {
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [cityCenter.lng, cityCenter.lat]
+                        },
+                        text: line[0],
+                        number: (i + 1),
+                        fillStyle: line[2]
+                    }
+                    if (line[1]) {
+                        //item.size = intensity.getSize(line[1]);
+                        item.count = parseFloat(line[1]);
+                    }
+                    data.push(item);
+                    if (line[3] !== 'nolabel') {
+                        textData.push(item);
+                    }
                 }
             }
             data = data.sort(function (a, b) {

@@ -540,12 +540,12 @@ var styleOptions = {
                 map.addOverlay(ply);  //添加覆盖物
                 showResult(ply);
                 var path = ply.getPath();
-                var rs = [];
+                var result = [];
                 for (var j = 0; j < path.length; j++) {
                     var px = project.lngLatToPoint(path[j]);
-                    rs.push(px.x + ',' + px.y);
+                    result.push(px.x + ',' + px.y);
                 }
-                console.log(rs.join(';'));
+                console.log(result.join(';'));
                 pointArray = pointArray.concat(path);
             }    
             map.setViewport(pointArray);    //调整视野                 

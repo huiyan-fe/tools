@@ -537,6 +537,13 @@ var styleOptions = {
             var pointArray = [];
             for (var i = 0; i < count; i++) {
                 var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
+
+                (function(ply){
+                    ply.addEventListener('click', function() {
+                        showResult(ply);
+                    });
+                })(ply);
+
                 map.addOverlay(ply);  //添加覆盖物
                 showResult(ply);
                 var path = ply.getPath();

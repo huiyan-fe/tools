@@ -452,6 +452,16 @@ var overlaycomplete = function(e){
 };
 
 
+function getPathStr(overlay) {
+    var pathStr = "";
+    var path = overlay.getPath();
+    for (var i = 0; i < path.length; i++) {
+        pathStr += path[i].lng + "," + path[i].lat + ",";
+    }
+    pathStr = pathStr.substr(0, pathStr.length - 1);
+    return pathStr;
+}
+
 function showResult (overlay) {
     var bounds = overlay.getBounds();
     var ne = bounds.getNorthEast();
@@ -535,6 +545,7 @@ var styleOptions = {
                 return ;
             }
             var pointArray = [];
+            var pathArr = [];
             for (var i = 0; i < count; i++) {
                 var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
 
@@ -543,6 +554,7 @@ var styleOptions = {
                         showResult(ply);
                     });
                 })(ply);
+                pathArr.push(getPathStr(ply));
 
                 map.addOverlay(ply);  //添加覆盖物
                 showResult(ply);
@@ -552,9 +564,9 @@ var styleOptions = {
                     var px = project.lngLatToPoint(path[j]);
                     result.push(px.x + ',' + px.y);
                 }
-                console.log(result.join(';'));
                 pointArray = pointArray.concat(path);
             }    
+            console.log(pathArr.join('|'));
             map.setViewport(pointArray);    //调整视野                 
         });   
     }

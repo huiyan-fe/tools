@@ -44,7 +44,7 @@ Tip.prototype.initialize = function(map){
     div.style.MozUserSelect = "none";
     div.style.fontSize = "18px"
 
-    div.style.border = "1px solid #a67972";
+    div.style.border = "2px solid #a67972";
     div.style.color = "#494947";
     div.style.background = "#fff";
     div.style.borderRadius = '25px';

@@ -218,6 +218,7 @@ class App extends React.Component {
         for (var i = 0; i < data.length; i++) {
             map.addOverlay(new BMap.Polyline(data[i].points, {
                 strokeColor: data[i].strokeColor || 'red',
+                strokeOpacity: 1,
                 strokeWeight: data[i].strokeWeight || 3
             }));
 

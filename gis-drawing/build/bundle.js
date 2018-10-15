@@ -22295,6 +22295,7 @@
 	            for (var i = 0; i < data.length; i++) {
 	                map.addOverlay(new BMap.Polyline(data[i].points, {
 	                    strokeColor: data[i].strokeColor || 'red',
+	                    strokeOpacity: 1,
 	                    strokeWeight: data[i].strokeWeight || 3
 	                }));
 
@@ -23115,7 +23116,7 @@
 	    div.style.position = "absolute";
 	    div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
 	    div.style.backgroundColor = this.color;
-	    div.style.border = "1px solid " + borderColors[this.color];
+	    div.style.border = "2px solid " + borderColors[this.color];
 	    div.style.color = "white";
 	    div.style.height = "38px";
 	    div.style.padding = "5px";

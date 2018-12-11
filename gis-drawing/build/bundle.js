@@ -22000,22 +22000,27 @@
 	            });
 	            */
 
+	            /*
 	            map.setMapStyle({
-	                styleJson: [{
-	                    "featureType": "all",
-	                    "elementType": "all",
-	                    "stylers": {
-	                        "lightness": 40,
-	                        "saturation": -30
-	                    }
-	                }, {
-	                    "featureType": "road",
-	                    "elementType": "labels",
-	                    "stylers": {
-	                        "visibility": "on"
-	                    }
-	                }]
+	                styleJson: [
+	              {
+	                        "featureType": "all",
+	                        "elementType": "all",
+	                        "stylers": {
+	                                  "lightness": 40,
+	                                  "saturation": -30
+	                        }
+	              },
+	              {
+	                        "featureType": "road",
+	                        "elementType": "labels",
+	                        "stylers": {
+	                                  "visibility": "on"
+	                        }
+	              }
+	            ]
 	            });
+	            */
 	        }
 	    }, {
 	        key: "render",

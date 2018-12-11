@@ -28,6 +28,7 @@ class App extends React.Component {
         });
         */
 
+        /*
         map.setMapStyle({
             styleJson: [
           {
@@ -47,6 +48,7 @@ class App extends React.Component {
           }
         ]
         });
+        */
 
     }
 

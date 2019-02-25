@@ -90,6 +90,7 @@
             <button onclick="moremarker()">打点</button>
             <button onclick="morePolyline()">画线</button>
             <button onclick="morePolygon()">画面</button>
+            <button onclick="moreCircle()">画圆</button>
         </div>
         <div style="font-size: 12px;margin-top: 5px;">个性化底图配置：
         <select class="browser-default" id="select">
@@ -337,15 +338,31 @@
                      });
                 map.addOverlay(label);
             }
+        }
 
-            
+        function moreCircle() {
+            var tex = document.getElementById('more').value;
+            var polygons = tex.split(";");
+            var allPointArr = [];
+            for (var j = 0; j < polygons.length; j++) {
+                var points = polygons[j].split(",");
+                var point;
+                if (points[0] > 10000) {
+                    point = project.pointToLngLat(new BMap.Pixel(points[0], points[1]));
+                } else {
+                    point = new BMap.Point(points[0], points[1]);
+                }
+                allPointArr.push(point);
+                var polygon = new BMap.Circle(point, points[2], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                map.addOverlay(polygon);
+            }
+
             map.setViewport(allPointArr);
 
             polygon.enableEditing();
             polygon.addEventListener('lineupdate', function () {
                 showResult(polygon);
             });
-
              
         };
 

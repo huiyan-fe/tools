@@ -22076,9 +22076,9 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var pt = new BMap.Point(131.733142, 23.226515);
-	var jiuduanwidth = 407;
-	var jiuduanheight = 541;
-	var scale = 4.5;
+	var jiuduanwidth = 496;
+	var jiuduanheight = 588;
+	var scale = 5.0;
 
 	var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
 	    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)

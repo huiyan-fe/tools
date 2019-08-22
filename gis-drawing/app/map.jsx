@@ -28,7 +28,6 @@ class App extends React.Component {
         });
         */
 
-        /*
         map.setMapStyle({
             styleJson: [
           {
@@ -36,19 +35,25 @@ class App extends React.Component {
                     "elementType": "all",
                     "stylers": {
                               "lightness": 40,
-                              "saturation": -30
+                              "saturation": -70
                     }
           },
           {
                     "featureType": "road",
                     "elementType": "labels",
                     "stylers": {
-                              "visibility": "on"
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
                     }
           }
         ]
         });
-        */
 
     }
 

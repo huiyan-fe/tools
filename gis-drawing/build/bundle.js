@@ -22000,27 +22000,28 @@
 	            });
 	            */
 
-	            /*
 	            map.setMapStyle({
-	                styleJson: [
-	              {
-	                        "featureType": "all",
-	                        "elementType": "all",
-	                        "stylers": {
-	                                  "lightness": 40,
-	                                  "saturation": -30
-	                        }
-	              },
-	              {
-	                        "featureType": "road",
-	                        "elementType": "labels",
-	                        "stylers": {
-	                                  "visibility": "on"
-	                        }
-	              }
-	            ]
+	                styleJson: [{
+	                    "featureType": "all",
+	                    "elementType": "all",
+	                    "stylers": {
+	                        "lightness": 40,
+	                        "saturation": -70
+	                    }
+	                }, {
+	                    "featureType": "road",
+	                    "elementType": "labels",
+	                    "stylers": {
+	                        "visibility": "off"
+	                    }
+	                }, {
+	                    "featureType": "poi",
+	                    "elementType": "all",
+	                    "stylers": {
+	                        "visibility": "off"
+	                    }
+	                }]
 	            });
-	            */
 	        }
 	    }, {
 	        key: "render",
@@ -22074,9 +22075,9 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var pt = new BMap.Point(127.733142, 21.226515);
-	var jiuduanwidth = 408;
-	var jiuduanheight = 563;
+	var pt = new BMap.Point(131.733142, 23.226515);
+	var jiuduanwidth = 407;
+	var jiuduanheight = 541;
 	var scale = 4.5;
 
 	var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
@@ -23120,18 +23121,18 @@
 	    var div = this._div = document.createElement("div");
 	    div.style.position = "absolute";
 	    div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-	    div.style.backgroundColor = this.color;
-	    div.style.border = "2px solid " + borderColors[this.color];
+	    //div.style.backgroundColor = this.color;
+	    //div.style.border = "2px solid " + borderColors[this.color];
 	    div.style.color = "white";
-	    div.style.height = "38px";
+	    div.style.height = "28px";
 	    div.style.padding = "5px";
 	    div.style.whiteSpace = "nowrap";
 	    div.style.MozUserSelect = "none";
-	    div.style.fontSize = "18px";
+	    div.style.fontSize = "12px";
 
-	    div.style.border = "2px solid #a67972";
+	    //div.style.border = "2px solid #a67972";
 	    div.style.color = "#494947";
-	    div.style.background = "#fff";
+	    //div.style.background = "#fff";
 	    div.style.borderRadius = '25px';
 	    div.style.paddingLeft = '30px';
 
@@ -23225,7 +23226,7 @@
 	    this._span.innerHTML = this._text;
 	    var pixel = map.pointToOverlayPixel(this._point);
 	    this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
-	    this._div.style.top = pixel.y - 40 + "px";
+	    this._div.style.top = pixel.y - 20 + "px";
 	};
 
 	exports.default = Tip;

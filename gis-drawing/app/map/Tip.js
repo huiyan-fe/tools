@@ -35,18 +35,18 @@ Tip.prototype.initialize = function(map){
     var div = this._div = document.createElement("div");
     div.style.position = "absolute";
     div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-    div.style.backgroundColor = this.color;
-    div.style.border = "2px solid " + borderColors[this.color];
+    //div.style.backgroundColor = this.color;
+    //div.style.border = "2px solid " + borderColors[this.color];
     div.style.color = "white";
-    div.style.height = "38px";
+    div.style.height = "28px";
     div.style.padding = "5px";
     div.style.whiteSpace = "nowrap";
     div.style.MozUserSelect = "none";
-    div.style.fontSize = "18px"
+    div.style.fontSize = "12px"
 
-    div.style.border = "2px solid #a67972";
+    //div.style.border = "2px solid #a67972";
     div.style.color = "#494947";
-    div.style.background = "#fff";
+    //div.style.background = "#fff";
     div.style.borderRadius = '25px';
     div.style.paddingLeft = '30px';
 
@@ -142,7 +142,7 @@ Tip.prototype.draw = function(){
     this._span.innerHTML = this._text;
     var pixel = map.pointToOverlayPixel(this._point);
     this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
-    this._div.style.top  = pixel.y - 40 + "px";
+    this._div.style.top  = pixel.y - 20 + "px";
 }
 
 export default Tip;

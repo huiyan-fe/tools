@@ -51,7 +51,14 @@ class App extends React.Component {
                     "stylers": {
                               "visibility": "off"
                     }
-          }
+          },
+                      {
+                            "featureType": "all",
+                            "elementType": "labels",
+                            "stylers": {
+                                      "visibility": "off"
+                            }
+                       }
         ]
         });
 

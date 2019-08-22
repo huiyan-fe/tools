@@ -5,8 +5,8 @@ import DraggingLabel from './map/DraggingLabel.js';
 import center from './center.js';
 
 var pt = new BMap.Point(131.733142,  23.226515);
-var jiuduanwidth = 496;
-var jiuduanheight  = 588;
+var jiuduanwidth = 417;
+var jiuduanheight  = 646;
 var scale = 5.0;
 
 var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
@@ -154,7 +154,7 @@ class App extends React.Component {
                 points: pointArr,
                 strokeColor: 'red',
                 strokeWeight: 3,
-                tipColor: '#ee5d5b',
+                tipColor: 'rgb(255, 111, 0)',
                 index: j + 1,
                 isNumberLeft: true,
                 textPoint: pointArr[~~(pointArr.length / 2)],
@@ -197,7 +197,7 @@ class App extends React.Component {
         var dataSet = new mapv.DataSet(data);
 
         var options = {
-            fillStyle: 'rgba(255, 50, 50, 0.8)',
+            fillStyle: 'rgb(255, 111, 0)',
             enableMassClear: false,
             shadowColor: 'rgba(55, 50, 50, 0.3)',
             shadowBlur: 20,
@@ -412,7 +412,14 @@ class App extends React.Component {
                                 "stylers": {
                                           "visibility": "off"
                                 }
-                      }
+                      },
+                      {
+                            "featureType": "all",
+                            "elementType": "labels",
+                            "stylers": {
+                                      "visibility": "off"
+                            }
+                       }
                     ]
                     });
                 }

@@ -22020,6 +22020,12 @@
 	                    "stylers": {
 	                        "visibility": "off"
 	                    }
+	                }, {
+	                    "featureType": "all",
+	                    "elementType": "labels",
+	                    "stylers": {
+	                        "visibility": "off"
+	                    }
 	                }]
 	            });
 	        }
@@ -22076,8 +22082,8 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var pt = new BMap.Point(131.733142, 23.226515);
-	var jiuduanwidth = 496;
-	var jiuduanheight = 588;
+	var jiuduanwidth = 417;
+	var jiuduanheight = 646;
 	var scale = 5.0;
 
 	var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
@@ -22234,7 +22240,7 @@
 	                    points: pointArr,
 	                    strokeColor: 'red',
 	                    strokeWeight: 3,
-	                    tipColor: '#ee5d5b',
+	                    tipColor: 'rgb(255, 111, 0)',
 	                    index: j + 1,
 	                    isNumberLeft: true,
 	                    textPoint: pointArr[~~(pointArr.length / 2)],
@@ -22279,7 +22285,7 @@
 	            var dataSet = new mapv.DataSet(data);
 
 	            var options = {
-	                fillStyle: 'rgba(255, 50, 50, 0.8)',
+	                fillStyle: 'rgb(255, 111, 0)',
 	                enableMassClear: false,
 	                shadowColor: 'rgba(55, 50, 50, 0.3)',
 	                shadowBlur: 20,
@@ -22487,6 +22493,12 @@
 	                            }, {
 	                                "featureType": "poi",
 	                                "elementType": "all",
+	                                "stylers": {
+	                                    "visibility": "off"
+	                                }
+	                            }, {
+	                                "featureType": "all",
+	                                "elementType": "labels",
 	                                "stylers": {
 	                                    "visibility": "off"
 	                                }
@@ -23111,7 +23123,7 @@
 
 	    if (this._div) {
 	        this._div.style.backgroundColor = color;
-	        this._div.style.borderColor = borderColors[color];
+	        this._div.style.borderColor = color;
 	        this._arrow.style.backgroundPosition = positions[color];
 	    }
 	};
@@ -23121,18 +23133,18 @@
 	    var div = this._div = document.createElement("div");
 	    div.style.position = "absolute";
 	    div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-	    //div.style.backgroundColor = this.color;
-	    //div.style.border = "2px solid " + borderColors[this.color];
+	    div.style.backgroundColor = this.color;
 	    div.style.color = "white";
-	    div.style.height = "28px";
+	    div.style.height = "38px";
 	    div.style.padding = "5px";
 	    div.style.whiteSpace = "nowrap";
 	    div.style.MozUserSelect = "none";
-	    div.style.fontSize = "12px";
+	    div.style.fontSize = "18px";
 
 	    //div.style.border = "2px solid #a67972";
+	    div.style.border = "2px solid " + this.color;
 	    div.style.color = "#494947";
-	    //div.style.background = "#fff";
+	    div.style.background = "rgba(255, 255, 255, 0.5)";
 	    div.style.borderRadius = '25px';
 	    div.style.paddingLeft = '30px';
 
@@ -23153,7 +23165,7 @@
 	    div.appendChild(arrow);
 
 	    var number = this._number = document.createElement("div");
-	    number.style.background = this.color || "#f15e5c";
+	    number.style.background = this.color || "rgb(255, 111, 0)";
 	    number.style.color = "#fff";
 	    number.style.position = "absolute";
 	    number.style.top = "3px";
@@ -23225,7 +23237,7 @@
 	    var map = this._map;
 	    this._span.innerHTML = this._text;
 	    var pixel = map.pointToOverlayPixel(this._point);
-	    this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+	    this._div.style.left = pixel.x + parseInt(this._arrow.style.left) + "px";
 	    this._div.style.top = pixel.y - 20 + "px";
 	};
 

@@ -24,7 +24,7 @@ Tip.prototype.changeColor = function(color){
     
     if (this._div) {
         this._div.style.backgroundColor = color;
-        this._div.style.borderColor = borderColors[color];
+        this._div.style.borderColor = color;
         this._arrow.style.backgroundPosition = positions[color];
     }
 }
@@ -35,18 +35,18 @@ Tip.prototype.initialize = function(map){
     var div = this._div = document.createElement("div");
     div.style.position = "absolute";
     div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-    //div.style.backgroundColor = this.color;
-    //div.style.border = "2px solid " + borderColors[this.color];
+    div.style.backgroundColor = this.color;
     div.style.color = "white";
-    div.style.height = "28px";
+    div.style.height = "38px";
     div.style.padding = "5px";
     div.style.whiteSpace = "nowrap";
     div.style.MozUserSelect = "none";
-    div.style.fontSize = "12px"
+    div.style.fontSize = "18px"
 
     //div.style.border = "2px solid #a67972";
+    div.style.border = "2px solid " + this.color;
     div.style.color = "#494947";
-    //div.style.background = "#fff";
+    div.style.background = "rgba(255, 255, 255, 0.5)";
     div.style.borderRadius = '25px';
     div.style.paddingLeft = '30px';
 
@@ -67,7 +67,7 @@ Tip.prototype.initialize = function(map){
     div.appendChild(arrow);
 
     var number = this._number = document.createElement("div");
-    number.style.background = this.color || "#f15e5c";
+    number.style.background = this.color || "rgb(255, 111, 0)";
     number.style.color = "#fff";
     number.style.position = "absolute";
     number.style.top = "3px";
@@ -141,7 +141,7 @@ Tip.prototype.draw = function(){
     var map = this._map;
     this._span.innerHTML = this._text;
     var pixel = map.pointToOverlayPixel(this._point);
-    this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+    this._div.style.left = pixel.x + parseInt(this._arrow.style.left) + "px";
     this._div.style.top  = pixel.y - 20 + "px";
 }
 

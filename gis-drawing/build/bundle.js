@@ -23051,8 +23051,9 @@
 
 	    this.map = map;
 	    var tip = this.tip = new _Tip2.default(this.point, name, options.color, options.index);
-	    var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(25, 25), {
-	        imageSize: new BMap.Size(25, 25)
+	    var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(30, 30), {
+	        offset: new BMap.Size(15, 15),
+	        imageSize: new BMap.Size(30, 30)
 	    });
 	    var marker = this.marker = new BMap.Marker(this.point);
 	    marker.setIcon(icon);
@@ -23144,7 +23145,7 @@
 	    //div.style.border = "2px solid #a67972";
 	    div.style.border = "2px solid " + this.color;
 	    div.style.color = "#494947";
-	    div.style.background = "rgba(255, 255, 255, 0.5)";
+	    div.style.background = "rgba(255, 255, 255, 0.0)";
 	    div.style.borderRadius = '25px';
 	    div.style.paddingLeft = '30px';
 

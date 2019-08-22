@@ -46,7 +46,7 @@ Tip.prototype.initialize = function(map){
     //div.style.border = "2px solid #a67972";
     div.style.border = "2px solid " + this.color;
     div.style.color = "#494947";
-    div.style.background = "rgba(255, 255, 255, 0.5)";
+    div.style.background = "rgba(255, 255, 255, 0.0)";
     div.style.borderRadius = '25px';
     div.style.paddingLeft = '30px';
 

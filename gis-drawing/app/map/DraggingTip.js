@@ -9,8 +9,9 @@ function DraggingTip(options) {
 
     this.map = map;
     var tip = this.tip = new Tip(this.point, name, options.color, options.index);
-    var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(25, 25), {
-        imageSize: new BMap.Size(25, 25)
+    var icon = new BMap.Icon("static/images/drag.png", new BMap.Size(30, 30), {
+        offset: new BMap.Size(15, 15),
+        imageSize: new BMap.Size(30, 30)
     });
     var marker = this.marker = new BMap.Marker(this.point);
     marker.setIcon(icon);

@@ -21946,7 +21946,7 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	          value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21964,79 +21964,85 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var App = function (_React$Component) {
-	    _inherits(App, _React$Component);
+	          _inherits(App, _React$Component);
 
-	    function App(args) {
-	        _classCallCheck(this, App);
+	          function App(args) {
+	                    _classCallCheck(this, App);
 
-	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
+	                    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
 
-	        _this.state = {};
-	        return _this;
-	    }
+	                    _this.state = {};
+	                    return _this;
+	          }
 
-	    _createClass(App, [{
-	        key: "componentDidMount",
-	        value: function componentDidMount() {
-	            this.initMap();
-	        }
-	    }, {
-	        key: "initMap",
-	        value: function initMap() {
-
-	            // 百度地图API功能
-	            var map = window.map = new BMap.Map(this.refs.map, {
-	                enableMapClick: true
-	            }); // 创建Map实例
-	            map.getContainer().style.zIndex = 1;
-	            map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5); // 初始化地图,设置中心点坐标和地图级别
-	            map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
-	            var navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
-	            map.addControl(navigation);
-
-	            /*
-	            map.setMapStyle({
-	                style: 'light'
-	            });
-	            */
-
-	            map.setMapStyle({
-	                styleJson: [{
-	                    "featureType": "all",
-	                    "elementType": "all",
-	                    "stylers": {
-	                        "lightness": 40,
-	                        "saturation": -70
+	          _createClass(App, [{
+	                    key: "componentDidMount",
+	                    value: function componentDidMount() {
+	                              this.initMap();
 	                    }
-	                }, {
-	                    "featureType": "road",
-	                    "elementType": "labels",
-	                    "stylers": {
-	                        "visibility": "off"
-	                    }
-	                }, {
-	                    "featureType": "poi",
-	                    "elementType": "all",
-	                    "stylers": {
-	                        "visibility": "off"
-	                    }
-	                }, {
-	                    "featureType": "all",
-	                    "elementType": "labels",
-	                    "stylers": {
-	                        "visibility": "off"
-	                    }
-	                }]
-	            });
-	        }
-	    }, {
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement("div", { className: "map", ref: "map" });
-	        }
-	    }]);
+	          }, {
+	                    key: "initMap",
+	                    value: function initMap() {
 
-	    return App;
+	                              // 百度地图API功能
+	                              var map = window.map = new BMap.Map(this.refs.map, {
+	                                        enableMapClick: true
+	                              }); // 创建Map实例
+	                              map.getContainer().style.zIndex = 1;
+	                              map.centerAndZoom(new BMap.Point(105.403119, 38.028658), 5); // 初始化地图,设置中心点坐标和地图级别
+	                              map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+	                              var navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+	                              map.addControl(navigation);
+
+	                              /*
+	                              map.setMapStyle({
+	                                  style: 'light'
+	                              });
+	                              */
+
+	                              map.setMapStyle({
+	                                        styleJson: [{
+	                                                  "featureType": "all",
+	                                                  "elementType": "all",
+	                                                  "stylers": {
+	                                                            "lightness": 40,
+	                                                            "saturation": -70
+	                                                  }
+	                                        }, {
+	                                                  "featureType": "road",
+	                                                  "elementType": "labels",
+	                                                  "stylers": {
+	                                                            "visibility": "off"
+	                                                  }
+	                                        }, {
+	                                                  "featureType": "poi",
+	                                                  "elementType": "all",
+	                                                  "stylers": {
+	                                                            "visibility": "off"
+	                                                  }
+	                                        }, {
+	                                                  "featureType": "all",
+	                                                  "elementType": "labels",
+	                                                  "stylers": {
+	                                                            "visibility": "off"
+	                                                  }
+	                                        }, {
+	                                                  "featureType": "administrative",
+	                                                  "elementType": "geometry.stroke",
+	                                                  "stylers": {
+	                                                            "color": "#999999ff"
+	                                                  }
+	                                        }]
+	                              });
+	                    }
+	          }, {
+	                    key: "render",
+	                    value: function render() {
+	                              return _react2.default.createElement("div", { className: "map", ref: "map" });
+	                    }
+	          }]);
+
+	          return App;
 	}(_react2.default.Component);
 
 	exports.default = App;
@@ -22501,6 +22507,12 @@
 	                                "elementType": "labels",
 	                                "stylers": {
 	                                    "visibility": "off"
+	                                }
+	                            }, {
+	                                "featureType": "administrative",
+	                                "elementType": "geometry.stroke",
+	                                "stylers": {
+	                                    "color": "#999999ff"
 	                                }
 	                            }]
 	                        });

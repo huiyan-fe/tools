@@ -414,13 +414,20 @@ class App extends React.Component {
                                 }
                       },
                       {
-                            "featureType": "all",
-                            "elementType": "labels",
-                            "stylers": {
-                                      "visibility": "off"
-                            }
-                       }
-                    ]
+                                "featureType": "all",
+                                "elementType": "labels",
+                                "stylers": {
+                                          "visibility": "off"
+                                }
+                      },
+                      {
+                                "featureType": "administrative",
+                                "elementType": "geometry.stroke",
+                                "stylers": {
+                                          "color": "#999999ff"
+                                }
+                      }
+            ]
                     });
                 }
 

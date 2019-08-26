@@ -60,10 +60,35 @@ class App extends React.Component {
                     }
           },
           {
-                    "featureType": "administrative",
-                    "elementType": "geometry.stroke",
+                    "featureType": "0602",
+                    "elementType": "geometry.fill",
                     "stylers": {
-                              "color": "#999999ff"
+                              "visibility": "on"
+                    }
+          },
+          {
+                    "featureType": "boundary",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                              "color": "#666666ff",
+                              "visibility": "on"
+                    }
+          },
+          {
+                    "featureType": "land",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                              "color": "#f3f3f3ff"
+                    }
+          },
+          {
+                    "featureType": "water",
+                    "elementType": "geometry",
+                    "stylers": {
+                              "color": "#b6dcf7ff",
+                              "lightness": 1,
+                              "saturation": 1,
+                              "visibility": "on"
                     }
           }
 ]

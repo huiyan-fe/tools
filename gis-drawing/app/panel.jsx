@@ -391,43 +391,68 @@ class App extends React.Component {
                 } else {
                     map.setMapStyle({
                         styleJson: [
-                      {
-                                "featureType": "all",
-                                "elementType": "all",
-                                "stylers": {
-                                          "lightness": 40,
-                                          "saturation": -70
-                                }
-                      },
-                      {
-                                "featureType": "road",
-                                "elementType": "labels",
-                                "stylers": {
-                                          "visibility": "off"
-                                }
-                      },
-                      {
-                                "featureType": "poi",
-                                "elementType": "all",
-                                "stylers": {
-                                          "visibility": "off"
-                                }
-                      },
-                      {
-                                "featureType": "all",
-                                "elementType": "labels",
-                                "stylers": {
-                                          "visibility": "off"
-                                }
-                      },
-                      {
-                                "featureType": "administrative",
-                                "elementType": "geometry.stroke",
-                                "stylers": {
-                                          "color": "#999999ff"
-                                }
-                      }
-            ]
+          {
+                    "featureType": "all",
+                    "elementType": "all",
+                    "stylers": {
+                              "lightness": 40,
+                              "saturation": -70
+                    }
+          },
+          {
+                    "featureType": "road",
+                    "elementType": "labels",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "all",
+                    "elementType": "labels",
+                    "stylers": {
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "0602",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                              "visibility": "on"
+                    }
+          },
+          {
+                    "featureType": "boundary",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                              "color": "#666666ff",
+                              "visibility": "on"
+                    }
+          },
+          {
+                    "featureType": "land",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                              "color": "#f3f3f3ff"
+                    }
+          },
+          {
+                    "featureType": "water",
+                    "elementType": "geometry",
+                    "stylers": {
+                              "color": "#b6dcf7ff",
+                              "lightness": 1,
+                              "saturation": 1,
+                              "visibility": "on"
+                    }
+          }
+]
                     });
                 }
 

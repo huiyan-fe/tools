@@ -267,7 +267,7 @@ var customStyle = [{
     "featureType": "city",
     "elementType": "labels",
     "stylers": {
-        "visibility": "on"
+        "visibility": "off"
     }
 }, {
     "featureType": "city",
@@ -1015,10 +1015,16 @@ var customStyle = [{
     "featureType": "districtlabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "on"
+        "visibility": "off"
     }
 }, {
     "featureType": "country",
+    "elementType": "labels",
+    "stylers": {
+        "visibility": "off"
+    }
+}, {
+    "featureType": "water",
     "elementType": "labels",
     "stylers": {
         "visibility": "off"

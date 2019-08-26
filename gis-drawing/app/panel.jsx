@@ -5,8 +5,8 @@ import DraggingLabel from './map/DraggingLabel.js';
 import center from './center.js';
 
 var pt = new BMap.Point(131.733142,  23.226515);
-var jiuduanwidth = 454;
-var jiuduanheight = 666;
+var jiuduanwidth = 452;
+var jiuduanheight = 672;
 var scale = 4.5;
 
 var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {

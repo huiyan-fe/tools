@@ -23157,7 +23157,14 @@
 	                        }
 	                    }
 	                } else {
-	                    var cityCenter = mapv.utilCityCenter.getCenterByCityName(points[0].replace('市', ''));
+	                    var cityName = points[0].replace('市', '');
+	                    var cityCenter = mapv.utilCityCenter.getCenterByCityName(cityName);
+	                    if (cityName === '额济纳旗') {
+	                        cityCenter = {
+	                            lng: 101.063764,
+	                            lat: 41.960646
+	                        };
+	                    }
 	                    if (cityCenter) {
 	                        var point = new BMap.Point(cityCenter.lng, cityCenter.lat);
 	                    } else {

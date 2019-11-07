@@ -63,11 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
+/* 0 */,
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -79,7 +80,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utility = __webpack_require__(4);
+var _utility = __webpack_require__(7);
 
 var _utility2 = _interopRequireDefault(_utility);
 
@@ -204,622 +205,8 @@ var OBJ = function () {
 exports.default = OBJ;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Object = __webpack_require__(0);
-
-var _Object2 = _interopRequireDefault(_Object);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Path = function (_Obj) {
-    _inherits(Path, _Obj);
-
-    function Path(GL, obj) {
-        _classCallCheck(this, Path);
-
-        var _this = _possibleConstructorReturn(this, (Path.__proto__ || Object.getPrototypeOf(Path)).call(this, GL, obj));
-
-        var color = _this.color;
-        var paths = obj.path;
-        _this.verticesColors = [];
-        paths.forEach(function (point) {
-            _this.verticesColors = _this.verticesColors.concat(point.concat(color));
-        });
-        _this.verticesColors = new Float32Array(_this.verticesColors);
-        return _this;
-    }
-
-    _createClass(Path, [{
-        key: 'render',
-        value: function render() {
-            var gl = this.gl;
-            gl.uniform1i(this.gl.uUseTexture, false);
-            var mvMatrix = this.GL.camera.mvMatrix;
-
-            // 顶点/颜色缓冲区操作
-            var vertexColorBuffer = this.gl.buffers('vcBuffer' + this.id);
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
-            //
-            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
-            //
-            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
-            gl.enableVertexAttribArray(gl.aPosition);
-            //
-            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-            gl.enableVertexAttribArray(gl.aColor);
-            vertexColorBuffer = null;
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-
-            // set mv
-            this.updateOpearte();
-            //
-
-            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-            gl.drawArrays(gl.LINE_STRIP, 0, this.verticesColors.length / 6);
-        }
-    }]);
-
-    return Path;
-}(_Object2.default);
-
-exports.default = Path;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Object = __webpack_require__(0);
-
-var _Object2 = _interopRequireDefault(_Object);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Belt = function (_Obj) {
-    _inherits(Belt, _Obj);
-
-    function Belt(GL, obj) {
-        _classCallCheck(this, Belt);
-
-        var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
-
-        _this.obj = obj;
-        _this.update(obj);
-        return _this;
-    }
-
-    _createClass(Belt, [{
-        key: 'update',
-        value: function update(obj) {
-            var _this2 = this;
-
-            var color = this.color;
-            var paths = obj.path;
-            this.height = obj.height || 10.0;
-            this.verticesColors = [];
-            this.indices = [];
-            this.texture_coords = [];
-
-            var pathDistances = [];
-            var pathLength = 0;
-            paths.forEach(function (point, index) {
-                // if(index>10) return false;
-                if (index > 0) {
-                    var start = point;
-                    var end = paths[index - 1];
-                    var dist = Math.sqrt(Math.pow(start[0] - end[0], 2), Math.pow(start[1] - end[1], 2));
-                    pathLength += dist;
-                }
-                pathDistances.push(pathLength);
-                //
-                point[2] = _this2.height;
-                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
-                point[2] = 0;
-                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
-                //
-                _this2.indices.push(index * 2);
-                _this2.indices.push(index * 2 + 1);
-            });
-            pathDistances.forEach(function (dist, index) {
-                _this2.texture_coords.push(dist / pathLength, 1);
-                _this2.texture_coords.push(dist / pathLength, 0);
-            });
-            this.texture_coords = new Float32Array(this.texture_coords);
-            this.indices = new Uint16Array(this.indices);
-            this.verticesColors = new Float32Array(this.verticesColors);
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var gl = this.gl;
-            var mvMatrix = this.GL.camera.mvMatrix;
-
-            // 顶点/颜色缓冲区操作
-            var vertexColorBuffer = this.gl.buffers('vcBuffer');
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
-            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
-            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
-            gl.enableVertexAttribArray(gl.aPosition);
-            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
-            gl.enableVertexAttribArray(gl.aColor);
-            vertexColorBuffer = null;
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-
-            // 顶点索引
-            var indexBuffer = this.gl.buffers('indexBuffer');
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            // gl.bindTexture(gl.TEXTURE_2D, texture);
-            // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-            // gl.bindTexture(gl.TEXTURE_2D, null);
-
-            if (this.obj.texture) {
-                this.gl.uniform1i(this.gl.uUseTexture, true);
-                // texture
-                var texture = gl.textures('text');
-                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.activeTexture(gl.TEXTURE0);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.obj.texture);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.uniform1i(gl.uSampler, 0);
-                // // texture coordinate
-                // console.log(this.texture_coords)
-                var textureBufferObject = this.gl.buffers('textureBuffer');
-                gl.bindBuffer(gl.ARRAY_BUFFER, textureBufferObject);
-                gl.bufferData(gl.ARRAY_BUFFER, this.texture_coords, gl.STATIC_DRAW);
-                gl.vertexAttribPointer(gl.aVertexTextureCoords, 2, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(gl.aVertexTextureCoords);
-                // gl.bindBuffer(gl.ARRAY_BUFFER, null);
-            }
-
-            // set mv
-            this.updateOpearte();
-            //
-
-            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-            // gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
-            // console.log(this.indices.length)
-
-            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
-            window.gl = gl;
-        }
-    }]);
-
-    return Belt;
-}(_Object2.default);
-
-exports.default = Belt;
-
-/***/ }),
+/* 2 */,
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Object = __webpack_require__(0);
-
-var _Object2 = _interopRequireDefault(_Object);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Heatmap = function (_Obj) {
-    _inherits(Heatmap, _Obj);
-
-    function Heatmap(GL, obj) {
-        _classCallCheck(this, Heatmap);
-
-        var _this = _possibleConstructorReturn(this, (Heatmap.__proto__ || Object.getPrototypeOf(Heatmap)).call(this, GL, obj));
-
-        _this.GL = GL;
-        _this.obj = obj;
-
-        var color = _this.color;
-        var paths = obj.path;
-        _this.verticesColors = [];
-        _this.indices = [];
-        _this.texture_coords = [];
-        // this.verticesColors.concat(point.concat(color));
-
-        var drawWidth = 1000;
-        var drawHeight = 1000;
-        var offsetX = 10;
-        var offsetY = 10;
-
-        var xIndex = 0;
-        var yIndex = 0;
-        while (yIndex <= drawWidth) {
-            while (xIndex <= drawHeight) {
-                var xPresent = xIndex / drawWidth;
-                var yPresent = yIndex / drawHeight;
-                var xImg = Math.round(obj.alphaImageData.width * xPresent);
-                var yImg = Math.round(obj.alphaImageData.height * yPresent);
-                xImg = Math.min(obj.alphaImageData.width - 1, xImg);
-                yImg = Math.min(obj.alphaImageData.height - 1, yImg);
-                var imgDataIndex = (xImg + yImg * obj.alphaImageData.width) * 4;
-
-                var xPixel = xIndex - drawWidth / 2;
-                var yPixel = drawHeight / 2 - yIndex;
-                //
-                var r = obj.imgData.data[imgDataIndex] / 255;
-                var g = obj.imgData.data[imgDataIndex + 1] / 255;
-                var b = obj.imgData.data[imgDataIndex + 2] / 255;
-                if (obj.alphaImageData.data[imgDataIndex + 3] === 0) {
-                    r = g = b = 0.1;
-                }
-                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, r, g, b, 0);
-                xIndex += offsetX;
-            }
-            xIndex = 0;
-            yIndex += offsetY;
-        }
-
-        var xPointsLength = Math.round(drawWidth / offsetX) + 1;
-        var yPointsLength = Math.round(drawHeight / offsetY) + 1;
-
-        //
-        xIndex = 0;
-        yIndex = 1;
-        while (yIndex < yPointsLength) {
-            while (xIndex < xPointsLength) {
-                if (xIndex === 0) {
-                    _this.indices.push((yIndex - 1) * xPointsLength + xIndex);
-                }
-                _this.indices.push((yIndex - 1) * xPointsLength + xIndex, yIndex * xPointsLength + xIndex);
-                if (xIndex === xPointsLength - 1) {
-                    _this.indices.push(yIndex * xPointsLength + xIndex);
-                }
-                xIndex += 1;
-            }
-            xIndex = 0;
-            yIndex += 1;
-        }
-
-        _this.indices = new Uint16Array(_this.indices);
-        _this.verticesColors = new Float32Array(_this.verticesColors);
-        return _this;
-    }
-
-    _createClass(Heatmap, [{
-        key: 'update',
-        value: function update(obj) {
-            this.constructor(this.GL, obj);
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var gl = this.gl;
-            var mvMatrix = this.GL.camera.mvMatrix;
-
-            // 顶点/颜色缓冲区操作
-            var vertexColorBuffer = this.gl.buffers('vcBuffer');
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
-            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
-            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 7, 0);
-            gl.enableVertexAttribArray(gl.aPosition);
-            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 7, FSIZE * 3);
-            gl.enableVertexAttribArray(gl.aColor);
-            vertexColorBuffer = null;
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
-
-            // 顶点索引
-            var indexBuffer = this.gl.buffers('indexBuffer');
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-            // set mv
-            this.updateOpearte();
-            //
-
-            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
-        }
-    }]);
-
-    return Heatmap;
-}(_Object2.default);
-
-exports.default = Heatmap;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-//get the context
-function getWebGLContext(canvas, err) {
-    // bind err
-    if (canvas.addEventListener) {
-        canvas.addEventListener("webglcontextcreationerror", function (event) {
-            console.log(event.statusMessage);
-        }, false);
-    }
-    //create context
-    var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-    var context = null;
-    for (var ii = 0; ii < names.length; ++ii) {
-        try {
-            context = canvas.getContext(names[ii], err);
-        } catch (e) {}
-        if (context) {
-            break;
-        }
-    }
-    return context;
-};
-
-//init shader
-function initShaders(gl, vshader, fshader) {
-    // console.log('?>??')
-    var program = createProgram(gl, vshader, fshader);
-    if (!program) {
-        console.log('Failed to create program');
-        return false;
-    }
-    gl.useProgram(program);
-    gl.program = program;
-
-    // init shader variable
-    gl.uPMatrix = gl.getUniformLocation(program, "uPMatrix");
-    gl.uMVMatrix = gl.getUniformLocation(program, "uMVMatrix");
-    gl.uNMatrix = gl.getUniformLocation(program, "uNMatrix");
-    gl.uSampler = gl.getUniformLocation(program, "uSampler");
-    gl.uUseTexture = gl.getUniformLocation(program, "uUseTexture");
-    gl.uniform1i(program.uUseTextures, false);
-
-    gl.aVertexTextureCoords = gl.getAttribLocation(program, "aVertexTextureCoords");
-    gl.aPosition = gl.getAttribLocation(gl.program, 'aPosition');
-    gl.aColor = gl.getAttribLocation(gl.program, 'aColor');
-
-    return true;
-}
-
-//create program
-function createProgram(gl, vshader, fshader) {
-    // Create shader object
-    var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vshader);
-    var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fshader);
-    // console.log(vertexShader)
-
-    if (!vertexShader || !fragmentShader) {
-        return null;
-    }
-    // Create a program object
-    var program = gl.createProgram();
-    if (!program) {
-        return null;
-    }
-    // Attach the shader objects
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    // Link the program object
-    gl.linkProgram(program);
-    // Check the result of linking
-    var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
-    if (!linked) {
-        var error = gl.getProgramInfoLog(program);
-        console.log('Failed to link program: ' + error);
-        gl.deleteProgram(program);
-        gl.deleteShader(fragmentShader);
-        gl.deleteShader(vertexShader);
-        return null;
-    }
-    return program;
-}
-
-//loadShader
-function loadShader(gl, type, source) {
-    // console.log(type)
-    // Create shader object
-    var shader = gl.createShader(type);
-    if (shader == null) {
-        console.log('unable to create shader');
-        return null;
-    }
-    // Set the shader program
-    gl.shaderSource(shader, source);
-    // Compile the shader
-    gl.compileShader(shader);
-    // Check the result of compilation
-    var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-    if (!compiled) {
-        var error = gl.getShaderInfoLog(shader);
-        console.log('Failed to compile shader: ' + error);
-        gl.deleteShader(shader);
-        return null;
-    }
-    return shader;
-}
-
-function colorTransform(colorStr) {
-    var color = [0, 0, 0];
-    if (typeof colorStr == 'string') {
-        if (colorStr.indexOf('#') !== -1) {
-            var _color = colorStr.substring(1);
-            if (_color.length == 3) {
-                color = [];
-                for (var i = 0; i < _color.length; i++) {
-                    var key = _color.charAt(i);
-                    color.push(parseInt(key + key, 16) / 255);
-                }
-            } else if (_color.length == 6) {
-                color = [];
-                for (var i = 0; i < _color.length; i += 2) {
-                    var key = _color.charAt(i);
-                    var key2 = _color.charAt(i + 1);
-                    color.push(parseInt(key + key2, 16) / 255);
-                }
-            }
-        }
-    }
-    return color;
-}
-
-function calculateNormals(vs, ind) {
-    // console.log(vs, ind)
-    var x = 0;
-    var y = 1;
-    var z = 2;
-
-    var ns = [];
-    for (var i = 0; i < vs.length; i++) {
-        //for each vertex, initialize normal x, normal y, normal z
-        ns[i] = 0.0;
-    }
-    // console.warn(ns)
-    for (var i = 0; i < ind.length; i = i + 3) {
-        //we work on triads of vertices to calculate normals so i = i+3 (i = indices index)
-        var v1 = [];
-        var v2 = [];
-        var normal = [];
-        // console.log(vs[3 * ind[i + 1] + x] - vs[3 * ind[i] + x]);
-        //p1 - p0
-        v1[x] = vs[3 * ind[i + 1] + x] - vs[3 * ind[i] + x];
-        v1[y] = vs[3 * ind[i + 1] + y] - vs[3 * ind[i] + y];
-        v1[z] = vs[3 * ind[i + 1] + z] - vs[3 * ind[i] + z];
-        // console.log('!', v1)
-        // p0 - p1
-        v2[x] = vs[3 * ind[i + 2] + x] - vs[3 * ind[i + 1] + x];
-        v2[y] = vs[3 * ind[i + 2] + y] - vs[3 * ind[i + 1] + y];
-        v2[z] = vs[3 * ind[i + 2] + z] - vs[3 * ind[i + 1] + z];
-        // console.log('?', v2)
-        //p2 - p1
-        // v1[x] = vs[3*ind[i+2]+x] - vs[3*ind[i+1]+x];
-        // v1[y] = vs[3*ind[i+2]+y] - vs[3*ind[i+1]+y];
-        // v1[z] = vs[3*ind[i+2]+z] - vs[3*ind[i+1]+z];
-        // p0 - p1
-        // v2[x] = vs[3*ind[i]+x] - vs[3*ind[i+1]+x];
-        // v2[y] = vs[3*ind[i]+y] - vs[3*ind[i+1]+y];
-        // v2[z] = vs[3*ind[i]+z] - vs[3*ind[i+1]+z];
-        //cross product by Sarrus Rule
-        normal[x] = v1[y] * v2[z] - v1[z] * v2[y];
-        normal[y] = v1[z] * v2[x] - v1[x] * v2[z];
-        normal[z] = v1[x] * v2[y] - v1[y] * v2[x];
-        // console.log(normal, x, y, z,v1)
-
-        // ns[3*ind[i]+x] += normal[x];
-        // ns[3*ind[i]+y] += normal[y];
-        // ns[3*ind[i]+z] += normal[z];
-        for (var j = 0; j < 3; j++) {
-            //update the normals of that triangle: sum of vectors
-            ns[3 * ind[i + j] + x] = ns[3 * ind[i + j] + x] + normal[x];
-            ns[3 * ind[i + j] + y] = ns[3 * ind[i + j] + y] + normal[y];
-            ns[3 * ind[i + j] + z] = ns[3 * ind[i + j] + z] + normal[z];
-        }
-    }
-    // console.log(ns)
-    //normalize the result
-    for (var i = 0; i < vs.length; i = i + 3) {
-        //the increment here is because each vertex occurs with an offset of 3 in the array (due to x, y, z contiguous values)
-
-        var nn = [];
-        nn[x] = ns[i + x];
-        nn[y] = ns[i + y];
-        nn[z] = ns[i + z];
-
-        var len = Math.sqrt(nn[x] * nn[x] + nn[y] * nn[y] + nn[z] * nn[z]);
-        if (len == 0) len = 0.00001;
-
-        nn[x] = nn[x] / len;
-        nn[y] = nn[y] / len;
-        nn[z] = nn[z] / len;
-
-        ns[i + x] = nn[x];
-        ns[i + y] = nn[y];
-        ns[i + z] = nn[z];
-    }
-    return ns;
-}
-
-function BufferManage(name) {
-    this._cache = this._cache || {};
-    this._cache.buffers = this._cache.buffers || {};
-    if (!this._cache.buffers[name]) {
-        this._cache.buffers[name] = this.createBuffer();
-    }
-    return this._cache.buffers[name];
-}
-
-function TextureManage(name) {
-    this._cache = this._cache || {};
-    this._cache.texture = this._cache.texture || {};
-    if (!this._cache.texture[name]) {
-        this._cache.texture[name] = this.createTexture();
-    }
-    return this._cache.texture[name];
-}
-
-exports.default = {
-    getWebGLContext: getWebGLContext,
-    initShaders: initShaders,
-    createProgram: createProgram,
-    loadShader: loadShader,
-    colorTransform: colorTransform,
-    calculateNormals: calculateNormals,
-    BufferManage: BufferManage,
-    TextureManage: TextureManage
-};
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1081,6 +468,232 @@ extend(MercatorProjection.prototype, {
 exports.default = MercatorProjection;
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Object = __webpack_require__(1);
+
+var _Object2 = _interopRequireDefault(_Object);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Path = function (_Obj) {
+    _inherits(Path, _Obj);
+
+    function Path(GL, obj) {
+        _classCallCheck(this, Path);
+
+        var _this = _possibleConstructorReturn(this, (Path.__proto__ || Object.getPrototypeOf(Path)).call(this, GL, obj));
+
+        var color = _this.color;
+        var paths = obj.path;
+        _this.verticesColors = [];
+        paths.forEach(function (point) {
+            _this.verticesColors = _this.verticesColors.concat(point.concat(color));
+        });
+        _this.verticesColors = new Float32Array(_this.verticesColors);
+        return _this;
+    }
+
+    _createClass(Path, [{
+        key: 'render',
+        value: function render() {
+            var gl = this.gl;
+            gl.uniform1i(this.gl.uUseTexture, false);
+            var mvMatrix = this.GL.camera.mvMatrix;
+
+            // 顶点/颜色缓冲区操作
+            var vertexColorBuffer = this.gl.buffers('vcBuffer' + this.id);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
+            //
+            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
+            //
+            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
+            gl.enableVertexAttribArray(gl.aPosition);
+            //
+            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+            gl.enableVertexAttribArray(gl.aColor);
+            vertexColorBuffer = null;
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+
+            // set mv
+            this.updateOpearte();
+            //
+
+            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
+            gl.drawArrays(gl.LINE_STRIP, 0, this.verticesColors.length / 6);
+        }
+    }]);
+
+    return Path;
+}(_Object2.default);
+
+exports.default = Path;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Object = __webpack_require__(1);
+
+var _Object2 = _interopRequireDefault(_Object);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Belt = function (_Obj) {
+    _inherits(Belt, _Obj);
+
+    function Belt(GL, obj) {
+        _classCallCheck(this, Belt);
+
+        var _this = _possibleConstructorReturn(this, (Belt.__proto__ || Object.getPrototypeOf(Belt)).call(this, GL, obj));
+
+        _this.obj = obj;
+        _this.update(obj);
+        return _this;
+    }
+
+    _createClass(Belt, [{
+        key: 'update',
+        value: function update(obj) {
+            var _this2 = this;
+
+            var color = this.color;
+            var paths = obj.path;
+            this.height = obj.height || 10.0;
+            this.verticesColors = [];
+            this.indices = [];
+            this.texture_coords = [];
+
+            var pathDistances = [];
+            var pathLength = 0;
+            paths.forEach(function (point, index) {
+                // if(index>10) return false;
+                if (index > 0) {
+                    var start = point;
+                    var end = paths[index - 1];
+                    var dist = Math.sqrt(Math.pow(start[0] - end[0], 2), Math.pow(start[1] - end[1], 2));
+                    pathLength += dist;
+                }
+                pathDistances.push(pathLength);
+                //
+                point[2] = _this2.height;
+                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
+                point[2] = 0;
+                _this2.verticesColors = _this2.verticesColors.concat(point.concat(color));
+                //
+                _this2.indices.push(index * 2);
+                _this2.indices.push(index * 2 + 1);
+            });
+            pathDistances.forEach(function (dist, index) {
+                _this2.texture_coords.push(dist / pathLength, 1);
+                _this2.texture_coords.push(dist / pathLength, 0);
+            });
+            this.texture_coords = new Float32Array(this.texture_coords);
+            this.indices = new Uint16Array(this.indices);
+            this.verticesColors = new Float32Array(this.verticesColors);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var gl = this.gl;
+            var mvMatrix = this.GL.camera.mvMatrix;
+
+            // 顶点/颜色缓冲区操作
+            var vertexColorBuffer = this.gl.buffers('vcBuffer');
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
+            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
+            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 6, 0);
+            gl.enableVertexAttribArray(gl.aPosition);
+            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+            gl.enableVertexAttribArray(gl.aColor);
+            vertexColorBuffer = null;
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+
+            // 顶点索引
+            var indexBuffer = this.gl.buffers('indexBuffer');
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // gl.bindTexture(gl.TEXTURE_2D, texture);
+            // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            // gl.bindTexture(gl.TEXTURE_2D, null);
+
+            if (this.obj.texture) {
+                this.gl.uniform1i(this.gl.uUseTexture, true);
+                // texture
+                var texture = gl.textures('text');
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.activeTexture(gl.TEXTURE0);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.obj.texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.uniform1i(gl.uSampler, 0);
+                // // texture coordinate
+                // console.log(this.texture_coords)
+                var textureBufferObject = this.gl.buffers('textureBuffer');
+                gl.bindBuffer(gl.ARRAY_BUFFER, textureBufferObject);
+                gl.bufferData(gl.ARRAY_BUFFER, this.texture_coords, gl.STATIC_DRAW);
+                gl.vertexAttribPointer(gl.aVertexTextureCoords, 2, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(gl.aVertexTextureCoords);
+                // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            }
+
+            // set mv
+            this.updateOpearte();
+            //
+
+            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
+            // gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
+            // console.log(this.indices.length)
+
+            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+            window.gl = gl;
+        }
+    }]);
+
+    return Belt;
+}(_Object2.default);
+
+exports.default = Belt;
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1091,19 +704,425 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _utility = __webpack_require__(4);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Object = __webpack_require__(1);
+
+var _Object2 = _interopRequireDefault(_Object);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Heatmap = function (_Obj) {
+    _inherits(Heatmap, _Obj);
+
+    function Heatmap(GL, obj) {
+        _classCallCheck(this, Heatmap);
+
+        var _this = _possibleConstructorReturn(this, (Heatmap.__proto__ || Object.getPrototypeOf(Heatmap)).call(this, GL, obj));
+
+        _this.GL = GL;
+        _this.obj = obj;
+
+        var color = _this.color;
+        var paths = obj.path;
+        _this.verticesColors = [];
+        _this.indices = [];
+        _this.texture_coords = [];
+        // this.verticesColors.concat(point.concat(color));
+
+        var drawWidth = 1000;
+        var drawHeight = 1000;
+        var offsetX = 10;
+        var offsetY = 10;
+
+        var xIndex = 0;
+        var yIndex = 0;
+        while (yIndex <= drawWidth) {
+            while (xIndex <= drawHeight) {
+                var xPresent = xIndex / drawWidth;
+                var yPresent = yIndex / drawHeight;
+                var xImg = Math.round(obj.alphaImageData.width * xPresent);
+                var yImg = Math.round(obj.alphaImageData.height * yPresent);
+                xImg = Math.min(obj.alphaImageData.width - 1, xImg);
+                yImg = Math.min(obj.alphaImageData.height - 1, yImg);
+                var imgDataIndex = (xImg + yImg * obj.alphaImageData.width) * 4;
+
+                var xPixel = xIndex - drawWidth / 2;
+                var yPixel = drawHeight / 2 - yIndex;
+                //
+                var r = obj.imgData.data[imgDataIndex] / 255;
+                var g = obj.imgData.data[imgDataIndex + 1] / 255;
+                var b = obj.imgData.data[imgDataIndex + 2] / 255;
+                if (obj.alphaImageData.data[imgDataIndex + 3] === 0) {
+                    r = g = b = 0.1;
+                }
+                _this.verticesColors.push(xPixel, yPixel, obj.alphaImageData.data[imgDataIndex + 3] * 3, r, g, b, 0);
+                xIndex += offsetX;
+            }
+            xIndex = 0;
+            yIndex += offsetY;
+        }
+
+        var xPointsLength = Math.round(drawWidth / offsetX) + 1;
+        var yPointsLength = Math.round(drawHeight / offsetY) + 1;
+
+        //
+        xIndex = 0;
+        yIndex = 1;
+        while (yIndex < yPointsLength) {
+            while (xIndex < xPointsLength) {
+                if (xIndex === 0) {
+                    _this.indices.push((yIndex - 1) * xPointsLength + xIndex);
+                }
+                _this.indices.push((yIndex - 1) * xPointsLength + xIndex, yIndex * xPointsLength + xIndex);
+                if (xIndex === xPointsLength - 1) {
+                    _this.indices.push(yIndex * xPointsLength + xIndex);
+                }
+                xIndex += 1;
+            }
+            xIndex = 0;
+            yIndex += 1;
+        }
+
+        _this.indices = new Uint16Array(_this.indices);
+        _this.verticesColors = new Float32Array(_this.verticesColors);
+        return _this;
+    }
+
+    _createClass(Heatmap, [{
+        key: 'update',
+        value: function update(obj) {
+            this.constructor(this.GL, obj);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var gl = this.gl;
+            var mvMatrix = this.GL.camera.mvMatrix;
+
+            // 顶点/颜色缓冲区操作
+            var vertexColorBuffer = this.gl.buffers('vcBuffer');
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.verticesColors, gl.STATIC_DRAW);
+            var FSIZE = this.verticesColors.BYTES_PER_ELEMENT;
+            gl.vertexAttribPointer(gl.aPosition, 3, gl.FLOAT, false, FSIZE * 7, 0);
+            gl.enableVertexAttribArray(gl.aPosition);
+            gl.vertexAttribPointer(gl.aColor, 3, gl.FLOAT, false, FSIZE * 7, FSIZE * 3);
+            gl.enableVertexAttribArray(gl.aColor);
+            vertexColorBuffer = null;
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+
+            // 顶点索引
+            var indexBuffer = this.gl.buffers('indexBuffer');
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // set mv
+            this.updateOpearte();
+            //
+
+            gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
+            gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        }
+    }]);
+
+    return Heatmap;
+}(_Object2.default);
+
+exports.default = Heatmap;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+//get the context
+function getWebGLContext(canvas, err) {
+    // bind err
+    if (canvas.addEventListener) {
+        canvas.addEventListener("webglcontextcreationerror", function (event) {
+            console.log(event.statusMessage);
+        }, false);
+    }
+    //create context
+    var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+    var context = null;
+    for (var ii = 0; ii < names.length; ++ii) {
+        try {
+            context = canvas.getContext(names[ii], err);
+        } catch (e) {}
+        if (context) {
+            break;
+        }
+    }
+    return context;
+};
+
+//init shader
+function initShaders(gl, vshader, fshader) {
+    // console.log('?>??')
+    var program = createProgram(gl, vshader, fshader);
+    if (!program) {
+        console.log('Failed to create program');
+        return false;
+    }
+    gl.useProgram(program);
+    gl.program = program;
+
+    // init shader variable
+    gl.uPMatrix = gl.getUniformLocation(program, "uPMatrix");
+    gl.uMVMatrix = gl.getUniformLocation(program, "uMVMatrix");
+    gl.uNMatrix = gl.getUniformLocation(program, "uNMatrix");
+    gl.uSampler = gl.getUniformLocation(program, "uSampler");
+    gl.uUseTexture = gl.getUniformLocation(program, "uUseTexture");
+    gl.uniform1i(program.uUseTextures, false);
+
+    gl.aVertexTextureCoords = gl.getAttribLocation(program, "aVertexTextureCoords");
+    gl.aPosition = gl.getAttribLocation(gl.program, 'aPosition');
+    gl.aColor = gl.getAttribLocation(gl.program, 'aColor');
+
+    return true;
+}
+
+//create program
+function createProgram(gl, vshader, fshader) {
+    // Create shader object
+    var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vshader);
+    var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fshader);
+    // console.log(vertexShader)
+
+    if (!vertexShader || !fragmentShader) {
+        return null;
+    }
+    // Create a program object
+    var program = gl.createProgram();
+    if (!program) {
+        return null;
+    }
+    // Attach the shader objects
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    // Link the program object
+    gl.linkProgram(program);
+    // Check the result of linking
+    var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!linked) {
+        var error = gl.getProgramInfoLog(program);
+        console.log('Failed to link program: ' + error);
+        gl.deleteProgram(program);
+        gl.deleteShader(fragmentShader);
+        gl.deleteShader(vertexShader);
+        return null;
+    }
+    return program;
+}
+
+//loadShader
+function loadShader(gl, type, source) {
+    // console.log(type)
+    // Create shader object
+    var shader = gl.createShader(type);
+    if (shader == null) {
+        console.log('unable to create shader');
+        return null;
+    }
+    // Set the shader program
+    gl.shaderSource(shader, source);
+    // Compile the shader
+    gl.compileShader(shader);
+    // Check the result of compilation
+    var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (!compiled) {
+        var error = gl.getShaderInfoLog(shader);
+        console.log('Failed to compile shader: ' + error);
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+function colorTransform(colorStr) {
+    var color = [0, 0, 0];
+    if (typeof colorStr == 'string') {
+        if (colorStr.indexOf('#') !== -1) {
+            var _color = colorStr.substring(1);
+            if (_color.length == 3) {
+                color = [];
+                for (var i = 0; i < _color.length; i++) {
+                    var key = _color.charAt(i);
+                    color.push(parseInt(key + key, 16) / 255);
+                }
+            } else if (_color.length == 6) {
+                color = [];
+                for (var i = 0; i < _color.length; i += 2) {
+                    var key = _color.charAt(i);
+                    var key2 = _color.charAt(i + 1);
+                    color.push(parseInt(key + key2, 16) / 255);
+                }
+            }
+        }
+    }
+    return color;
+}
+
+function calculateNormals(vs, ind) {
+    // console.log(vs, ind)
+    var x = 0;
+    var y = 1;
+    var z = 2;
+
+    var ns = [];
+    for (var i = 0; i < vs.length; i++) {
+        //for each vertex, initialize normal x, normal y, normal z
+        ns[i] = 0.0;
+    }
+    // console.warn(ns)
+    for (var i = 0; i < ind.length; i = i + 3) {
+        //we work on triads of vertices to calculate normals so i = i+3 (i = indices index)
+        var v1 = [];
+        var v2 = [];
+        var normal = [];
+        // console.log(vs[3 * ind[i + 1] + x] - vs[3 * ind[i] + x]);
+        //p1 - p0
+        v1[x] = vs[3 * ind[i + 1] + x] - vs[3 * ind[i] + x];
+        v1[y] = vs[3 * ind[i + 1] + y] - vs[3 * ind[i] + y];
+        v1[z] = vs[3 * ind[i + 1] + z] - vs[3 * ind[i] + z];
+        // console.log('!', v1)
+        // p0 - p1
+        v2[x] = vs[3 * ind[i + 2] + x] - vs[3 * ind[i + 1] + x];
+        v2[y] = vs[3 * ind[i + 2] + y] - vs[3 * ind[i + 1] + y];
+        v2[z] = vs[3 * ind[i + 2] + z] - vs[3 * ind[i + 1] + z];
+        // console.log('?', v2)
+        //p2 - p1
+        // v1[x] = vs[3*ind[i+2]+x] - vs[3*ind[i+1]+x];
+        // v1[y] = vs[3*ind[i+2]+y] - vs[3*ind[i+1]+y];
+        // v1[z] = vs[3*ind[i+2]+z] - vs[3*ind[i+1]+z];
+        // p0 - p1
+        // v2[x] = vs[3*ind[i]+x] - vs[3*ind[i+1]+x];
+        // v2[y] = vs[3*ind[i]+y] - vs[3*ind[i+1]+y];
+        // v2[z] = vs[3*ind[i]+z] - vs[3*ind[i+1]+z];
+        //cross product by Sarrus Rule
+        normal[x] = v1[y] * v2[z] - v1[z] * v2[y];
+        normal[y] = v1[z] * v2[x] - v1[x] * v2[z];
+        normal[z] = v1[x] * v2[y] - v1[y] * v2[x];
+        // console.log(normal, x, y, z,v1)
+
+        // ns[3*ind[i]+x] += normal[x];
+        // ns[3*ind[i]+y] += normal[y];
+        // ns[3*ind[i]+z] += normal[z];
+        for (var j = 0; j < 3; j++) {
+            //update the normals of that triangle: sum of vectors
+            ns[3 * ind[i + j] + x] = ns[3 * ind[i + j] + x] + normal[x];
+            ns[3 * ind[i + j] + y] = ns[3 * ind[i + j] + y] + normal[y];
+            ns[3 * ind[i + j] + z] = ns[3 * ind[i + j] + z] + normal[z];
+        }
+    }
+    // console.log(ns)
+    //normalize the result
+    for (var i = 0; i < vs.length; i = i + 3) {
+        //the increment here is because each vertex occurs with an offset of 3 in the array (due to x, y, z contiguous values)
+
+        var nn = [];
+        nn[x] = ns[i + x];
+        nn[y] = ns[i + y];
+        nn[z] = ns[i + z];
+
+        var len = Math.sqrt(nn[x] * nn[x] + nn[y] * nn[y] + nn[z] * nn[z]);
+        if (len == 0) len = 0.00001;
+
+        nn[x] = nn[x] / len;
+        nn[y] = nn[y] / len;
+        nn[z] = nn[z] / len;
+
+        ns[i + x] = nn[x];
+        ns[i + y] = nn[y];
+        ns[i + z] = nn[z];
+    }
+    return ns;
+}
+
+function BufferManage(name) {
+    this._cache = this._cache || {};
+    this._cache.buffers = this._cache.buffers || {};
+    if (!this._cache.buffers[name]) {
+        this._cache.buffers[name] = this.createBuffer();
+    }
+    return this._cache.buffers[name];
+}
+
+function TextureManage(name) {
+    this._cache = this._cache || {};
+    this._cache.texture = this._cache.texture || {};
+    if (!this._cache.texture[name]) {
+        this._cache.texture[name] = this.createTexture();
+    }
+    return this._cache.texture[name];
+}
+
+exports.default = {
+    getWebGLContext: getWebGLContext,
+    initShaders: initShaders,
+    createProgram: createProgram,
+    loadShader: loadShader,
+    colorTransform: colorTransform,
+    calculateNormals: calculateNormals,
+    BufferManage: BufferManage,
+    TextureManage: TextureManage
+};
+
+/***/ }),
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var paths = [["116.452143", "39.889167", 0], ["116.451994", "39.890329", 0], ["116.451846", "39.891591", 0], ["116.451739", "39.892438", 0], ["116.451643", "39.893203", 0], ["116.451323", "39.895705", 0], ["116.451103", "39.897235", 0], ["116.451020", "39.897781", 0], ["116.450945", "39.898277", 0], ["116.450825", "39.899458", 0], ["116.450759", "39.900727", 0], ["116.450748", "39.900943", 0], ["116.450662", "39.903094", 0], ["116.450417", "39.903752", 0], ["116.449079", "39.904687", 0], ["116.446823", "39.905211", 0], ["116.444635", "39.905708", 0], ["116.443402", "39.906438", 0], ["116.443151", "39.906811", 0], ["116.443011", "39.907385", 0], ["116.443027", "39.907719", 0], ["116.443042", "39.907911", 0], ["116.443068", "39.908238", 0], ["116.442954", "39.909361", 0], ["116.442804", "39.910220", 0], ["116.442768", "39.910438", 0], ["116.442687", "39.910907", 0], ["116.442669", "39.911008", 0], ["116.442541", "39.911746", 0], ["116.442496", "39.911948", 0], ["116.442460", "39.912539", 0], ["116.442416", "39.913245", 0], ["116.442382", "39.914500", 0], ["116.442295", "39.915674", 0], ["116.442285", "39.915882", 0], ["116.442243", "39.916742", 0], ["116.442040", "39.917711", 0], ["116.441813", "39.918740", 0], ["116.441483", "39.921427", 0], ["116.441476", "39.921570", 0], ["116.441445", "39.922271", 0], ["116.441436", "39.922576", 0], ["116.441428", "39.922730", 0], ["116.441399", "39.923433", 0], ["116.441393", "39.923617", 0], ["116.441289", "39.925688", 0], ["116.441227", "39.927439", 0], ["116.441212", "39.927748", 0], ["116.441196", "39.927861", 0], ["116.441079", "39.930370", 0], ["116.441012", "39.931965", 0], ["116.440986", "39.932708", 0], ["116.440921", "39.934236", 0], ["116.440894", "39.934861", 0], ["116.440822", "39.936462", 0], ["116.440816", "39.936684", 0], ["116.440800", "39.937062", 0], ["116.440771", "39.937575", 0], ["116.440675", "39.939640", 0], ["116.440609", "39.941181", 0], ["116.440563", "39.942114", 0], ["116.440553", "39.942264", 0], ["116.440509", "39.943285", 0], ["116.440446", "39.944815", 0], ["116.440347", "39.947009", 0], ["116.440275", "39.949320", 0], ["116.440291", "39.949821", 0], ["116.440322", "39.950905", 0], ["116.440309", "39.951048", 0], ["116.440315", "39.951350", 0], ["116.440344", "39.952350", 0], ["116.440343", "39.952484", 0], ["116.438276", "39.955607", 0], ["116.437094", "39.955816", 0], ["116.435638", "39.955792", 0], ["116.435177", "39.955786", 0], ["116.434470", "39.955773", 0], ["116.430681", "39.955711", 0], ["116.427758", "39.955671", 0], ["116.426977", "39.955654", 0], ["116.426766", "39.955651", 0], ["116.426435", "39.955648", 0], ["116.425105", "39.955621", 0], ["116.421619", "39.955556", 0], ["116.418171", "39.955490", 0], ["116.414766", "39.955462", 0], ["116.410814", "39.955458", 0], ["116.406925", "39.955431", 0], ["116.402176", "39.955374", 0], ["116.400467", "39.955354", 0], ["116.400270", "39.955352", 0], ["116.397776", "39.955335", 0], ["116.396883", "39.955320", 0], ["116.396284", "39.955310", 0], ["116.391650", "39.955213", 0], ["116.388423", "39.955144", 0], ["116.386054", "39.955099", 0], ["116.384483", "39.955040", 0], ["116.382831", "39.954981", 0], ["116.382383", "39.954965", 0], ["116.381459", "39.954917", 0], ["116.378012", "39.954641", 0], ["116.375494", "39.953935", 0], ["116.374771", "39.953644", 0], ["116.372932", "39.952841", 0], ["116.371970", "39.952421", 0], ["116.370419", "39.951940", 0], ["116.367191", "39.950978", 0], ["116.366170", "39.950680", 0], ["116.366083", "39.950655", 0], ["116.365591", "39.950509", 0], ["116.361928", "39.948586", 0], ["116.361967", "39.947731", 0], ["116.362032", "39.946246", 0], ["116.362053", "39.943655", 0], ["116.362170", "39.941876", 0], ["116.362181", "39.941266", 0], ["116.362336", "39.938210", 0], ["116.362489", "39.935104", 0], ["116.362546", "39.933335", 0], ["116.362617", "39.931677", 0], ["116.362621", "39.931422", 0], ["116.362668", "39.930570", 0], ["116.362726", "39.929455", 0], ["116.362786", "39.928375", 0], ["116.362811", "39.927908", 0], ["116.362845", "39.927300", 0], ["116.362860", "39.926697", 0], ["116.363037", "39.923706", 0], ["116.363083", "39.922439", 0], ["116.363115", "39.921784", 0], ["116.363210", "39.919724", 0], ["116.363234", "39.916692", 0], ["116.363170", "39.916124", 0], ["116.363105", "39.914178", 0], ["116.363158", "39.913017", 0], ["116.363210", "39.911812", 0], ["116.363277", "39.910069", 0], ["116.363231", "39.908398", 0], ["116.363247", "39.907031", 0], ["116.363260", "39.906804", 0], ["116.363276", "39.906523", 0], ["116.363057", "39.905419", 0], ["116.360762", "39.904211", 0], ["116.357967", "39.904007", 0], ["116.357328", "39.903965", 0], ["116.355180", "39.901867", 0], ["116.355231", "39.900434", 0], ["116.355228", "39.900070", 0], ["116.355231", "39.899202", 0], ["116.355242", "39.898325", 0], ["116.355259", "39.897530", 0], ["116.355261", "39.897472", 0], ["116.355274", "39.896488", 0], ["116.355281", "39.895299", 0], ["116.355304", "39.894311", 0], ["116.355323", "39.893709", 0], ["116.355338", "39.892896", 0], ["116.355341", "39.892635", 0], ["116.355353", "39.891327", 0], ["116.355379", "39.889328", 0], ["116.355381", "39.888599", 0], ["116.355390", "39.888385", 0], ["116.355420", "39.887638", 0], ["116.355621", "39.885016", 0], ["116.355850", "39.882375", 0], ["116.355826", "39.880801", 0], ["116.355738", "39.880256", 0], ["116.355595", "39.879221", 0], ["116.355499", "39.878504", 0], ["116.355319", "39.876775", 0], ["116.355702", "39.875349", 0], ["116.356837", "39.874460", 0], ["116.360095", "39.874115", 0], ["116.361516", "39.874107", 0], ["116.363561", "39.874081", 0], ["116.365209", "39.874190", 0], ["116.365449", "39.874209", 0], ["116.366479", "39.874306", 0], ["116.366597", "39.874323", 0], ["116.367043", "39.874384", 0], ["116.370755", "39.875016", 0], ["116.375193", "39.875736", 0], ["116.376808", "39.875904", 0], ["116.378011", "39.876030", 0], ["116.381488", "39.876347", 0], ["116.383279", "39.876498", 0], ["116.384578", "39.876610", 0], ["116.384982", "39.876644", 0], ["116.386605", "39.876787", 0], ["116.388015", "39.876910", 0], ["116.390503", "39.877132", 0], ["116.391317", "39.877192", 0], ["116.392350", "39.877279", 0], ["116.394374", "39.877421", 0], ["116.395746", "39.877515", 0], ["116.396180", "39.877545", 0], ["116.396504", "39.877567", 0], ["116.397429", "39.877628", 0], ["116.400260", "39.877775", 0], ["116.401773", "39.877826", 0], ["116.403841", "39.877919", 0], ["116.405912", "39.877982", 0], ["116.407887", "39.878077", 0], ["116.409628", "39.878204", 0], ["116.410613", "39.878253", 0], ["116.411896", "39.878285", 0], ["116.412908", "39.878308", 0], ["116.413621", "39.878328", 0], ["116.414545", "39.878354", 0], ["116.415307", "39.878348", 0], ["116.416517", "39.878369", 0], ["116.418634", "39.878412", 0], ["116.420226", "39.878440", 0], ["116.420545", "39.878448", 0], ["116.421641", "39.878355", 0], ["116.421709", "39.878340", 0], ["116.422258", "39.878123", 0], ["116.423074", "39.877718", 0], ["116.426273", "39.877270", 0], ["116.426727", "39.877289", 0], ["116.427368", "39.877328", 0], ["116.427484", "39.877331", 0], ["116.427622", "39.877338", 0], ["116.428028", "39.877356", 0], ["116.428454", "39.877377", 0], ["116.429088", "39.877411", 0], ["116.429862", "39.877426", 0], ["116.431068", "39.877408", 0], ["116.434706", "39.877210", 0], ["116.436790", "39.877053", 0], ["116.437244", "39.877012", 0], ["116.439287", "39.876871", 0], ["116.439955", "39.876826", 0], ["116.441024", "39.876748", 0], ["116.441403", "39.876726", 0], ["116.441881", "39.876695", 0], ["116.442122", "39.876678", 0], ["116.442315", "39.876664", 0], ["116.443333", "39.876590", 0], ["116.443841", "39.876549", 0], ["116.446124", "39.876387", 0], ["116.447569", "39.876293", 0], ["116.448502", "39.876345", 0], ["116.449349", "39.876593", 0], ["116.449882", "39.876878", 0], ["116.450456", "39.877499", 0], ["116.450527", "39.877617", 0], ["116.450885", "39.878793", 0], ["116.451306", "39.880522", 0], ["116.451387", "39.880748", 0], ["116.451685", "39.881578", 0], ["116.452358", "39.882953", 0], ["116.452613", "39.886537", 0], ["116.452577", "39.886829", 0], ["116.452304", "39.888168", 0], ["116.452246", "39.888527", 0], ["116.452143", "39.889167", 0]];
+
+exports.default = {
+    paths: paths
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _utility = __webpack_require__(7);
 
 var _utility2 = _interopRequireDefault(_utility);
 
-var _camera = __webpack_require__(7);
+var _camera = __webpack_require__(23);
 
 var _camera2 = _interopRequireDefault(_camera);
 
-var _objectPath = __webpack_require__(1);
+var _objectPath = __webpack_require__(4);
 
 var _objectPath2 = _interopRequireDefault(_objectPath);
 
-var _default = __webpack_require__(8);
+var _default = __webpack_require__(24);
 
 var _default2 = _interopRequireDefault(_default);
 
@@ -1173,7 +1192,7 @@ var objects = [{
 
 objects.forEach(function (object) {
     WebGl.prototype[object.name] = function (obj) {
-        var objClass = __webpack_require__(11)("./" + object.path).default;
+        var objClass = __webpack_require__(27)("./" + object.path).default;
         var objInstance = new objClass(this, obj);
         this.renderList.push(objInstance);
         return objInstance;
@@ -1183,7 +1202,290 @@ objects.forEach(function (object) {
 exports.default = WebGl;
 
 /***/ }),
-/* 7 */
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _webgl = __webpack_require__(10);
+
+var _webgl2 = _interopRequireDefault(_webgl);
+
+var _path = __webpack_require__(9);
+
+var _path2 = _interopRequireDefault(_path);
+
+var _mercatorPorjection = __webpack_require__(3);
+
+var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mercatorProjection = new _mercatorPorjection2.default();
+// console.log(data);
+
+
+var app = void 0;
+var heatMap = void 0;
+var thumbnailCanvas = void 0;
+
+var maxX = -Infinity;
+var minX = Infinity;
+var maxY = -Infinity;
+var minY = Infinity;
+var usePerPixel = 0;
+window.onload = function () {
+    app = window.app = new _webgl2.default('canvas');
+    // x
+    app.Path({
+        path: [[520, 520, 0], [520, 100 + 520, 0]],
+        color: '#f00'
+    });
+
+    // y
+    app.Path({
+        path: [[520, 520, 0], [100 + 520, 520, 0]],
+        color: '#0f0'
+    });
+
+    // z
+    app.Path({
+        path: [[520, 520, 0], [520, 520, 100]],
+        color: '#00f'
+    });
+    draw();
+};
+
+function getColorData() {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = '255';
+    canvas.height = '1';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.zIndex = '100';
+    var grandient = ctx.createLinearGradient(0, 0, 255, 0);
+    grandient.addColorStop(.25, "rgb(0,0,255)");
+    grandient.addColorStop(0.5, "rgb(0,255,0)");
+    grandient.addColorStop(0.75, "yellow");
+    grandient.addColorStop(1, "rgb(250,0,0)");
+    ctx.fillStyle = grandient;
+    ctx.fillRect(0, 0, 255, 1);
+    var colordata = ctx.getImageData(0, 0, 255, 1).data;
+    return colordata;
+}
+
+function draw(data, isMct) {
+    // color  data
+    var colordata = getColorData();
+
+    // otherdata 
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = '512';
+    canvas.height = '512';
+    canvas.style.width = '200px';
+    canvas.style.height = '200px';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.zIndex = '100';
+    canvas.className = 'thumbnailCanvas';
+    document.body.appendChild(canvas);
+    thumbnailCanvas && document.body.removeChild(thumbnailCanvas);
+    thumbnailCanvas = canvas;
+
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+    ctx.shadowColor = 'rgba(0,0,0, 0.05)';
+    ctx.shadowOffsetX = 10000;
+    ctx.shadowBlur = 8;
+
+    if (!data) {
+        for (var i = 0; i < 500; i++) {
+            ctx.fillRect((Math.random() * 512 | 0) - 10000, Math.random() * 512 | 0, Math.random() * 18 + 8, Math.random() * 18 + 8);
+        }
+    } else {
+        maxX = -Infinity;
+        minX = Infinity;
+        maxY = -Infinity;
+        minY = Infinity;
+        data.forEach(function (item) {
+            maxX = Math.max(maxX, item.x);
+            minX = Math.min(minX, item.x);
+            maxY = Math.max(maxY, item.y);
+            minY = Math.min(minY, item.y);
+        });
+        console.log(maxX);
+        var preX = 512 / (maxX - minX);
+        var preY = 512 / (maxY - minY);
+        usePerPixel = Math.min(preX, preY);
+        // by graph
+        var graph = {};
+
+        var graphMax = 0;
+        data.forEach(function (item) {
+            var x = (item.x - minX) * usePerPixel | 0;
+            var y = (item.y - minY) * usePerPixel | 0;
+            graph[x + '_' + y] = graph[x + '_' + y] || {
+                value: 0,
+                x: x,
+                y: y
+            };
+            graph[x + '_' + y].value++;
+            graphMax = Math.max(graphMax, graph[x + '_' + y].value);
+        });
+        Object.keys(graph).forEach(function (key) {
+            var basic = 0;
+            var level = graph[key].value - basic < 0 ? 0 : (graph[key].value - basic) / (graphMax - basic);
+            level = Math.max(0.1, level);
+            ctx.fillStyle = 'rgba(255,255,255,' + level + ')';
+            ctx.beginPath();
+            ctx.fillRect(graph[key].x - 10000, 512 - graph[key].y, ctx.shadowBlur, ctx.shadowBlur);
+        });
+    }
+
+    // img data
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var alphaImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var canvasData = imgData.data;
+    for (var i = 0; i < canvasData.length; i += 4) {
+        var index = Math.min(254, canvasData[i + 3] * 10);
+        canvasData[i] = colordata[index * 4];
+        canvasData[i + 1] = colordata[index * 4 + 1];
+        canvasData[i + 2] = colordata[index * 4 + 2];
+        canvasData[i + 3] = colordata[index * 4 + 3];
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    //
+    if (heatMap) {
+        heatMap.update({
+            alphaImageData: alphaImageData,
+            imgData: imgData
+        });
+    } else {
+        heatMap = app.HeatMap({
+            alphaImageData: alphaImageData,
+            imgData: imgData
+        });
+    }
+}
+
+// for drop
+window.ondragover = function (e) {
+    e.preventDefault();
+};
+
+window.ondragend = function (e) {
+    e.preventDefault();
+};
+
+var datas = [];
+window.ondrop = function (e) {
+    e.preventDefault();
+    var files = e.dataTransfer.files;
+
+    Object.keys(files).forEach(function (id) {
+        var read = new FileReader();
+        read.onload = function (e) {
+            var jsonData = JSON.parse(e.target.result).filter(function (item) {
+                console.log(item);
+                return item.x > 10 && item.y > 10;
+            });
+            datas.push({
+                name: files[id],
+                datas: jsonData
+            });
+            updateList();
+        };
+        read.readAsText(files[id]);
+    });
+};
+
+function updateList() {
+    var ul = document.getElementById('ul');
+    var newData = datas.map(function (data, index) {
+        return '<li data-id=' + index + '>' + data.name.name + '</li>';
+    });
+    ul.innerHTML = newData.join('');
+}
+
+document.getElementById('ul').onclick = function (e) {
+    // console.log(datas[e.target.dataset.id]);
+    draw(datas[e.target.dataset.id].datas, true);
+};
+
+// for draw area
+var pickCanvas = document.createElement('canvas');
+var pickCanvasCtx = pickCanvas.getContext('2d');
+pickCanvas.style.position = 'absolute';
+pickCanvas.style.top = pickCanvas.style.left = 0;
+pickCanvas.width = pickCanvas.height = 512;
+pickCanvas.style.width = pickCanvas.style.height = '512px';
+pickCanvas.style.display = 'none';
+pickCanvas.style.zIndex = '10000';
+var pickPoints = [];
+
+document.body.appendChild(pickCanvas);
+document.body.onclick = function (e) {
+    if (e.target == thumbnailCanvas) {
+        thumbnailCanvas.style.width = '512px';
+        thumbnailCanvas.style.height = '512px';
+        pickCanvas.style.display = 'block';
+        pickPoints = [];
+        drawPick();
+    }
+};
+
+pickCanvas.onclick = function (e) {
+    pickPoints.push([e.offsetX, e.offsetY]);
+    drawPick();
+};
+
+function drawPick() {
+    var ctx = pickCanvasCtx;
+    if (!ctx) return false;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 4;
+    pickPoints.forEach(function (point, index) {
+        if (index === 0) {
+            ctx.moveTo(point[0], point[1]);
+        } else {
+            ctx.lineTo(point[0], point[1]);
+        }
+    });
+    ctx.stroke();
+}
+
+window.onkeyup = function (e) {
+    if (e.keyCode === 27 && pickPoints.length > 1) {
+        var mc = [];
+        for (var i = 0; i < pickPoints.length; i++) {
+            mc.push(minX + pickPoints[i][0] / usePerPixel, minY + (512 - pickPoints[i][1]) / usePerPixel);
+        }
+        location.hash = mc.join(',');
+        pickPoints = [];
+        pickCanvas.style.display = 'none';
+        thumbnailCanvas.style.width = '200px';
+        thumbnailCanvas.style.height = '200px';
+    }
+};
+
+/***/ }),
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1193,7 +1495,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _glMatrixMin = __webpack_require__(9);
+var _glMatrixMin = __webpack_require__(25);
 
 // import Con from './sys';
 var Con = {
@@ -1320,7 +1622,7 @@ Camera.prototype.computerXYZ = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 8 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1341,7 +1643,7 @@ var shaders = {
 exports.default = shaders;
 
 /***/ }),
-/* 9 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2655,10 +2957,10 @@ THE SOFTWARE. */
     }, t.exports = o;
   }]);
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26)(module)))
 
 /***/ }),
-/* 10 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -2686,18 +2988,18 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 11 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./Object": 0,
-	"./Object.js": 0,
-	"./object-belt": 2,
-	"./object-belt.js": 2,
-	"./object-heatmap": 3,
-	"./object-heatmap.js": 3,
-	"./object-path": 1,
-	"./object-path.js": 1
+	"./Object": 1,
+	"./Object.js": 1,
+	"./object-belt": 5,
+	"./object-belt.js": 5,
+	"./object-heatmap": 6,
+	"./object-heatmap.js": 6,
+	"./object-path": 4,
+	"./object-path.js": 4
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -2713,297 +3015,7 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 11;
-
-/***/ }),
-/* 12 */,
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var paths = [["116.452143", "39.889167", 0], ["116.451994", "39.890329", 0], ["116.451846", "39.891591", 0], ["116.451739", "39.892438", 0], ["116.451643", "39.893203", 0], ["116.451323", "39.895705", 0], ["116.451103", "39.897235", 0], ["116.451020", "39.897781", 0], ["116.450945", "39.898277", 0], ["116.450825", "39.899458", 0], ["116.450759", "39.900727", 0], ["116.450748", "39.900943", 0], ["116.450662", "39.903094", 0], ["116.450417", "39.903752", 0], ["116.449079", "39.904687", 0], ["116.446823", "39.905211", 0], ["116.444635", "39.905708", 0], ["116.443402", "39.906438", 0], ["116.443151", "39.906811", 0], ["116.443011", "39.907385", 0], ["116.443027", "39.907719", 0], ["116.443042", "39.907911", 0], ["116.443068", "39.908238", 0], ["116.442954", "39.909361", 0], ["116.442804", "39.910220", 0], ["116.442768", "39.910438", 0], ["116.442687", "39.910907", 0], ["116.442669", "39.911008", 0], ["116.442541", "39.911746", 0], ["116.442496", "39.911948", 0], ["116.442460", "39.912539", 0], ["116.442416", "39.913245", 0], ["116.442382", "39.914500", 0], ["116.442295", "39.915674", 0], ["116.442285", "39.915882", 0], ["116.442243", "39.916742", 0], ["116.442040", "39.917711", 0], ["116.441813", "39.918740", 0], ["116.441483", "39.921427", 0], ["116.441476", "39.921570", 0], ["116.441445", "39.922271", 0], ["116.441436", "39.922576", 0], ["116.441428", "39.922730", 0], ["116.441399", "39.923433", 0], ["116.441393", "39.923617", 0], ["116.441289", "39.925688", 0], ["116.441227", "39.927439", 0], ["116.441212", "39.927748", 0], ["116.441196", "39.927861", 0], ["116.441079", "39.930370", 0], ["116.441012", "39.931965", 0], ["116.440986", "39.932708", 0], ["116.440921", "39.934236", 0], ["116.440894", "39.934861", 0], ["116.440822", "39.936462", 0], ["116.440816", "39.936684", 0], ["116.440800", "39.937062", 0], ["116.440771", "39.937575", 0], ["116.440675", "39.939640", 0], ["116.440609", "39.941181", 0], ["116.440563", "39.942114", 0], ["116.440553", "39.942264", 0], ["116.440509", "39.943285", 0], ["116.440446", "39.944815", 0], ["116.440347", "39.947009", 0], ["116.440275", "39.949320", 0], ["116.440291", "39.949821", 0], ["116.440322", "39.950905", 0], ["116.440309", "39.951048", 0], ["116.440315", "39.951350", 0], ["116.440344", "39.952350", 0], ["116.440343", "39.952484", 0], ["116.438276", "39.955607", 0], ["116.437094", "39.955816", 0], ["116.435638", "39.955792", 0], ["116.435177", "39.955786", 0], ["116.434470", "39.955773", 0], ["116.430681", "39.955711", 0], ["116.427758", "39.955671", 0], ["116.426977", "39.955654", 0], ["116.426766", "39.955651", 0], ["116.426435", "39.955648", 0], ["116.425105", "39.955621", 0], ["116.421619", "39.955556", 0], ["116.418171", "39.955490", 0], ["116.414766", "39.955462", 0], ["116.410814", "39.955458", 0], ["116.406925", "39.955431", 0], ["116.402176", "39.955374", 0], ["116.400467", "39.955354", 0], ["116.400270", "39.955352", 0], ["116.397776", "39.955335", 0], ["116.396883", "39.955320", 0], ["116.396284", "39.955310", 0], ["116.391650", "39.955213", 0], ["116.388423", "39.955144", 0], ["116.386054", "39.955099", 0], ["116.384483", "39.955040", 0], ["116.382831", "39.954981", 0], ["116.382383", "39.954965", 0], ["116.381459", "39.954917", 0], ["116.378012", "39.954641", 0], ["116.375494", "39.953935", 0], ["116.374771", "39.953644", 0], ["116.372932", "39.952841", 0], ["116.371970", "39.952421", 0], ["116.370419", "39.951940", 0], ["116.367191", "39.950978", 0], ["116.366170", "39.950680", 0], ["116.366083", "39.950655", 0], ["116.365591", "39.950509", 0], ["116.361928", "39.948586", 0], ["116.361967", "39.947731", 0], ["116.362032", "39.946246", 0], ["116.362053", "39.943655", 0], ["116.362170", "39.941876", 0], ["116.362181", "39.941266", 0], ["116.362336", "39.938210", 0], ["116.362489", "39.935104", 0], ["116.362546", "39.933335", 0], ["116.362617", "39.931677", 0], ["116.362621", "39.931422", 0], ["116.362668", "39.930570", 0], ["116.362726", "39.929455", 0], ["116.362786", "39.928375", 0], ["116.362811", "39.927908", 0], ["116.362845", "39.927300", 0], ["116.362860", "39.926697", 0], ["116.363037", "39.923706", 0], ["116.363083", "39.922439", 0], ["116.363115", "39.921784", 0], ["116.363210", "39.919724", 0], ["116.363234", "39.916692", 0], ["116.363170", "39.916124", 0], ["116.363105", "39.914178", 0], ["116.363158", "39.913017", 0], ["116.363210", "39.911812", 0], ["116.363277", "39.910069", 0], ["116.363231", "39.908398", 0], ["116.363247", "39.907031", 0], ["116.363260", "39.906804", 0], ["116.363276", "39.906523", 0], ["116.363057", "39.905419", 0], ["116.360762", "39.904211", 0], ["116.357967", "39.904007", 0], ["116.357328", "39.903965", 0], ["116.355180", "39.901867", 0], ["116.355231", "39.900434", 0], ["116.355228", "39.900070", 0], ["116.355231", "39.899202", 0], ["116.355242", "39.898325", 0], ["116.355259", "39.897530", 0], ["116.355261", "39.897472", 0], ["116.355274", "39.896488", 0], ["116.355281", "39.895299", 0], ["116.355304", "39.894311", 0], ["116.355323", "39.893709", 0], ["116.355338", "39.892896", 0], ["116.355341", "39.892635", 0], ["116.355353", "39.891327", 0], ["116.355379", "39.889328", 0], ["116.355381", "39.888599", 0], ["116.355390", "39.888385", 0], ["116.355420", "39.887638", 0], ["116.355621", "39.885016", 0], ["116.355850", "39.882375", 0], ["116.355826", "39.880801", 0], ["116.355738", "39.880256", 0], ["116.355595", "39.879221", 0], ["116.355499", "39.878504", 0], ["116.355319", "39.876775", 0], ["116.355702", "39.875349", 0], ["116.356837", "39.874460", 0], ["116.360095", "39.874115", 0], ["116.361516", "39.874107", 0], ["116.363561", "39.874081", 0], ["116.365209", "39.874190", 0], ["116.365449", "39.874209", 0], ["116.366479", "39.874306", 0], ["116.366597", "39.874323", 0], ["116.367043", "39.874384", 0], ["116.370755", "39.875016", 0], ["116.375193", "39.875736", 0], ["116.376808", "39.875904", 0], ["116.378011", "39.876030", 0], ["116.381488", "39.876347", 0], ["116.383279", "39.876498", 0], ["116.384578", "39.876610", 0], ["116.384982", "39.876644", 0], ["116.386605", "39.876787", 0], ["116.388015", "39.876910", 0], ["116.390503", "39.877132", 0], ["116.391317", "39.877192", 0], ["116.392350", "39.877279", 0], ["116.394374", "39.877421", 0], ["116.395746", "39.877515", 0], ["116.396180", "39.877545", 0], ["116.396504", "39.877567", 0], ["116.397429", "39.877628", 0], ["116.400260", "39.877775", 0], ["116.401773", "39.877826", 0], ["116.403841", "39.877919", 0], ["116.405912", "39.877982", 0], ["116.407887", "39.878077", 0], ["116.409628", "39.878204", 0], ["116.410613", "39.878253", 0], ["116.411896", "39.878285", 0], ["116.412908", "39.878308", 0], ["116.413621", "39.878328", 0], ["116.414545", "39.878354", 0], ["116.415307", "39.878348", 0], ["116.416517", "39.878369", 0], ["116.418634", "39.878412", 0], ["116.420226", "39.878440", 0], ["116.420545", "39.878448", 0], ["116.421641", "39.878355", 0], ["116.421709", "39.878340", 0], ["116.422258", "39.878123", 0], ["116.423074", "39.877718", 0], ["116.426273", "39.877270", 0], ["116.426727", "39.877289", 0], ["116.427368", "39.877328", 0], ["116.427484", "39.877331", 0], ["116.427622", "39.877338", 0], ["116.428028", "39.877356", 0], ["116.428454", "39.877377", 0], ["116.429088", "39.877411", 0], ["116.429862", "39.877426", 0], ["116.431068", "39.877408", 0], ["116.434706", "39.877210", 0], ["116.436790", "39.877053", 0], ["116.437244", "39.877012", 0], ["116.439287", "39.876871", 0], ["116.439955", "39.876826", 0], ["116.441024", "39.876748", 0], ["116.441403", "39.876726", 0], ["116.441881", "39.876695", 0], ["116.442122", "39.876678", 0], ["116.442315", "39.876664", 0], ["116.443333", "39.876590", 0], ["116.443841", "39.876549", 0], ["116.446124", "39.876387", 0], ["116.447569", "39.876293", 0], ["116.448502", "39.876345", 0], ["116.449349", "39.876593", 0], ["116.449882", "39.876878", 0], ["116.450456", "39.877499", 0], ["116.450527", "39.877617", 0], ["116.450885", "39.878793", 0], ["116.451306", "39.880522", 0], ["116.451387", "39.880748", 0], ["116.451685", "39.881578", 0], ["116.452358", "39.882953", 0], ["116.452613", "39.886537", 0], ["116.452577", "39.886829", 0], ["116.452304", "39.888168", 0], ["116.452246", "39.888527", 0], ["116.452143", "39.889167", 0]];
-
-exports.default = {
-    paths: paths
-};
-
-/***/ }),
-/* 14 */,
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _webgl = __webpack_require__(6);
-
-var _webgl2 = _interopRequireDefault(_webgl);
-
-var _path = __webpack_require__(13);
-
-var _path2 = _interopRequireDefault(_path);
-
-var _mercatorPorjection = __webpack_require__(5);
-
-var _mercatorPorjection2 = _interopRequireDefault(_mercatorPorjection);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mercatorProjection = new _mercatorPorjection2.default();
-// console.log(data);
-
-
-var app = void 0;
-var heatMap = void 0;
-var thumbnailCanvas = void 0;
-
-var maxX = -Infinity;
-var minX = Infinity;
-var maxY = -Infinity;
-var minY = Infinity;
-var usePerPixel = 0;
-window.onload = function () {
-    app = window.app = new _webgl2.default('canvas');
-    // x
-    app.Path({
-        path: [[520, 520, 0], [520, 100 + 520, 0]],
-        color: '#f00'
-    });
-
-    // y
-    app.Path({
-        path: [[520, 520, 0], [100 + 520, 520, 0]],
-        color: '#0f0'
-    });
-
-    // z
-    app.Path({
-        path: [[520, 520, 0], [520, 520, 100]],
-        color: '#00f'
-    });
-    draw();
-};
-
-function getColorData() {
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-    canvas.width = '255';
-    canvas.height = '1';
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.zIndex = '100';
-    var grandient = ctx.createLinearGradient(0, 0, 255, 0);
-    grandient.addColorStop(.25, "rgb(0,0,255)");
-    grandient.addColorStop(0.5, "rgb(0,255,0)");
-    grandient.addColorStop(0.75, "yellow");
-    grandient.addColorStop(1, "rgb(250,0,0)");
-    ctx.fillStyle = grandient;
-    ctx.fillRect(0, 0, 255, 1);
-    var colordata = ctx.getImageData(0, 0, 255, 1).data;
-    return colordata;
-}
-
-function draw(data, isMct) {
-    // color  data
-    var colordata = getColorData();
-
-    // otherdata 
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-    canvas.width = '512';
-    canvas.height = '512';
-    canvas.style.width = '200px';
-    canvas.style.height = '200px';
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.zIndex = '100';
-    canvas.className = 'thumbnailCanvas';
-    document.body.appendChild(canvas);
-    thumbnailCanvas && document.body.removeChild(thumbnailCanvas);
-    thumbnailCanvas = canvas;
-
-    ctx.fillStyle = 'rgba(255,255,255,1)';
-    ctx.shadowColor = 'rgba(0,0,0, 0.05)';
-    ctx.shadowOffsetX = 10000;
-    ctx.shadowBlur = 8;
-
-    if (!data) {
-        for (var i = 0; i < 500; i++) {
-            ctx.fillRect((Math.random() * 512 | 0) - 10000, Math.random() * 512 | 0, Math.random() * 18 + 8, Math.random() * 18 + 8);
-        }
-    } else {
-        maxX = -Infinity;
-        minX = Infinity;
-        maxY = -Infinity;
-        minY = Infinity;
-        data.forEach(function (item) {
-            maxX = Math.max(maxX, item.x);
-            minX = Math.min(minX, item.x);
-            maxY = Math.max(maxY, item.y);
-            minY = Math.min(minY, item.y);
-        });
-        console.log(maxX);
-        var preX = 512 / (maxX - minX);
-        var preY = 512 / (maxY - minY);
-        usePerPixel = Math.min(preX, preY);
-        // by graph
-        var graph = {};
-
-        var graphMax = 0;
-        data.forEach(function (item) {
-            var x = (item.x - minX) * usePerPixel | 0;
-            var y = (item.y - minY) * usePerPixel | 0;
-            graph[x + '_' + y] = graph[x + '_' + y] || {
-                value: 0,
-                x: x,
-                y: y
-            };
-            graph[x + '_' + y].value++;
-            graphMax = Math.max(graphMax, graph[x + '_' + y].value);
-        });
-        Object.keys(graph).forEach(function (key) {
-            var basic = 0;
-            var level = graph[key].value - basic < 0 ? 0 : (graph[key].value - basic) / (graphMax - basic);
-            level = Math.max(0.1, level);
-            ctx.fillStyle = 'rgba(255,255,255,' + level + ')';
-            ctx.beginPath();
-            ctx.fillRect(graph[key].x - 10000, 512 - graph[key].y, ctx.shadowBlur, ctx.shadowBlur);
-        });
-    }
-
-    // img data
-    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    var alphaImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    var canvasData = imgData.data;
-    for (var i = 0; i < canvasData.length; i += 4) {
-        var index = Math.min(254, canvasData[i + 3] * 10);
-        canvasData[i] = colordata[index * 4];
-        canvasData[i + 1] = colordata[index * 4 + 1];
-        canvasData[i + 2] = colordata[index * 4 + 2];
-        canvasData[i + 3] = colordata[index * 4 + 3];
-    }
-    ctx.putImageData(imgData, 0, 0);
-
-    //
-    if (heatMap) {
-        heatMap.update({
-            alphaImageData: alphaImageData,
-            imgData: imgData
-        });
-    } else {
-        heatMap = app.HeatMap({
-            alphaImageData: alphaImageData,
-            imgData: imgData
-        });
-    }
-}
-
-// for drop
-window.ondragover = function (e) {
-    e.preventDefault();
-};
-
-window.ondragend = function (e) {
-    e.preventDefault();
-};
-
-var datas = [];
-window.ondrop = function (e) {
-    e.preventDefault();
-    var files = e.dataTransfer.files;
-
-    Object.keys(files).forEach(function (id) {
-        var read = new FileReader();
-        read.onload = function (e) {
-            var jsonData = JSON.parse(e.target.result).filter(function (item) {
-                console.log(item);
-                return item.x > 10 && item.y > 10;
-            });
-            datas.push({
-                name: files[id],
-                datas: jsonData
-            });
-            updateList();
-        };
-        read.readAsText(files[id]);
-    });
-};
-
-function updateList() {
-    var ul = document.getElementById('ul');
-    var newData = datas.map(function (data, index) {
-        return '<li data-id=' + index + '>' + data.name.name + '</li>';
-    });
-    ul.innerHTML = newData.join('');
-}
-
-document.getElementById('ul').onclick = function (e) {
-    // console.log(datas[e.target.dataset.id]);
-    draw(datas[e.target.dataset.id].datas, true);
-};
-
-// for draw area
-var pickCanvas = document.createElement('canvas');
-var pickCanvasCtx = pickCanvas.getContext('2d');
-pickCanvas.style.position = 'absolute';
-pickCanvas.style.top = pickCanvas.style.left = 0;
-pickCanvas.width = pickCanvas.height = 512;
-pickCanvas.style.width = pickCanvas.style.height = '512px';
-pickCanvas.style.display = 'none';
-pickCanvas.style.zIndex = '10000';
-var pickPoints = [];
-
-document.body.appendChild(pickCanvas);
-document.body.onclick = function (e) {
-    if (e.target == thumbnailCanvas) {
-        thumbnailCanvas.style.width = '512px';
-        thumbnailCanvas.style.height = '512px';
-        pickCanvas.style.display = 'block';
-        pickPoints = [];
-        drawPick();
-    }
-};
-
-pickCanvas.onclick = function (e) {
-    pickPoints.push([e.offsetX, e.offsetY]);
-    drawPick();
-};
-
-function drawPick() {
-    var ctx = pickCanvasCtx;
-    if (!ctx) return false;
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.beginPath();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 4;
-    pickPoints.forEach(function (point, index) {
-        if (index === 0) {
-            ctx.moveTo(point[0], point[1]);
-        } else {
-            ctx.lineTo(point[0], point[1]);
-        }
-    });
-    ctx.stroke();
-}
-
-window.onkeyup = function (e) {
-    if (e.keyCode === 27 && pickPoints.length > 1) {
-        var mc = [];
-        for (var i = 0; i < pickPoints.length; i++) {
-            mc.push(minX + pickPoints[i][0] / usePerPixel, minY + (512 - pickPoints[i][1]) / usePerPixel);
-        }
-        location.hash = mc.join(',');
-        pickPoints = [];
-        pickCanvas.style.display = 'none';
-        thumbnailCanvas.style.width = '200px';
-        thumbnailCanvas.style.height = '200px';
-    }
-};
+webpackContext.id = 27;
 
 /***/ })
 /******/ ]);

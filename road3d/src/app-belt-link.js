@@ -1,13 +1,6 @@
-import WebGl from './engine/webgl.js';
-// import data from './data/path.js';
-// import hotData from './data/hot.js';
-import MercatorProjection from './engine/tools/mercatorPorjection.js';
+import WebGl from './engine.link/webgl.js';
 
-// console.log(data)
-// console.log(hotData)
-
-function drawBelt(id, data, hotData, max, min) {
-    var mercatorProjection = new MercatorProjection();
+function drawBelt(id, data) {
     let app = window.app = new WebGl(id);
     let dom = document.getElementById(id);
 
@@ -42,16 +35,31 @@ function drawBelt(id, data, hotData, max, min) {
     var maxWidth = 1000;
     var min = [Infinity, Infinity];
     var max = [-Infinity, -Infinity];
-    data.paths = data.paths.map(point => {
-        let newPoint = mercatorProjection.lngLatToMercator({
-            lng: point[0],
-            lat: point[1]
-        });
-        min[0] = Math.min(min[0], newPoint.lng);
-        min[1] = Math.min(min[1], newPoint.lat);
-        max[0] = Math.max(max[0], newPoint.lng);
-        max[1] = Math.max(max[1], newPoint.lat);
-        return [newPoint.lng, newPoint.lat, 0];
+    let hotData = [];
+    let paths = [];
+    data.road.forEach((link, index) => {
+        let path = [];
+        for (let i = 0; i < link.data.length; i++) {
+            const hot = link.data[i];
+            hotData.push([index, ...hot]);
+        }
+        let loc = link.loc.split(',');
+        for (let j = 0; j < loc.length; j+=2) {
+            const x = Number(loc[j]);
+            const y = Number(loc[j+1]);
+            path.push([x,y]);
+        }
+        paths.push(path);
+    });
+
+    paths.forEach(points => {
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            min[0] = Math.min(min[0], point[0]);
+            min[1] = Math.min(min[1], point[1]);
+            max[0] = Math.max(max[0], point[0]);
+            max[1] = Math.max(max[1], point[1]);
+        }
     });
     var mid = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2];
     var delta = [max[0] - min[0], max[1] - min[1]];
@@ -59,11 +67,12 @@ function drawBelt(id, data, hotData, max, min) {
     // console.log(mid, deltaMax)
 
     var scale = maxWidth / deltaMax;
-    var newPath = data.paths.map(point => {
-        return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale, 0];
+    var newPath = paths.map(points => {
+        return points.map(point => {
+            return [(point[0] - mid[0]) * scale, (point[1] - mid[1]) * scale];
+        })
     });
     // console.log(JSON.stringify(newPath));
-    // console.log(newPath)
 
     // parpeat hot data 
     // color  data
@@ -87,7 +96,7 @@ function drawBelt(id, data, hotData, max, min) {
     let dataMaxHeight = 0;
     let dataMaxValue = 0;
     let dataMinValue = Infinity;
-    data.hotData.forEach(data => {
+    hotData.forEach(data => {
         dataMaxWidth = Math.max(dataMaxWidth, data[0]);
         dataMaxHeight = Math.max(dataMaxHeight, data[1]);
         dataMaxValue = Math.max(dataMaxValue, data[2]);
@@ -97,8 +106,8 @@ function drawBelt(id, data, hotData, max, min) {
     dataMaxValue = text.max;
     dataMinValue = text.min;
     //
-    let canvasWidth = 512;
-    let canvasHeight = 1024;
+    let canvasWidth = 1024;
+    let canvasHeight = 2048;
 
     //
     var canvas = document.createElement('canvas');
@@ -120,10 +129,11 @@ function drawBelt(id, data, hotData, max, min) {
 
     var preWidth = canvasWidth / dataMaxWidth;
     var preHeight = canvasHeight / dataMaxHeight;
-    data.hotData.forEach((data) => {
+    console.log(preWidth, preHeight, dataMaxValue, dataMinValue)
+    hotData.forEach((data) => {
         // for (var i = 0; i < data[2]; i++) {
         let precent = (data[2] - dataMinValue) / (dataMaxValue - dataMinValue);
-        ctx.fillStyle = `rgba(255,0,0,${text.strength *precent})`;
+        ctx.fillStyle = `rgba(255,0,0,${text.strength * precent})`;
         ctx.fillRect(data[0] * preWidth, data[1] * preHeight, preWidth, preHeight)
             // }
     });

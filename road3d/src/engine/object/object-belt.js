@@ -42,6 +42,7 @@ class Belt extends Obj {
         this.texture_coords = new Float32Array(this.texture_coords);
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
+        console.log(this.texture_coords, this.verticesColors, this.indices)
     }
 
     render() {

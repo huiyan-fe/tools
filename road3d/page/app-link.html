@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3D路线热力图工具</title>
+    <meta charset="UTF-8">
+
+    <style type="text/css">
+        .dg.ac {
+            z-index: 999 !important;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            background: black;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 40px;
+            width: 100%;
+        }
+        
+        .tips {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            color: white;
+        }
+        
+        .tips a {
+            color: white;
+        }
+
+        #sel {
+            position: absolute;
+            top: 10px;
+            left: 100px;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <select id="sel">
+        <option value="shenhai">shenhai</option>
+        <option value="huancheng">huancheng</option>
+    </select>
+    <div class="tips">备注：window下可能无法使用，后续会进行适配，另<a href="../src/data/beltRoad.json" target="_blank">数据格式，点击这里查看</a></div>
+    <script src="../src/lib/dat.gui.min.js"></script>
+    <script src="../dist/app.bundle.js"></script>
+    <script src="../src/data/huancheng.js"></script>
+    <script src="../src/data/shenhai.js"></script>
+    <script>
+        let road = shenhai;
+        var sel = document.getElementById('sel');
+        sel.addEventListener('change', function(e) {
+            let value = e.target.value;
+            if (value === 'huancheng') {
+                road = huancheng;
+            } else {
+                road = shenhai;
+            }
+            draw();
+        });
+
+        let max = null;
+        let min = null;
+        let strength = 0.1;
+
+        function draw() {
+            let canvas = document.getElementById('canvas');
+            if (canvas) {
+                document.body.removeChild(canvas);
+            }
+            canvas = document.createElement('div');
+            canvas.id = 'canvas';
+            document.body.appendChild(canvas);
+            canvas.innerHTML = '';
+
+            var belt = Engin.BeltLink('canvas', {
+                road: road,
+                max: text.max,
+                min: text.min
+            });
+        }
+
+
+
+        // for drop
+        window.ondragover = e => {
+            e.preventDefault();
+        }
+
+        window.ondragend = e => {
+            e.preventDefault();
+        }
+
+        window.ondrop = e => {
+            e.preventDefault();
+            let files = e.dataTransfer.files;
+
+            Object.keys(files).forEach(id => {
+                let read = new FileReader();
+                read.onload = (e) => {
+                    let jsonData = road = JSON.parse(e.target.result);
+                    let dataMaxValue = 0;
+                    let dataMinValue = Infinity;
+                    road.forEach((link, index) => {
+                        for (let i = 0; i < link.data.length; i++) {
+                            const hot = link.data[i];
+                            dataMaxValue = Math.max(dataMaxValue, hot[1]);
+                            dataMinValue = Math.min(dataMinValue, hot[1]);
+                        }
+                    });
+                    text.max = dataMaxValue;
+                    text.min = dataMinValue;
+                    gui.__controllers.forEach(e => {
+                        e.updateDisplay()
+                    })
+                    draw(road);
+                }
+                read.readAsText(files[id]);
+            });
+        }
+
+        //
+        var FizzyText = function() {
+            this.max = max || 0;
+            this.min = min || 0;
+            this.strength = 0.2;
+        };
+
+        function change() {
+            draw();
+            // new Chart(dom, datas);
+        }
+
+        window.onload = function() {
+            window.text = new FizzyText();
+            window.gui = new dat.GUI();
+            let min = gui.add(text, 'min');
+            let max = gui.add(text, 'max');
+            let strength = gui.add(text, 'strength', 0, 1);
+
+            min.onFinishChange(change);
+            max.onFinishChange(change);
+            strength.onFinishChange(change);
+
+            let dataMaxValue = 0;
+            let dataMinValue = Infinity;
+            road.forEach((link, index) => {
+                for (let i = 0; i < link.data.length; i++) {
+                    const hot = link.data[i];
+                    dataMaxValue = Math.max(dataMaxValue, hot[1]);
+                    dataMinValue = Math.min(dataMinValue, hot[1]);
+                }
+            });
+            text.max = dataMaxValue;
+            text.min = dataMinValue;
+            gui.__controllers.forEach(e => {
+                e.updateDisplay()
+            })
+
+            draw();
+        };
+    </script>
+</body>
+
+</html>

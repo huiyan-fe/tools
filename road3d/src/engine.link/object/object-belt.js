@@ -17,23 +17,19 @@ class Belt extends Obj {
 
         let pathDistances = [];
         let pathLength = 0;
-        paths.forEach((point, index) => {
-            // if(index>10) return false;
-            if (index > 0) {
-                let start = point;
-                let end = paths[index - 1];
-                let dist = Math.sqrt((start[0] - end[0]) ** 2, (start[1] - end[1]) ** 2)
-                pathLength += dist;
+        paths.forEach((points, index) => {
+            let lastLong = pathDistances.length;
+            for (let i = 0; i < points.length; i++) {
+                if (i > 0) {
+                    let dist = Math.sqrt((points[i][0] - points[i-1][0]) ** 2, (points[i][1] - points[i-1][1]) ** 2)
+                    pathLength += dist;
+                }
+                pathDistances.push(pathLength);
+                this.verticesColors.push(points[i][0], points[i][1], this.height, ...this.color);
+                this.verticesColors.push(points[i][0], points[i][1], 0, ...this.color);
+                this.indices.push(lastLong * 2 + i * 2);
+                this.indices.push(lastLong * 2 + i * 2 + 1);
             }
-            pathDistances.push(pathLength);
-            //
-            point[2] = this.height
-            this.verticesColors = this.verticesColors.concat(point.concat(color));
-            point[2] = 0
-            this.verticesColors = this.verticesColors.concat(point.concat(color));
-            //
-            this.indices.push(index * 2);
-            this.indices.push(index * 2 + 1);
         });
         pathDistances.forEach((dist, index) => {
             this.texture_coords.push(dist / pathLength, 1);
@@ -42,6 +38,7 @@ class Belt extends Obj {
         this.texture_coords = new Float32Array(this.texture_coords);
         this.indices = new Uint16Array(this.indices);
         this.verticesColors = new Float32Array(this.verticesColors);
+        console.log(this.texture_coords, this.verticesColors, this.indices)
     }
 
     render() {
@@ -99,10 +96,10 @@ class Belt extends Obj {
         //
 
         gl.uniformMatrix4fv(this.gl.uMVMatrix, false, this.opearteBuild.result);
-        // gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.verticesColors.length / 6);
         // console.log(this.indices.length)
 
-        gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+        // gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
         window.gl = gl;
     }
 }

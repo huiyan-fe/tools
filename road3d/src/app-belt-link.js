@@ -114,8 +114,8 @@ function drawBelt(id, data) {
     var ctx = canvas.getContext('2d');
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    canvas.style.width = 50 + 'px';
-    canvas.style.height = (50 * (canvasHeight / canvasWidth)) + 'px';
+    canvas.style.width = 100 + 'px';
+    canvas.style.height = (100 * (canvasHeight / canvasWidth)) + 'px';
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.left = '0';
@@ -152,7 +152,7 @@ function drawBelt(id, data) {
     //
     return app.Belt({
         path: newPath,
-        height: 100,
+        height: 500,
         texture: canvas
     });
 }

@@ -1,0 +1,33 @@
+.title-header {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 200px;
+    text-align: center;
+
+    h1 {
+        display: inline-block;
+        color: #fff;
+        vertical-align: middle;
+        margin: 0 20px 0 0;
+    }
+
+    .title-input {
+        position: absolute;
+        top: 4px;
+        left: -20px;
+    }
+    
+    .title-btn {
+        display: none;
+        vertical-align: middle;
+    }
+
+    &:hover {
+        .title-btn {
+            display: inline-block;
+        }
+    }
+}

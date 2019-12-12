@@ -322,6 +322,7 @@
                     allPointArr.push(point);
                 }
                 var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                polygon.enableEditing();
                 map.addOverlay(polygon);
                 var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
                 var opts = {
@@ -551,8 +552,7 @@ var styleOptions = {
         local.search(text);
     }
 
-    function boundarySearch(){
-        var text = document.getElementById('boundaryText').value;
+    function getBoundary(text) {
         var bdary = new BMap.Boundary();
         bdary.get(text , function(rs){       //获取行政区域
             //map.clearOverlays();        //清除地图覆盖物       
@@ -564,7 +564,7 @@ var styleOptions = {
             var pointArray = [];
             var pathArr = [];
             for (var i = 0; i < count; i++) {
-                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.2, strokeColor: "#0000ff"}); //建立多边形覆盖物
 
                 (function(ply){
                     ply.addEventListener('click', function() {
@@ -585,7 +585,15 @@ var styleOptions = {
             }    
             console.log(pathArr.join('|'));
             map.setViewport(pointArray);    //调整视野                 
-        });   
+        }); 
+    }
+
+    function boundarySearch(){
+        var text = document.getElementById('boundaryText').value;
+        text = text.split(',');
+        for (var i = 0; i < text.length; i++) {
+            getBoundary(text[i]);
+        }
     }
 
 

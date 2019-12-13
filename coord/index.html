@@ -323,6 +323,9 @@
                 }
                 var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
                 polygon.enableEditing();
+                polygon.addEventListener('lineupdate', function (e) {
+                    showResult(polygon);
+                });
                 map.addOverlay(polygon);
                 var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
                 var opts = {

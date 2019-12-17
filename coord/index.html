@@ -275,8 +275,22 @@
                         text: item[1]
                     });
                 }
-                // var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
                 // map.addOverlay(polyline);
+                var distance = parseInt(BMapLib.GeoUtils.getPolylineDistance(polyline));
+                var opts = {
+                  position : polyline.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+                  offset   : new BMap.Size(30, -30)    //设置文本偏移量
+                }
+                var label = new BMap.Label("长度:" + Math.round(distance) + "米", opts);  // 创建文本标注对象
+                    label.setStyle({
+                         color : "red",
+                         fontSize : "12px",
+                         height : "20px",
+                         lineHeight : "20px",
+                         fontFamily:"微软雅黑"
+                     });
+                map.addOverlay(label); 
             }
 
             var dataSet = new mapv.DataSet(data);

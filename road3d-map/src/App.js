@@ -48,11 +48,12 @@ class App extends Component {
             radius: 1
         });
         this.canvas = this.heatmap._renderer.canvas;
+        this.ctx = this.canvas.getContext('2d');
     }
 
     drawMapvgl = view => {
         this.initCanvas();
-        let {heatMax, heatData, lineData} = this.parseData(HuanchengData);
+        let {heatMax, heatData, lineData} = this.parseData(ShenhaiData);
 
         this.heatmap.setData({
             max: heatMax * 4,
@@ -60,12 +61,27 @@ class App extends Component {
             data: heatData
         });
 
+        this.drawTimeText();
+
         var layer = new mapvgl.WallLayer({
             texture: this.canvas,
             height: 30000
         });
         view.addLayer(layer);    
         layer.setData(lineData);
+    }
+
+    drawTimeText = () => {
+        this.ctx.font = '20px normal 微软雅黑';
+        this.ctx.fillStyle = '#fff';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.save();
+        this.ctx.scale(1/4, 0.9);
+        for (let i = 0; i <= 4; i++) {
+            this.ctx.fillText(`${24/4*i}:00`, 0, this.canvasHeight / 4 * i);
+        }
+        this.ctx.restore();
     }
 
     parseData = roadData => {

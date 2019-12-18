@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "antd": "^3.26.0",
+    "heatmap.js": "^2.0.5",
     "mapvgl": "^1.0.0-beta.15",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

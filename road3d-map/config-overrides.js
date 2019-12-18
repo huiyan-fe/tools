@@ -2,9 +2,11 @@ const {
     override,
     fixBabelImports,
     addLessLoader,
+    addWebpackAlias,
     addWebpackPlugin
 } = require('customize-cra');
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
+const path = require('path');
 
 module.exports = override(
     fixBabelImports('import', {
@@ -13,10 +15,10 @@ module.exports = override(
         style: true
     }),
     addLessLoader({
-        javascriptEnabled: true,
-        modifyVars: {
-            '@primary-color': '#1DA57A'
-        }
+        javascriptEnabled: true
     }),
-    addWebpackPlugin(new AntdDayjsWebpackPlugin())
+    addWebpackPlugin(new AntdDayjsWebpackPlugin()),
+    addWebpackAlias({
+        ['@']: path.resolve(__dirname, 'src')
+    })
 );

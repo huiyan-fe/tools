@@ -275,8 +275,22 @@
                         text: item[1]
                     });
                 }
-                // var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                var polyline = new BMap.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
                 // map.addOverlay(polyline);
+                var distance = parseInt(BMapLib.GeoUtils.getPolylineDistance(polyline));
+                var opts = {
+                  position : polyline.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+                  offset   : new BMap.Size(30, -30)    //设置文本偏移量
+                }
+                var label = new BMap.Label("长度:" + Math.round(distance) + "米", opts);  // 创建文本标注对象
+                    label.setStyle({
+                         color : "red",
+                         fontSize : "12px",
+                         height : "20px",
+                         lineHeight : "20px",
+                         fontFamily:"微软雅黑"
+                     });
+                map.addOverlay(label); 
             }
 
             var dataSet = new mapv.DataSet(data);
@@ -322,6 +336,10 @@
                     allPointArr.push(point);
                 }
                 var polygon = new BMap.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                polygon.enableEditing();
+                polygon.addEventListener('lineupdate', function (e) {
+                    showResult(polygon);
+                });
                 map.addOverlay(polygon);
                 var area = parseInt(BMapLib.GeoUtils.getPolygonArea(polygon));
                 var opts = {
@@ -338,6 +356,7 @@
                      });
                 map.addOverlay(label);
             }
+            map.setViewport(allPointArr);
         }
 
         function moreCircle() {
@@ -551,8 +570,7 @@ var styleOptions = {
         local.search(text);
     }
 
-    function boundarySearch(){
-        var text = document.getElementById('boundaryText').value;
+    function getBoundary(text) {
         var bdary = new BMap.Boundary();
         bdary.get(text , function(rs){       //获取行政区域
             //map.clearOverlays();        //清除地图覆盖物       
@@ -564,7 +582,7 @@ var styleOptions = {
             var pointArray = [];
             var pathArr = [];
             for (var i = 0; i < count; i++) {
-                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.4, strokeColor: "#ff0000"}); //建立多边形覆盖物
+                var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.2, strokeColor: "#0000ff"}); //建立多边形覆盖物
 
                 (function(ply){
                     ply.addEventListener('click', function() {
@@ -585,7 +603,15 @@ var styleOptions = {
             }    
             console.log(pathArr.join('|'));
             map.setViewport(pointArray);    //调整视野                 
-        });   
+        }); 
+    }
+
+    function boundarySearch(){
+        var text = document.getElementById('boundaryText').value;
+        text = text.split(',');
+        for (var i = 0; i < text.length; i++) {
+            getBoundary(text[i]);
+        }
     }
 
 

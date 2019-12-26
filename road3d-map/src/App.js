@@ -9,12 +9,14 @@ import ShenhaiData from './data/shenhai.json';
 import HuanchengData from './data/huancheng.json';
 import './App.less';
 
-function FizzyText(max, min, color1, color2, color3) {
+function FizzyText(max, min, color1, color2, color3, color4, color5) {
     this.max = max || 10;
     this.min = min || 0;
-    this.color1 = "#00ff00" || color1; // CSS string
-    this.color2 = "#ffff00" || color2; // CSS string
-    this.color3 = "#ff0000" || color3; // CSS string
+    this.color1 = "#AA0000" || color1; // CSS string
+    this.color2 = "#FFFF00" || color2; // CSS string
+    this.color3 = "#00AA00" || color3; // CSS string
+    this.color4 = "#0000AA" || color4; // CSS string
+    this.color5 = "#990099" || color5; // CSS string
 }
 
 class App extends Component {
@@ -23,7 +25,8 @@ class App extends Component {
     canvasHeight = 256;
     state = {
         innerHeight: window.innerHeight,
-        isChangeMap: true
+        visible: true,
+        text: {}
     };
 
     componentDidMount() {
@@ -66,13 +69,18 @@ class App extends Component {
         this.initCanvas();
         let {heatMax, heatData, lineData} = this.parseData(ShenhaiData);
         // 初始化 GUI面板
-        this.initGUIPanel(heatMax * 4, 0, '#00ff00', '#ffff00', '#ff0000')
+        this.initGUIPanel(heatMax * 4, 0, '#AA0000', '#FFFF00', '#00AA00', '#0000AA', '#990099')
 
         this.heatmap.setData({
             max: heatMax * 4,
             min: 0,
             data: heatData
         });
+
+        var nuConfig = {
+            backgroundColor: '#000'
+          };
+        this.heatmap.configure(nuConfig)
 
         this.drawTimeText();
 
@@ -174,65 +182,97 @@ class App extends Component {
     }
 
     changeHeatMapColor = () => {
-        const { color1, color2, color3 } = this.text
+        const { color1, color2, color3, color4, color5 } = this.text
 
         var nuConfig = {
             gradient: {
-                '.3': color1,
-                '.6': color2,
-                '.9': color3
+                '.2': color1,
+                '.4': color2,
+                '.6': color3,
+                '.8': color4,
+                '1': color5,
             },
+            backgroundColor: '#000'
           };
         this.heatmap.configure(nuConfig)
         this.layerSetData()
+
+        this.forceUpdate()
+    }
+
+    onChangeClick = () => {
+        const { visible } = this.state
+        
+        this.setState({ visible: !visible })
     }
       
-    initGUIPanel = (max, min, color1, color2, color3) => {
+    initGUIPanel = (max, min, color1, color2, color3, color4, color5) => {
 
         if (!this.gui) {
             this.gui = new dat.GUI();
         }
-        this.text = new FizzyText(max, min, color1, color2, color3);
+        this.text = new FizzyText(max, min, color1, color2, color3, color4, color5);
+        
+        this.setState({ text: this.text })
+        
         this.minText = this.gui.add(this.text, 'min');
         this.maxText = this.gui.add(this.text, 'max');
 
         this.color1 = this.gui.addColor(this.text, 'color1');
         this.color2 = this.gui.addColor(this.text, 'color2');
         this.color3 = this.gui.addColor(this.text, 'color3');
- 
+        this.color4 = this.gui.addColor(this.text, 'color4');
+        this.color5 = this.gui.addColor(this.text, 'color5');
+
         this.minText.onFinishChange(this.changeHeatMap);
         this.maxText.onFinishChange(this.changeHeatMap);
 
         this.color1.onFinishChange(this.changeHeatMapColor)
         this.color2.onFinishChange(this.changeHeatMapColor)
         this.color3.onFinishChange(this.changeHeatMapColor)
+        this.color4.onFinishChange(this.changeHeatMapColor)
+        this.color5.onFinishChange(this.changeHeatMapColor)
 
         this.gui.__controllers.forEach(e => {
             e.updateDisplay()
         })
     }
 
+    // 切换控制
     onChangeClick = () => {
-        const { isChangeMap } = this.state
-        this.setState({ isChangeMap: !isChangeMap })
+        const { visible } = this.state
+
+        this.setState({ visible: !visible })
     }
 
     render() {
-        const { innerHeight, isChangeMap } = this.state;
+        const { innerHeight, visible, text } = this.state;
+        let { lineData } = this.parseData(ShenhaiData);
+        
         return (
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                <div className="change" onClick={this.onChangeClick}><b>切换</b></div>
-                {
-                    isChangeMap ? <Map3D
-                        style={{height: innerHeight}}
-                        center={[13469929.82759, 3709883.54775]}
-                        zoom={11}
-                        onMapLoaded={this.onMapLoaded}
-                    >
-                    </Map3D> : <Map2D></Map2D>
-                }
+                <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
+                <Map3D
+                    style={{ height: innerHeight }}
+                    visible={visible}
+                    center={[13469929.82759, 3709883.54775]}
+                    zoom={11}
+                    onMapLoaded={this.onMapLoaded}
+                    changeHeatMap={this.changeHeatMap}
+                >
+                </Map3D>
+                <Map2D
+                    center={[13469929.82759, 3709883.54775]}
+                    zoom={11}
+                    lineData={lineData}
+                    text={text}
+                    visible={visible}
+                    onMap2DLoaded={this.onMap2DLoaded}
+                    changeHeatMap={this.changeHeatMap}
+                >
+                </Map2D> 
             </React.Fragment>
         );
     }

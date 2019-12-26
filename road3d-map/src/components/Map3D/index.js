@@ -73,8 +73,15 @@ export default class Map3D extends Component {
         return this.props.render(this.map);
     }
 
+    //是否显示
+    isShow = (visible) => {
+        return visible ? 'block' : 'none'
+    }
+
     render() {
+        const { visible } = this.props
         let style = {
+            display: this.isShow(visible),
             position: 'relative',
             height: '100%',
             ...this.props.style

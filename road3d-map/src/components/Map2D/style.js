@@ -4,7 +4,7 @@ export var simpleMapStyle = {
             "featureType": "all",
             "elementType": "all",
             "stylers": {
-                "lightness": 41,
+                "lightness": 20,
                 "saturation": -70
             }
         }

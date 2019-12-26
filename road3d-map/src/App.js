@@ -1,18 +1,29 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import * as dat from 'dat.gui';
 import * as mapvgl from 'mapvgl';
 import h337 from 'heatmap.js';
 import TitleHeader from './components/TitleHeader';
 import Map3D from './components/Map3D';
+import Map2D from './components/Map2D';
 import ShenhaiData from './data/shenhai.json';
 import HuanchengData from './data/huancheng.json';
 import './App.less';
 
+function FizzyText(max, min, color1, color2, color3) {
+    this.max = max || 10;
+    this.min = min || 0;
+    this.color1 = "#00ff00" || color1; // CSS string
+    this.color2 = "#ffff00" || color2; // CSS string
+    this.color3 = "#ff0000" || color3; // CSS string
+}
+
 class App extends Component {
 
-    canvasWidth = 128;
+    canvasWidth = 512;
     canvasHeight = 256;
     state = {
-        innerHeight: window.innerHeight
+        innerHeight: window.innerHeight,
+        isChangeMap: true
     };
 
     componentDidMount() {
@@ -54,6 +65,8 @@ class App extends Component {
     drawMapvgl = view => {
         this.initCanvas();
         let {heatMax, heatData, lineData} = this.parseData(ShenhaiData);
+        // 初始化 GUI面板
+        this.initGUIPanel(heatMax * 4, 0, '#00ff00', '#ffff00', '#ff0000')
 
         this.heatmap.setData({
             max: heatMax * 4,
@@ -63,12 +76,12 @@ class App extends Component {
 
         this.drawTimeText();
 
-        var layer = new mapvgl.WallLayer({
+        this.layer = new mapvgl.WallLayer({
             texture: this.canvas,
             height: 30000
         });
-        view.addLayer(layer);    
-        layer.setData(lineData);
+        view.addLayer(this.layer);    
+        this.layer.setData(lineData);
     }
 
     drawTimeText = () => {
@@ -138,20 +151,89 @@ class App extends Component {
         this.canvasContainer = input;
     }
 
+    layerSetData = () => {
+        const { lineData } = this.parseData(ShenhaiData);
+
+        if (this.layer) {
+            this.drawTimeText();
+            this.view.addLayer(this.layer);  
+            this.layer.setData(lineData);
+        }
+    }
+
+    changeHeatMap = () => {
+        const { heatData } = this.parseData(ShenhaiData);
+        const { max, min } = this.text
+
+        this.heatmap.setData({
+            max: max,
+            min: min,
+            data: heatData
+        });
+        this.layerSetData()
+    }
+
+    changeHeatMapColor = () => {
+        const { color1, color2, color3 } = this.text
+
+        var nuConfig = {
+            gradient: {
+                '.3': color1,
+                '.6': color2,
+                '.9': color3
+            },
+          };
+        this.heatmap.configure(nuConfig)
+        this.layerSetData()
+    }
+      
+    initGUIPanel = (max, min, color1, color2, color3) => {
+
+        if (!this.gui) {
+            this.gui = new dat.GUI();
+        }
+        this.text = new FizzyText(max, min, color1, color2, color3);
+        this.minText = this.gui.add(this.text, 'min');
+        this.maxText = this.gui.add(this.text, 'max');
+
+        this.color1 = this.gui.addColor(this.text, 'color1');
+        this.color2 = this.gui.addColor(this.text, 'color2');
+        this.color3 = this.gui.addColor(this.text, 'color3');
+ 
+        this.minText.onFinishChange(this.changeHeatMap);
+        this.maxText.onFinishChange(this.changeHeatMap);
+
+        this.color1.onFinishChange(this.changeHeatMapColor)
+        this.color2.onFinishChange(this.changeHeatMapColor)
+        this.color3.onFinishChange(this.changeHeatMapColor)
+
+        this.gui.__controllers.forEach(e => {
+            e.updateDisplay()
+        })
+    }
+
+    onChangeClick = () => {
+        const { isChangeMap } = this.state
+        this.setState({ isChangeMap: !isChangeMap })
+    }
+
     render() {
-        const {innerHeight} = this.state;
+        const { innerHeight, isChangeMap } = this.state;
         return (
-            <>
+            <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                <Map3D
-                    style={{height: innerHeight}}
-                    center={[13469929.82759, 3709883.54775]}
-                    zoom={11}
-                    onMapLoaded={this.onMapLoaded}
-                >
-                </Map3D>
-            </>
+                <div className="change" onClick={this.onChangeClick}><b>切换</b></div>
+                {
+                    isChangeMap ? <Map3D
+                        style={{height: innerHeight}}
+                        center={[13469929.82759, 3709883.54775]}
+                        zoom={11}
+                        onMapLoaded={this.onMapLoaded}
+                    >
+                    </Map3D> : <Map2D></Map2D>
+                }
+            </React.Fragment>
         );
     }
 }

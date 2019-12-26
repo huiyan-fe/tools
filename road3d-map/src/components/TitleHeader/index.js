@@ -18,6 +18,7 @@ export default () => {
                 value={header}
                 onChange={e => {setHeader(e.target.value);}}
                 onPressEnter={() => {setShowInput(!showInput);}}
+                onBlur={() => {setShowInput(!showInput);}}
             />}
             {!showInput && <Button
                 className="title-btn"

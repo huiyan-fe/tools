@@ -1,18 +1,6 @@
 import React, { Component } from 'react';
 import { Map, Road } from 'react-bmap';
 import Color from 'color';
-// import ShenhaiData from '../../data/shenhai.json';
-
-// import ShenhaiData from './data/chengdu_avgspeed_holiday.json';
-// import ShenhaiData from './data/chengdu_slowdown_holiday.json';
-
-import ShenhaiData from '../../data/chengdu_avgspeed_0930.json';
-// import ShenhaiData from './data/chengdu_slowdown_0930.json';
-
-// import ShenhaiData from './data/chengdu_avgspeed_work.json';
-// import ShenhaiData from './data/chengdu_slowdown_work.json';
-
-
 import { simpleMapStyle } from './style';
 
 export default class Map2D extends Component {
@@ -49,22 +37,21 @@ export default class Map2D extends Component {
     return lineData
   }
 
-  heatDataHander = (max, data) => {
+  heatDataHander = (max, min, data) => {
     const { text } = this.props
     const { color1, color2, color3, color4, color5 } = text
-    
     const colorArr = [
       [0.2, color1],
-      [0.4, color2],
-      [0.6, color3],
-      [0.8, color4],
+      [0.6, color2],
+      [0.85, color3],
+      [0.9, color4],
       [1, color5]
     ];
 
     const splitList = {}
     const category = []
     data.map((item, index) => {
-      const percent = item.geometry.value / max
+      const percent = (item.geometry.value - min) / (max - min)
       splitList[index] = this.getColorFromColorStops(colorArr, percent)
       category.push(index)
     })
@@ -126,13 +113,13 @@ export default class Map2D extends Component {
 
 
   render() {
-    const { center, zoom, text } = this.props
-    const linksData = this.parseData(ShenhaiData)
+    const { center, zoom, text, dataWeRender } = this.props
+    const linksData = this.parseData(dataWeRender)
 
     // 路线绘制
     const roadPath = this.dataHander(linksData)
     // 颜色控制
-    const { splitList, category } =  this.heatDataHander(text.max / 4, linksData)
+    const { splitList, category } =  this.heatDataHander(text.max, text.min, linksData)
 
     return (
       <Map
@@ -151,9 +138,6 @@ export default class Map2D extends Component {
         arrowColor='rgba(255,0,0,0.7)'
         lineWidth={10}
         roadPath={roadPath}
-        onClick={index => {
-          console.log(index);
-        }}
       />
       
       </Map>

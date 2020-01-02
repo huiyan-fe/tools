@@ -5,28 +5,18 @@ import h337 from 'heatmap.js';
 import TitleHeader from './components/TitleHeader';
 import Map3D from './components/Map3D';
 import Map2D from './components/Map2D';
-// import ShenhaiData from './data/shenhai.json';
+import ShenhaiData from './data/chengdu_avgspeed_sort_holiday.json';
 
-import chengdu_avgspeed_holiday from './data/chengdu_avgspeed_holiday.json';
-import chengdu_slowdown_holiday from './data/chengdu_slowdown_holiday.json';
-
-import ShenhaiData from './data/chengdu_avgspeed_0930.json';
-import chengdu_slowdown_0930 from './data/chengdu_slowdown_0930.json';
-
-import chengdu_avgspeed_work from './data/chengdu_avgspeed_work.json';
-import chengdu_slowdown_work from './data/chengdu_slowdown_work.json';
-
-// import HuanchengData from './data/huancheng.json';
 import './App.less';
 
 function FizzyText(max, min, color1, color2, color3, color4, color5) {
     this.max = max || 10;
     this.min = min || 0;
-    this.color1 = "#AA0000" || color1; // CSS string
-    this.color2 = "#FFFF00" || color2; // CSS string
-    this.color3 = "#00AA00" || color3; // CSS string
-    this.color4 = "#0000AA" || color4; // CSS string
-    this.color5 = "#990099" || color5; // CSS string
+    this.color1 = color1 || "#0000FF"; // CSS string
+    this.color2 = color2 || "#00FF00"; // CSS string
+    this.color3 = color3 || "#66FF66"; // CSS string
+    this.color4 = color4 || "#FFFF33"; // CSS string
+    this.color5 = color5 || "#FF0000"; // CSS string
 }
 
 class App extends Component {
@@ -34,11 +24,12 @@ class App extends Component {
     canvasWidth = 512;
     canvasHeight = 256;
     state = {
-        dataWeRender: null,
+        dataWeRender: ShenhaiData,
         innerHeight: window.innerHeight,
         visible: true,
         text: null
     };
+    tRef = React.createRef();
 
     componentDidMount() {
         window.addEventListener('resize', this.onResize);
@@ -60,10 +51,17 @@ class App extends Component {
     }
 
     initMapvgl = map => {
+        const { dataWeRender } = this.state
+        let { heatMax } = this.parseData(dataWeRender);
+       
         this.view = new mapvgl.View({
             map: map
         });
-        this.drawMapvgl(this.view);
+        this.initCanvas();
+        // 初始化 GUI面板
+        this.initGUIPanel(heatMax, 0)
+        this.drawTimeText();
+        this.drawMapvgl();
     }
 
     initCanvas = () => {
@@ -76,30 +74,37 @@ class App extends Component {
         this.ctx = this.canvas.getContext('2d');
     }
 
-    drawMapvgl = view => {
-        this.initCanvas();
-        let { heatMax, heatData, lineData } = this.parseData(ShenhaiData);
-        // 初始化 GUI面板
-        this.initGUIPanel(heatMax * 4, 0, '#AA0000', '#FFFF00', '#00AA00', '#0000AA', '#990099')
+    drawMapvgl = () => {
+        const { dataWeRender } = this.state
+        const { heatMax, heatData, lineData } = this.parseData(dataWeRender);
+        const { color1, color2, color3, color4, color5 } = this.text
+
+        this.maxText.setValue(heatMax)
 
         this.heatmap.setData({
-            max: heatMax * 4,
+            max: heatMax,
             min: 0,
             data: heatData
         });
-
-        var nuConfig = {
-            backgroundColor: '#000'
-          };
-        this.heatmap.configure(nuConfig)
-
-        this.drawTimeText();
 
         this.layer = new mapvgl.WallLayer({
             texture: this.canvas,
             height: 30000
         });
-        view.addLayer(this.layer);    
+        this.view.addLayer(this.layer);  
+
+        const nuConfig = {
+            gradient: {
+                '.3': color1,
+                '.4': color2,
+                '.5': color3,
+                '.6': color4,
+                '1': color5,
+            },
+            backgroundColor: '#000'
+        };
+        console.log(nuConfig)
+        this.heatmap.configure(nuConfig)
         this.layer.setData(lineData);
     }
 
@@ -161,7 +166,7 @@ class App extends Component {
         });
 
         return {
-            heatMax: dataMaxValue,
+            heatMax: dataMaxValue / 2,
             heatData,
             lineData
         };
@@ -172,7 +177,8 @@ class App extends Component {
     }
 
     layerSetData = () => {
-        const { lineData } = this.parseData(ShenhaiData);
+        const { dataWeRender } = this.state
+        const { lineData } = this.parseData(dataWeRender);
 
         if (this.layer) {
             this.drawTimeText();
@@ -182,7 +188,8 @@ class App extends Component {
     }
 
     changeHeatMap = () => {
-        const { heatData } = this.parseData(ShenhaiData);
+        const { dataWeRender } = this.state
+        const { heatData } = this.parseData(dataWeRender);
         const { max, min } = this.text
 
         this.heatmap.setData({
@@ -197,17 +204,18 @@ class App extends Component {
 
     changeHeatMapColor = () => {
         const { color1, color2, color3, color4, color5 } = this.text
-
-        var nuConfig = {
+        const nuConfig = {
             gradient: {
-                '.2': color1,
+                '.3': color1,
                 '.4': color2,
-                '.6': color3,
-                '.8': color4,
+                '.5': color3,
+                '.6': color4,
                 '1': color5,
             },
             backgroundColor: '#000'
-          };
+        };
+        
+        console.log(nuConfig)
         this.heatmap.configure(nuConfig)
         this.layerSetData()
 
@@ -221,12 +229,11 @@ class App extends Component {
     }
       
     initGUIPanel = (max, min, color1, color2, color3, color4, color5) => {
+     
+        this.gui = new dat.GUI();
 
-        if (!this.gui) {
-            this.gui = new dat.GUI();
-        }
         this.text = new FizzyText(max, min, color1, color2, color3, color4, color5);
-        
+   
         this.setState({ text: this.text })
         
         this.minText = this.gui.add(this.text, 'min');
@@ -259,41 +266,39 @@ class App extends Component {
         this.setState({ visible: !visible })
     }
 
-    // 渲染不同data
-    // renderByDiffData = (type) => {
-    //     switch (key) {
-    //         case 'avgspeed':
-    //             this.setState({})
-    //             break;
-    //         case 'slowdown':
+    getFileContent = (fileInput, callback) => {
+        if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
+            var file = fileInput.files[0];
+            if (window.FileReader) {
+                var reader = new FileReader();
+                reader.onloadend = function (evt) {
+                    if (evt.target.readyState == FileReader.DONE) {
+                        callback(evt.target.result);
+                    }
+                };
+                // 包含中文内容用gbk编码
+                reader.readAsText(file, 'gbk');
+            }
+        }
+    };
 
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
-
-    onChangeSelectClick = (e) => {
-        const alpha = e.target.options[e.selectedIndex].value
-        console.log(alpha)
+    onChangeUploadClick = () => {
+        this.getFileContent(this.tRef.current, dataWeRender => {
+            this.setState({ dataWeRender: JSON.parse(dataWeRender) }, () => {
+                this.view.removeLayer(this.layer)
+                this.drawMapvgl()
+            })
+        });
     }
 
     render() {
-        const { innerHeight, visible, text } = this.state;
-        let { heatData, lineData } = this.parseData(ShenhaiData);
+        const { innerHeight, visible, text, dataWeRender } = this.state;
         
         return (
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                <select className="select" onChange={this.onChangeSelectClick}>
-                    <option value="0939均速" selected>
-                            0930均速
-                    </option>
-                    <option value="0930减速">
-                            0930减速
-                    </option>
-                </select>
+                <input className="upload" ref={this.tRef} onChange={this.onChangeUploadClick} type="file" name="upload" id="upload" accept="text/json"/>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
                     style={{ height: innerHeight }}
@@ -308,11 +313,9 @@ class App extends Component {
                     <Map2D
                         center={[11586045.04,3566065.08]}
                         zoom={11}
-                        lineData={lineData}
-                        heatData={heatData}
+                        dataWeRender={dataWeRender}
                         text={text}
                         visible={visible}
-                        onMap2DLoaded={this.onMap2DLoaded}
                         changeHeatMap={this.changeHeatMap}
                     >
                     </Map2D> 

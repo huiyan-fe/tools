@@ -5,8 +5,18 @@ import h337 from 'heatmap.js';
 import TitleHeader from './components/TitleHeader';
 import Map3D from './components/Map3D';
 import Map2D from './components/Map2D';
-import ShenhaiData from './data/shenhai.json';
-import HuanchengData from './data/huancheng.json';
+// import ShenhaiData from './data/shenhai.json';
+
+import chengdu_avgspeed_holiday from './data/chengdu_avgspeed_holiday.json';
+import chengdu_slowdown_holiday from './data/chengdu_slowdown_holiday.json';
+
+import ShenhaiData from './data/chengdu_avgspeed_0930.json';
+import chengdu_slowdown_0930 from './data/chengdu_slowdown_0930.json';
+
+import chengdu_avgspeed_work from './data/chengdu_avgspeed_work.json';
+import chengdu_slowdown_work from './data/chengdu_slowdown_work.json';
+
+// import HuanchengData from './data/huancheng.json';
 import './App.less';
 
 function FizzyText(max, min, color1, color2, color3, color4, color5) {
@@ -24,9 +34,10 @@ class App extends Component {
     canvasWidth = 512;
     canvasHeight = 256;
     state = {
+        dataWeRender: null,
         innerHeight: window.innerHeight,
         visible: true,
-        text: {}
+        text: null
     };
 
     componentDidMount() {
@@ -67,7 +78,7 @@ class App extends Component {
 
     drawMapvgl = view => {
         this.initCanvas();
-        let {heatMax, heatData, lineData} = this.parseData(ShenhaiData);
+        let { heatMax, heatData, lineData } = this.parseData(ShenhaiData);
         // 初始化 GUI面板
         this.initGUIPanel(heatMax * 4, 0, '#AA0000', '#FFFF00', '#00AA00', '#0000AA', '#990099')
 
@@ -130,6 +141,7 @@ class App extends Component {
                 path.push([x, y]);
             }
         }
+ 
         lineData.push({
             geometry: {
                 type: 'LineString',
@@ -179,6 +191,8 @@ class App extends Component {
             data: heatData
         });
         this.layerSetData()
+
+        this.forceUpdate()
     }
 
     changeHeatMapColor = () => {
@@ -245,34 +259,64 @@ class App extends Component {
         this.setState({ visible: !visible })
     }
 
+    // 渲染不同data
+    // renderByDiffData = (type) => {
+    //     switch (key) {
+    //         case 'avgspeed':
+    //             this.setState({})
+    //             break;
+    //         case 'slowdown':
+
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
+
+    onChangeSelectClick = (e) => {
+        const alpha = e.target.options[e.selectedIndex].value
+        console.log(alpha)
+    }
+
     render() {
         const { innerHeight, visible, text } = this.state;
-        let { lineData } = this.parseData(ShenhaiData);
+        let { heatData, lineData } = this.parseData(ShenhaiData);
         
         return (
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
+                <select className="select" onChange={this.onChangeSelectClick}>
+                    <option value="0939均速" selected>
+                            0930均速
+                    </option>
+                    <option value="0930减速">
+                            0930减速
+                    </option>
+                </select>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
                     style={{ height: innerHeight }}
                     visible={visible}
-                    center={[13469929.82759, 3709883.54775]}
+                    center={[11586045.04, 3566065.08]}
                     zoom={11}
                     onMapLoaded={this.onMapLoaded}
                     changeHeatMap={this.changeHeatMap}
                 >
                 </Map3D>
-                <Map2D
-                    center={[13469929.82759, 3709883.54775]}
-                    zoom={11}
-                    lineData={lineData}
-                    text={text}
-                    visible={visible}
-                    onMap2DLoaded={this.onMap2DLoaded}
-                    changeHeatMap={this.changeHeatMap}
-                >
-                </Map2D> 
+                {text &&
+                    <Map2D
+                        center={[11586045.04,3566065.08]}
+                        zoom={11}
+                        lineData={lineData}
+                        heatData={heatData}
+                        text={text}
+                        visible={visible}
+                        onMap2DLoaded={this.onMap2DLoaded}
+                        changeHeatMap={this.changeHeatMap}
+                    >
+                    </Map2D> 
+                }
             </React.Fragment>
         );
     }

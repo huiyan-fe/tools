@@ -1,15 +1,29 @@
 .canvas {
     position: absolute !important;
     bottom: 50px;
-    right: -50px;
+    right: 0px;
     width: 512px;
     height: 256px;
     z-index: 10;
 }
 
-.change{
+.select{
     position: absolute !important;
     top: 5px;
+    width: 100px;
+    line-height: 30px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 10px;
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    background: #3290ff;
+}
+
+.change{
+    position: absolute !important;
+    top: 50px;
     width: 100px;
     line-height: 30px;
     font-size: 14px;
@@ -29,6 +43,6 @@
     z-index: 999 !important;
 
     input {
-        line-height: 20px;
+        line-height: 16px;
     }
 }

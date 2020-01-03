@@ -9,7 +9,8 @@ import ShenhaiData from './data/chengdu_avgspeed_sort_holiday.json';
 
 import './App.less';
 
-function FizzyText(max, min, color1, color2, color3, color4, color5) {
+function FizzyText(radius, max, min, color1, color2, color3, color4, color5) {
+    this.radius = radius || 1;
     this.max = max || 10;
     this.min = min || 0;
     this.color1 = color1 || "#0000FF"; // CSS string
@@ -57,19 +58,30 @@ class App extends Component {
         this.view = new mapvgl.View({
             map: map
         });
-        this.initCanvas();
         // 初始化 GUI面板
-        this.initGUIPanel(heatMax, 0)
-        this.drawTimeText();
+        this.initGUIPanel(1, heatMax, 0)
+        this.initCanvas();
         this.drawMapvgl();
+        this.drawTimeText();
     }
 
     initCanvas = () => {
-        this.heatmap = h337.create({
+        const { radius, color1, color2, color3, color4, color5 } = this.text
+        const nuConfig = {
             container: this.canvasContainer,
             blur: 1,
-            radius: 1
-        });
+            gradient: {
+                '.3': color1,
+                '.4': color2,
+                '.5': color3,
+                '.6': color4,
+                '1': color5,
+            },
+            radius: radius,
+            backgroundColor: '#000'
+        };
+
+        this.heatmap = h337.create(nuConfig);
         this.canvas = this.heatmap._renderer.canvas;
         this.ctx = this.canvas.getContext('2d');
     }
@@ -77,9 +89,11 @@ class App extends Component {
     drawMapvgl = () => {
         const { dataWeRender } = this.state
         const { heatMax, heatData, lineData } = this.parseData(dataWeRender);
-        const { color1, color2, color3, color4, color5 } = this.text
 
         this.maxText.setValue(heatMax)
+        this.radiusText.setValue(1)
+
+        heatData.map(item =>  Object.assign(item, {radius: 1}))
 
         this.heatmap.setData({
             max: heatMax,
@@ -91,20 +105,8 @@ class App extends Component {
             texture: this.canvas,
             height: 30000
         });
-        this.view.addLayer(this.layer);  
 
-        const nuConfig = {
-            gradient: {
-                '.3': color1,
-                '.4': color2,
-                '.5': color3,
-                '.6': color4,
-                '1': color5,
-            },
-            backgroundColor: '#000'
-        };
-        console.log(nuConfig)
-        this.heatmap.configure(nuConfig)
+        this.view.addLayer(this.layer);  
         this.layer.setData(lineData);
     }
 
@@ -167,7 +169,7 @@ class App extends Component {
         });
 
         return {
-            heatMax: dataMaxValue,
+            heatMax: dataMaxValue / 4 * 3,
             heatData,
             lineData
         };
@@ -191,15 +193,16 @@ class App extends Component {
     changeHeatMap = () => {
         const { dataWeRender } = this.state
         const { heatData } = this.parseData(dataWeRender);
-        const { max, min } = this.text
+        const { radius, max, min } = this.text
+        heatData.map(item =>  Object.assign(item, {radius}))
 
         this.heatmap.setData({
             max: max,
             min: min,
             data: heatData
         });
-        this.layerSetData()
 
+        this.layerSetData()
         this.forceUpdate()
     }
 
@@ -216,10 +219,8 @@ class App extends Component {
             backgroundColor: '#000'
         };
         
-        console.log(nuConfig)
         this.heatmap.configure(nuConfig)
         this.layerSetData()
-
         this.forceUpdate()
     }
 
@@ -229,14 +230,16 @@ class App extends Component {
         this.setState({ visible: !visible })
     }
       
-    initGUIPanel = (max, min, color1, color2, color3, color4, color5) => {
+    initGUIPanel = (radius, max, min, color1, color2, color3, color4, color5) => {
      
         this.gui = new dat.GUI();
 
-        this.text = new FizzyText(max, min, color1, color2, color3, color4, color5);
+        this.text = new FizzyText(radius, max, min, color1, color2, color3, color4, color5);
    
         this.setState({ text: this.text })
         
+        this.radiusText = this.gui.add(this.text, 'radius');
+
         this.minText = this.gui.add(this.text, 'min');
         this.maxText = this.gui.add(this.text, 'max');
 
@@ -245,6 +248,8 @@ class App extends Component {
         this.color3 = this.gui.addColor(this.text, 'color3');
         this.color4 = this.gui.addColor(this.text, 'color4');
         this.color5 = this.gui.addColor(this.text, 'color5');
+
+        this.radiusText.onFinishChange(this.changeHeatMap);
 
         this.minText.onFinishChange(this.changeHeatMap);
         this.maxText.onFinishChange(this.changeHeatMap);

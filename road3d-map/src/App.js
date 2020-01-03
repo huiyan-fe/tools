@@ -5,19 +5,19 @@ import h337 from 'heatmap.js';
 import TitleHeader from './components/TitleHeader';
 import Map3D from './components/Map3D';
 import Map2D from './components/Map2D';
-import ShenhaiData from './data/chengdu_avgspeed_sort_holiday.json';
+import ShenhaiData from './data/chengdu_avgspeed_sort_work.json';
 
 import './App.less';
 
 function FizzyText(radius, max, min, color1, color2, color3, color4, color5) {
-    this.radius = radius || 1;
+    this.radius = radius || 4;
     this.max = max || 10;
     this.min = min || 0;
-    this.color1 = color1 || "#0000FF"; // CSS string
-    this.color2 = color2 || "#00FF00"; // CSS string
+    this.color1 = color1 || "#FF0000"; // CSS string
+    this.color2 = color2 || "#FFFF33"; // CSS string
     this.color3 = color3 || "#66FF66"; // CSS string
-    this.color4 = color4 || "#FFFF33"; // CSS string
-    this.color5 = color5 || "#FF0000"; // CSS string
+    this.color4 = color4 || "#00FF00"; // CSS string
+    this.color5 = color5 || "#0000FF"; // CSS string
 }
 
 class App extends Component {
@@ -34,6 +34,15 @@ class App extends Component {
 
     componentDidMount() {
         window.addEventListener('resize', this.onResize);
+        this.tRef.current.addEventListener("dragover", function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+		})
+		this.tRef.current.addEventListener("dragenter", function (e) {
+			e.preventDefault()
+			e.stopPropagation()
+		})
+        this.tRef.current.addEventListener("drop", this.onDropUploadClick)
     }
 
     componentWillUnmount() {
@@ -59,14 +68,14 @@ class App extends Component {
             map: map
         });
         // 初始化 GUI面板
-        this.initGUIPanel(1, heatMax, 0)
+        this.initGUIPanel(4, heatMax, 0)
         this.initCanvas();
         this.drawMapvgl();
-        this.drawTimeText();
+        // this.drawTimeText();
     }
 
     initCanvas = () => {
-        const { radius, color1, color2, color3, color4, color5 } = this.text
+        const { color1, color2, color3, color4, color5 } = this.text
         const nuConfig = {
             container: this.canvasContainer,
             blur: 1,
@@ -77,7 +86,6 @@ class App extends Component {
                 '.6': color4,
                 '1': color5,
             },
-            radius: radius,
             backgroundColor: '#000'
         };
 
@@ -91,9 +99,9 @@ class App extends Component {
         const { heatMax, heatData, lineData } = this.parseData(dataWeRender);
 
         this.maxText.setValue(heatMax)
-        this.radiusText.setValue(1)
+        this.radiusText.setValue(4)
 
-        heatData.map(item =>  Object.assign(item, {radius: 1}))
+        heatData.map(item =>  Object.assign(item, {radius: 4}))
 
         this.heatmap.setData({
             max: heatMax,
@@ -116,7 +124,7 @@ class App extends Component {
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         this.ctx.save();
-        this.ctx.scale(1/4, 0.9);
+        this.ctx.scale(1/3, 1);
         for (let i = 0; i <= 4; i++) {
             this.ctx.fillText(`${24/4*i}:00`, 0, this.canvasHeight / 4 * i);
         }
@@ -169,7 +177,7 @@ class App extends Component {
         });
 
         return {
-            heatMax: dataMaxValue / 4 * 3,
+            heatMax: dataMaxValue * 2,
             heatData,
             lineData
         };
@@ -184,7 +192,7 @@ class App extends Component {
         const { lineData } = this.parseData(dataWeRender);
 
         if (this.layer) {
-            this.drawTimeText();
+            // this.drawTimeText();
             this.view.addLayer(this.layer);  
             this.layer.setData(lineData);
         }
@@ -195,12 +203,8 @@ class App extends Component {
         const { heatData } = this.parseData(dataWeRender);
         const { radius, max, min } = this.text
         heatData.map(item =>  Object.assign(item, {radius}))
-
-        this.heatmap.setData({
-            max: max,
-            min: min,
-            data: heatData
-        });
+        this.heatmap.setDataMax(max)
+        this.heatmap.setDataMin(min)
 
         this.layerSetData()
         this.forceUpdate()
@@ -288,6 +292,21 @@ class App extends Component {
         }
     };
 
+    onDropUploadClick = (e) => {
+        const _this = this
+        e.preventDefault()
+		e.stopPropagation()
+        var files = this.files || e.dataTransfer.files
+        var reader = new FileReader()
+        reader.readAsText(files[0], 'utf-8')
+        reader.onload = function (evt) {
+            _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
+                _this.view.removeLayer(_this.layer)
+                _this.drawMapvgl()
+            })
+        }
+    }
+
     onChangeUploadClick = () => {
         this.getFileContent(this.tRef.current, dataWeRender => {
             this.setState({ dataWeRender: JSON.parse(dataWeRender) }, () => {
@@ -304,7 +323,8 @@ class App extends Component {
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                <input className="upload" ref={this.tRef} onChange={this.onChangeUploadClick} type="file" name="upload" id="upload" accept="text/json"/>
+                {/* <input className="upload" ref={this.tRef} onChange={this.onChangeUploadClick} type="file" name="upload" id="upload" accept="text/json" /> */}
+                <div ref={this.tRef} className="dashboard">请将数据拖入</div>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
                     style={{ height: innerHeight }}

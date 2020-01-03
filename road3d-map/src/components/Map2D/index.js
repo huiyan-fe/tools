@@ -130,7 +130,6 @@ export default class Map2D extends Component {
         enableScrollWheelZoom={true}
       >
       <Road
-        isShowArrow={false}
         category={category}
         splitList={splitList}
         color='rgba(0,255,0,0.7)'

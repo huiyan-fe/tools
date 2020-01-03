@@ -1,5 +1,9 @@
-import React, {Component} from 'react';
-import {darkStyle} from './style';
+import React, {
+    Component
+} from 'react';
+import {
+    darkStyle
+} from './style';
 
 export default class Map3D extends Component {
 
@@ -26,7 +30,7 @@ export default class Map3D extends Component {
         map.setHeading(options.heading);
         map.setDisplayOptions({
             indoor: false,
-            poi: false,
+            poi: true,
             skyColors: options.skyColors || [
                 'rgba(5, 5, 30, 0.01)',
                 'rgba(5, 5, 30, 1.0)'
@@ -42,7 +46,9 @@ export default class Map3D extends Component {
 
     renderChildren() {
 
-        const {children} = this.props;
+        const {
+            children
+        } = this.props;
 
         if (!children || !this.map) return;
 
@@ -79,20 +85,35 @@ export default class Map3D extends Component {
     }
 
     render() {
-        const { visible } = this.props
+        const {
+            visible
+        } = this.props
         let style = {
             display: this.isShow(visible),
             position: 'relative',
             height: '100%',
             ...this.props.style
         };
-        return (
-            <div style={style}>
-                <div ref={mapRef => (this.mapRef = mapRef)} style={{width: '100%', height: '100%'}}></div>
-                {this.renderChildren()}
-                {this.onRender()}
-            </div>
+        return ( <
+            div style = {
+                style
+            } >
+            <
+            div ref = {
+                mapRef => (this.mapRef = mapRef)
+            }
+            style = {
+                {
+                    width: '100%',
+                    height: '100%'
+                }
+            } > < /div> {
+                this.renderChildren()
+            } {
+                this.onRender()
+            } <
+            /div>
         );
     }
-    
+
 }

@@ -11,7 +11,7 @@ export default class Map3D extends Component {
     initMap() {
 
         let options = Object.assign({
-            tile: 60,
+            tilt: 60,
             heading: 0
         }, this.props.options);
         let map = new window.BMapGL.Map(this.mapRef, {
@@ -22,7 +22,7 @@ export default class Map3D extends Component {
         map.enableScrollWheelZoom();
         map.enableInertialDragging();
         map.enableContinuousZoom();
-        map.setTilt(options.tile);
+        map.setTilt(options.tilt);
         map.setHeading(options.heading);
         map.setDisplayOptions({
             indoor: false,

@@ -157,6 +157,7 @@ class App extends Component {
         var heatData = [];
         var preWidth = this.canvasWidth / dataMaxWidth;
         var preHeight = this.canvasHeight / dataMaxHeight;
+  
         hotData.forEach(data => {
             heatData.push({
                 x: data[0] * preWidth,
@@ -166,7 +167,7 @@ class App extends Component {
         });
 
         return {
-            heatMax: dataMaxValue / 2,
+            heatMax: dataMaxValue,
             heatData,
             lineData
         };

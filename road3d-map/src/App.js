@@ -47,10 +47,10 @@ class App extends Component {
 
         this.canvasContainer.addEventListener('click', (e) => {
             const { dataWeRender } = this.state
-            const x = e.pageX -  this.ctx.canvas.getBoundingClientRect().left 
-            const y = e.pageY - this.ctx.canvas.getBoundingClientRect().top
-            const { hotData } = this.parseData(dataWeRender);           
-
+            const x = Math.ceil((e.pageX -  this.ctx.canvas.getBoundingClientRect().left) / 2)
+            const y = Math.ceil((e.pageY - this.ctx.canvas.getBoundingClientRect().top) / 2)
+            const { hotData } = this.parseData(dataWeRender);   
+            
             const showPoint = hotData.filter(item => item[0] === x && item[1]  === y - 1 ) || []
             const selectValue = {
                 x,

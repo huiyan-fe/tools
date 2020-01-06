@@ -94,25 +94,14 @@ export default class Map3D extends Component {
             height: '100%',
             ...this.props.style
         };
-        return ( <
-            div style = {
-                style
-            } >
-            <
-            div ref = {
-                mapRef => (this.mapRef = mapRef)
-            }
-            style = {
-                {
-                    width: '100%',
-                    height: '100%'
-                }
-            } > < /div> {
-                this.renderChildren()
-            } {
-                this.onRender()
-            } <
-            /div>
+        return (
+            <div style={style} >
+                < div ref = { mapRef => (this.mapRef = mapRef)}
+                    style = {{ width: '100%', height: '100%' }} > 
+                </div>
+                { this.renderChildren() }
+                { this.onRender() }
+            </div>
         );
     }
 

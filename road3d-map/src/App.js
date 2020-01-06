@@ -22,13 +22,14 @@ function FizzyText(radius, max, min, color1, color2, color3, color4, color5) {
 
 class App extends Component {
 
-    canvasWidth = 512;
-    canvasHeight = 256;
+    canvasWidth = 298;
+    canvasHeight = 96;
     state = {
         dataWeRender: ShenhaiData,
         innerHeight: window.innerHeight,
         visible: true,
-        text: null
+        text: null,
+        selectValue: null
     };
     tRef = React.createRef();
 
@@ -43,6 +44,27 @@ class App extends Component {
 			e.stopPropagation()
 		})
         this.tRef.current.addEventListener("drop", this.onDropUploadClick)
+
+        this.canvasContainer.addEventListener('click', (e) => {
+            const { dataWeRender } = this.state
+            const x = e.pageX -  this.ctx.canvas.getBoundingClientRect().left 
+            const y = e.pageY - this.ctx.canvas.getBoundingClientRect().top
+            const { hotData } = this.parseData(dataWeRender);           
+
+            const showPoint = hotData.filter(item => item[0] === x && item[1]  === y - 1 ) || []
+            const selectValue = {
+                x,
+                y,
+                showPoint,
+                nowTime: this.parseTime(y / 96 * 24)
+            }
+            this.setState({ selectValue })
+    
+        })
+    }
+
+    parseTime = (num) => {
+        return ('0' + Math.floor(num) % 24).slice(-2) + ':' + ((num % 1)*60 + '0').slice(0, 2);
     }
 
     componentWillUnmount() {
@@ -76,6 +98,7 @@ class App extends Component {
 
     initCanvas = () => {
         const { color1, color2, color3, color4, color5 } = this.text
+
         const nuConfig = {
             container: this.canvasContainer,
             blur: 1,
@@ -177,9 +200,10 @@ class App extends Component {
         });
 
         return {
-            heatMax: dataMaxValue * 2,
+            heatMax: dataMaxValue,
             heatData,
-            lineData
+            lineData,
+            hotData 
         };
     }
 
@@ -276,22 +300,6 @@ class App extends Component {
         this.setState({ visible: !visible })
     }
 
-    getFileContent = (fileInput, callback) => {
-        if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
-            var file = fileInput.files[0];
-            if (window.FileReader) {
-                var reader = new FileReader();
-                reader.onloadend = function (evt) {
-                    if (evt.target.readyState == FileReader.DONE) {
-                        callback(evt.target.result);
-                    }
-                };
-                // 包含中文内容用gbk编码
-                reader.readAsText(file, 'gbk');
-            }
-        }
-    };
-
     onDropUploadClick = (e) => {
         const _this = this
         e.preventDefault()
@@ -307,23 +315,18 @@ class App extends Component {
         }
     }
 
-    onChangeUploadClick = () => {
-        this.getFileContent(this.tRef.current, dataWeRender => {
-            this.setState({ dataWeRender: JSON.parse(dataWeRender) }, () => {
-                this.view.removeLayer(this.layer)
-                this.drawMapvgl()
-            })
-        });
-    }
-
     render() {
-        const { innerHeight, visible, text, dataWeRender } = this.state;
+        const { innerHeight, visible, text, dataWeRender, selectValue } = this.state;
         
         return (
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                {/* <input className="upload" ref={this.tRef} onChange={this.onChangeUploadClick} type="file" name="upload" id="upload" accept="text/json" /> */}
+                {selectValue &&
+                <div className="show">
+                    <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
+                    <p>当前时间：{selectValue.nowTime}</p>
+                </div>}
                 <div ref={this.tRef} className="dashboard">请将数据拖入</div>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
@@ -343,6 +346,7 @@ class App extends Component {
                         text={text}
                         visible={visible}
                         changeHeatMap={this.changeHeatMap}
+                        selectValue={selectValue}
                     >
                     </Map2D> 
                 }

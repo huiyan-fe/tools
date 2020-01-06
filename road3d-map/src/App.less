@@ -1,10 +1,14 @@
 .canvas {
     position: absolute !important;
-    bottom: 50px;
+    bottom: 40px;
     right: 0px;
-    width: 512px;
-    height: 256px;
+    width: 298px;
+    height: 96px;
+    // width: 256px;
+    // height: 128px;
     z-index: 10;
+    // transform: scale(2);
+    transform-origin: right bottom;
 }
 
 .dashboard {
@@ -30,19 +34,6 @@
     background: #666666;
 }
 
-.upload{
-    position: absolute !important;
-    top: 5px;
-    line-height: 30px;
-    font-size: 14px;
-    text-align: center;
-    border-radius: 10px;
-    color: white;
-    z-index: 10;
-    cursor: pointer;
-    background: #3290ff;
-}
-
 .change{
     position: absolute !important;
     top: 5px;
@@ -55,6 +46,25 @@
     z-index: 10;
     cursor: pointer;
     background: #3290ff;
+}
+
+.show{
+    position: absolute !important;
+    top: 50px;
+    width: 150px;
+    line-height: 30px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 10px;
+    color: white;
+    z-index: 10;
+    cursor: pointer;
+    background: #3290ff;
+    text-align: left;
+    padding-left: 20px;
+    p{
+        margin-bottom: 0;
+    }
 }
 
 .change:hover{

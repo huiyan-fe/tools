@@ -37,6 +37,10 @@ export default class Map2D extends Component {
     return lineData
   }
 
+  highlightRoadHander = (data, index = 0) => {
+    return [data[index].geometry.coordinates]
+  }
+
   heatDataHander = (max, min, data) => {
     const { text } = this.props
     const { color1, color2, color3, color4, color5 } = text
@@ -113,11 +117,15 @@ export default class Map2D extends Component {
 
 
   render() {
-    const { center, zoom, text, dataWeRender } = this.props
+    const { center, zoom, text, dataWeRender, selectValue } = this.props
     const linksData = this.parseData(dataWeRender)
 
     // 路线绘制
     const roadPath = this.dataHander(linksData)
+
+    // 高亮路线
+    const highlightRoad = selectValue && this.highlightRoadHander(linksData, selectValue.x)
+    
     // 颜色控制
     const { splitList, category } =  this.heatDataHander(text.max, text.min, linksData)
 
@@ -130,6 +138,17 @@ export default class Map2D extends Component {
         enableScrollWheelZoom={true}
       >
       <Road
+        category={[1]}
+        splitList={{
+          1: '#0000FF'
+        }}
+        color='rgba(0,255,0,0.7)'
+        bgColor='rgba(255,255,255,0.1)'
+        arrowColor='rgba(255,0,0,0.7)'
+        lineWidth={20}
+        roadPath={highlightRoad}
+      />
+      <Road
         category={category}
         splitList={splitList}
         color='rgba(0,255,0,0.7)'
@@ -138,7 +157,6 @@ export default class Map2D extends Component {
         lineWidth={10}
         roadPath={roadPath}
       />
-      
       </Map>
     );
 

@@ -148,7 +148,7 @@ class App extends Component {
             _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
             _this.layer = new mapvgl.WallLayer({
                 texture: _this.mockCanvas,
-                height: 25000
+                height: 20000
             });
             _this.view.addLayer(_this.layer);  
             _this.layer.setData(lineData);

@@ -24,6 +24,8 @@ class App extends Component {
 
     canvasWidth = 298;
     canvasHeight = 96;
+    // canvasWidth = 298;
+    // canvasHeight = 96;
     state = {
         dataWeRender: ShenhaiData,
         innerHeight: window.innerHeight,
@@ -124,6 +126,7 @@ class App extends Component {
         this.maxText.setValue(heatMax)
         this.radiusText.setValue(4)
 
+        this.canvas.getContext('2d').scale( 256 / 299, 128 / 96)
         heatData.map(item =>  Object.assign(item, {radius: 4}))
 
         this.heatmap.setData({

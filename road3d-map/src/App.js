@@ -148,7 +148,8 @@ class App extends Component {
             _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
             _this.layer = new mapvgl.WallLayer({
                 texture: _this.mockCanvas,
-                height: 20000
+                height: 12000,
+                enablePreciseMap: true
             });
             _this.view.addLayer(_this.layer);  
             _this.layer.setData(lineData);
@@ -256,7 +257,6 @@ class App extends Component {
         let imageData = this.heatmap._renderer.canvas.toDataURL();
 
         this.img.src = imageData
-        console.log(this.img)
         const _this = this
 
         this.img.onload = function () {
@@ -378,8 +378,8 @@ class App extends Component {
                 <div ref={this.bindCanvasRef} className="canvas"></div>
                 {selectValue &&
                 <div className="show">
-                    <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
                     <p>当前时间：{selectValue.nowTime}</p>
+                    <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
                 </div>}
                 <div ref={this.tRef} className="dashboard">请将数据拖入</div>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>

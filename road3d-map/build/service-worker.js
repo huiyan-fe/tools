@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/tools/road3d-map/build/precache-manifest.4681b70f5e19c647b4037f56f557d5b9.js"
+  "/tools/road3d-map/build/precache-manifest.6daa3c0b84b594e9eed577c2eb5b4b5a.js"
 );
 
 self.addEventListener('message', (event) => {

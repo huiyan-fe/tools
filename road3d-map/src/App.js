@@ -402,18 +402,22 @@ class App extends Component {
   
         const nuConfig = {
             gradient: {
-                [color1Value / max] : this.getColorFromColorStops(colorArr, color1Value / max),
-                [color2Value / max] : this.getColorFromColorStops(colorArr, color2Value / max),
-                [color3Value / max] : this.getColorFromColorStops(colorArr, color3Value / max),
-                [color4Value / max] : this.getColorFromColorStops(colorArr, color4Value / max),
+                [color1Value / max] : color1,
+                [color2Value / max] : color2,
+                [color3Value / max] : color3,
+                [color4Value / max] : color4,
+                // [color1Value / max] : this.getColorFromColorStops(colorArr, color1Value / max),
+                // [color2Value / max] : this.getColorFromColorStops(colorArr, color2Value / max),
+                // [color3Value / max] : this.getColorFromColorStops(colorArr, color3Value / max),
+                // [color4Value / max] : this.getColorFromColorStops(colorArr, color4Value / max),
             },
             backgroundColor: '#000'
         };      
 
-        this.color1.setValue(nuConfig.gradient[color1Value / max])
-        this.color2.setValue(nuConfig.gradient[color2Value / max])
-        this.color3.setValue(nuConfig.gradient[color3Value / max])
-        this.color4.setValue(nuConfig.gradient[color4Value / max])
+        // this.color1.setValue(nuConfig.gradient[color1Value / max])
+        // this.color2.setValue(nuConfig.gradient[color2Value / max])
+        // this.color3.setValue(nuConfig.gradient[color3Value / max])
+        // this.color4.setValue(nuConfig.gradient[color4Value / max])
         
         this.color1Value.max(max)
         this.color2Value.max(max)

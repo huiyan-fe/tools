@@ -157,7 +157,12 @@ class App extends Component {
         const { heatMax, heatData, lineData } = this.parseData(dataWeRender);
 
         this.maxText.setValue(heatMax)
-        this.radiusText.setValue(4)
+        this.color1Value.setValue(heatMax * .25)
+        this.color2Value.setValue(heatMax * .55)
+        this.color3Value.setValue(heatMax * .85)
+        this.color4Value.setValue(heatMax * 1)        
+
+        this.radiusText.setValue(2)
 
         heatData.map(item =>  Object.assign(item, {radius: 4}))
 
@@ -386,7 +391,7 @@ class App extends Component {
         this.forceUpdate()
     }
     changeHeatMapColor = () => {
-        const { max, color1Value, color2Value, color3Value, color4Value, gradient, color1, color2, color3, color4} = this.text
+        const { max, color1Value, color2Value, color3Value, color4Value, color1, color2, color3, color4} = this.text
         
         const colorArr = [
             [0.25, color1],
@@ -394,7 +399,7 @@ class App extends Component {
             [0.85, color3],
             [1, color4]
         ];
-
+  
         const nuConfig = {
             gradient: {
                 [color1Value / max] : this.getColorFromColorStops(colorArr, color1Value / max),
@@ -408,7 +413,12 @@ class App extends Component {
         this.color1.setValue(nuConfig.gradient[color1Value / max])
         this.color2.setValue(nuConfig.gradient[color2Value / max])
         this.color3.setValue(nuConfig.gradient[color3Value / max])
-        this.color4.setValue(nuConfig.gradient[color4Value / max])        
+        this.color4.setValue(nuConfig.gradient[color4Value / max])
+        
+        this.color1Value.max(max)
+        this.color2Value.max(max)
+        this.color3Value.max(max)
+        this.color4Value.max(max)
 
 
         this.heatmap.configure(nuConfig)
@@ -437,7 +447,7 @@ class App extends Component {
     }
       
     initGUIPanel = (radius, max, min, gradient, color1Value, color1, color2Value, color2, color3Value, color3, color4Value, color4) => {
-     
+       
         this.gui = new window.dat.GUI({
             nameMap: {
                 radius: '辐射半径',
@@ -460,7 +470,7 @@ class App extends Component {
         this.setState({ text: this.text })
         
         this.radiusText = this.gui.add(this.text, 'radius').min(0.1);
-        this.minText = this.gui.add(this.text, 'min');
+        this.minText = this.gui.add(this.text, 'min').max(max);
         this.maxText = this.gui.add(this.text, 'max');
 
         this.radiusText.onFinishChange(this.changeHeatMap);
@@ -471,22 +481,22 @@ class App extends Component {
         this.gradientOptions.onFinishChange(this.changeHeatMapAllColor);
 
         // 第一档
-        this.color1Value = this.gui.add(this.text, 'color1Value');
+        this.color1Value = this.gui.add(this.text, 'color1Value').max(max);
         this.color1Value.onFinishChange(this.changeHeatMapColor);
         this.color1 = this.gui.addColor(this.text, 'color1');
         this.color1.onFinishChange(this.changeHeatMapColor);
         // 第二档
-        this.color2Value = this.gui.add(this.text, 'color2Value');
+        this.color2Value = this.gui.add(this.text, 'color2Value').max(max);
         this.color2Value.onFinishChange(this.changeHeatMapColor);
         this.color2 = this.gui.addColor(this.text, 'color2');
         this.color2.onFinishChange(this.changeHeatMapColor);
         // 第三档
-        this.color3Value = this.gui.add(this.text, 'color3Value');
+        this.color3Value = this.gui.add(this.text, 'color3Value').max(max);
         this.color3Value.onFinishChange(this.changeHeatMapColor);
         this.color3 = this.gui.addColor(this.text, 'color3');
         this.color3.onFinishChange(this.changeHeatMapColor);
         // 第四档
-        this.color4Value = this.gui.add(this.text, 'color4Value');
+        this.color4Value = this.gui.add(this.text, 'color4Value').max(max);
         this.color4Value.onFinishChange(this.changeHeatMapColor);
         this.color4 = this.gui.addColor(this.text, 'color4');
         this.color4.onFinishChange(this.changeHeatMapColor);
@@ -518,6 +528,33 @@ class App extends Component {
         }
     }
 
+    onDropUploadClick = () => {
+        this.getFileContent(this.tRef.current, dataWeRender => {
+            this.setState({ dataWeRender: JSON.parse(dataWeRender) }, () => {
+                this.view.removeLayer(this.layer)
+                this.drawMapvgl()
+            })
+        });
+    }
+    
+    getFileContent = (fileInput, callback) => {
+        const _this = this
+        if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
+            var file = fileInput.files[0];
+            if (window.FileReader) {
+                var reader = new FileReader();
+                reader.onloadend = function (evt) {
+                    _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
+                        _this.view.removeLayer(_this.layer)
+                        _this.drawMapvgl()
+                    })
+                };
+                // 包含中文内容用gbk编码
+                reader.readAsText(file, 'gbk');
+            }
+        }
+    };
+
     render() {
         const { innerHeight, visible, text, dataWeRender, selectValue } = this.state;
         
@@ -530,8 +567,8 @@ class App extends Component {
                     <p>当前时间：{selectValue.nowTime}</p>
                     <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
                 </div>}
-                <div ref={this.tRef} className="dashboard">请将数据拖入</div>
-                {/* <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input> */}
+                {/* <div ref={this.tRef} className="dashboard">请将数据拖入</div> */}
+                <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
                     style={{ height: innerHeight }}

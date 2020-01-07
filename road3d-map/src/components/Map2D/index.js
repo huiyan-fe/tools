@@ -145,7 +145,7 @@ export default class Map2D extends Component {
         color='rgba(0,255,0,0.7)'
         bgColor='rgba(255,255,255,0.1)'
         arrowColor='rgba(255,0,0,0.7)'
-        lineWidth={20}
+        lineWidth={40}
         roadPath={highlightRoad}
       />
       <Road

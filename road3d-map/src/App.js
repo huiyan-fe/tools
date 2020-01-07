@@ -126,7 +126,6 @@ class App extends Component {
         this.maxText.setValue(heatMax)
         this.radiusText.setValue(4)
 
-        this.canvas.getContext('2d').scale( 256 / 299, 128 / 96)
         heatData.map(item =>  Object.assign(item, {radius: 4}))
 
         this.heatmap.setData({
@@ -134,14 +133,27 @@ class App extends Component {
             min: 0,
             data: heatData
         });
+        this.mockCanvas = document.createElement('canvas');
+        this.mockCanvas.width = 256
+        this.mockCanvas.height = 128
+        this.mockCtx = this.mockCanvas.getContext('2d');
 
-        this.layer = new mapvgl.WallLayer({
-            texture: this.canvas,
-            height: 30000
-        });
+        this.imageData = this.canvas.toDataURL();
+        let img = this.img = document.createElement('img');
+        this.img.src = this.imageData
+        this.img.width = 299 
+        this.img.height = 96 
+        const _this = this
+        this.img.onload = function () {
+            _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
+            _this.layer = new mapvgl.WallLayer({
+                texture: _this.mockCanvas,
+                height: 25000
+            });
+            _this.view.addLayer(_this.layer);  
+            _this.layer.setData(lineData);
+        }
 
-        this.view.addLayer(this.layer);  
-        this.layer.setData(lineData);
     }
 
     drawTimeText = () => {
@@ -233,12 +245,36 @@ class App extends Component {
         this.heatmap.setDataMax(max)
         this.heatmap.setDataMin(min)
 
+        this.heatmap.setData({
+            max: max,
+            min: min,
+            data: heatData
+        });
+
+        this.mockCtx = this.mockCanvas.getContext('2d');
+        this.mockCtx.clearRect(0, 0, this.mockCanvas.width, this.mockCanvas.height)
+        let imageData = this.heatmap._renderer.canvas.toDataURL();
+
+        this.img.src = imageData
+        console.log(this.img)
+        const _this = this
+
+        this.img.onload = function () {
+            _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
+            _this.layer.setOptions({
+                texture: _this.mockCanvas,
+            })
+        }
+
+
         this.layerSetData()
         this.forceUpdate()
     }
 
     changeHeatMapColor = () => {
+        const { dataWeRender } = this.state
         const { color1, color2, color3, color4, color5 } = this.text
+        const { lineData } = this.parseData(dataWeRender);
         const nuConfig = {
             gradient: {
                 '.3': color1,
@@ -251,6 +287,21 @@ class App extends Component {
         };
         
         this.heatmap.configure(nuConfig)
+
+        this.mockCtx = this.mockCanvas.getContext('2d');
+        this.mockCtx.clearRect(0, 0, this.mockCanvas.width, this.mockCanvas.height)
+        let imageData = this.heatmap._renderer.canvas.toDataURL();
+
+        this.img.src = imageData
+    
+        const _this = this
+        this.img.onload = function () {
+            _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
+            _this.layer.setOptions({
+                texture: _this.mockCanvas,
+            })
+        }
+
         this.layerSetData()
         this.forceUpdate()
     }
@@ -338,7 +389,7 @@ class App extends Component {
                     center={[11586045.04, 3566065.08]}
                     zoom={11}
                     onMapLoaded={this.onMapLoaded}
-                    changeHeatMap={this.changeHeatMap}
+                    // changeHeatMap={this.changeHeatMap}
                 >
                 </Map3D>
                 {text &&
@@ -348,7 +399,7 @@ class App extends Component {
                         dataWeRender={dataWeRender}
                         text={text}
                         visible={visible}
-                        changeHeatMap={this.changeHeatMap}
+                        // changeHeatMap={this.changeHeatMap}
                         selectValue={selectValue}
                     >
                     </Map2D> 

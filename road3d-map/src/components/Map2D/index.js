@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, Road } from 'react-bmap';
+import { Map, Road, Marker } from 'react-bmap';
 import Color from 'color';
 import { simpleMapStyle } from './style';
 
@@ -127,7 +127,15 @@ export default class Map2D extends Component {
     const highlightRoad = selectValue && this.highlightRoadHander(linksData, selectValue.x)
     
     // 颜色控制
-    const { splitList, category } =  this.heatDataHander(text.max, text.min, linksData)
+    const { splitList, category } = this.heatDataHander(text.max, text.min, linksData)
+    
+    let markersIconUrl =
+      'http://webmap1.map.bdstatic.com/wolfman/static/common/images/markers_new2x_fbb9e99.png';
+    const startIcon = new window.BMap.Icon(markersIconUrl, new window.BMap.Size(20, 26), {
+      anchor: new window.BMap.Size(12, 25),
+      imageOffset: new window.BMap.Size(-180, -140),
+      imageSize: new window.BMap.Size(300, 300)
+    });
 
     return (
       <Map
@@ -137,7 +145,7 @@ export default class Map2D extends Component {
         zoom={zoom}
         enableScrollWheelZoom={true}
       >
-      <Road
+      {/* <Road
         category={[1]}
         splitList={{
           1: '#0000FF'
@@ -147,7 +155,7 @@ export default class Map2D extends Component {
         arrowColor='rgba(255,0,0,0.7)'
         lineWidth={40}
         roadPath={highlightRoad}
-      />
+      /> */}
       <Road
         category={category}
         splitList={splitList}
@@ -156,7 +164,12 @@ export default class Map2D extends Component {
         arrowColor='rgba(255,0,0,0.7)'
         lineWidth={10}
         roadPath={roadPath}
-      />
+        />
+      {highlightRoad && <Marker
+          position={{ lng: highlightRoad[0].split(',')[0], lat: highlightRoad[0].split(',')[1] }}
+          icon={startIcon}
+      >
+      </Marker>}
       </Map>
     );
 

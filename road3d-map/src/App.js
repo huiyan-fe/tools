@@ -366,11 +366,17 @@ class App extends Component {
             backgroundColor: '#000'
         };
 
+        this.color1Value.setValue(max * 0.25)
+        this.color2Value.setValue(max * 0.55)
+        this.color3Value.setValue(max * 0.85)
+        this.color4Value.setValue(max * 1)
+
+
         
-        this.color1.setValue(nuConfig.gradient[color1Value / max])
-        this.color2.setValue(nuConfig.gradient[color2Value / max])
-        this.color3.setValue(nuConfig.gradient[color3Value / max])
-        this.color4.setValue(nuConfig.gradient[color4Value / max])        
+        this.color1.setValue(gradient['0.25'])
+        this.color2.setValue(gradient['0.55'])
+        this.color3.setValue(gradient['0.85'])
+        this.color4.setValue(gradient['1'])        
 
         this.heatmap.configure(nuConfig)
 

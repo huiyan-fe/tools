@@ -572,10 +572,14 @@ class App extends Component {
             <React.Fragment>
                 <TitleHeader />
                 <div ref={this.bindCanvasRef} className="canvas"></div>
-                {selectValue &&
+                {selectValue && selectValue.showPoint[0] &&
                 <div className="show">
                     <p>当前时间：{selectValue.nowTime}</p>
                     <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
+                </div>}
+                {selectValue && !selectValue.showPoint[0] &&
+                <div className="show">
+                    <p>当前点暂无数据</p>
                 </div>}
                 {/* <div ref={this.tRef} className="dashboard">请将数据拖入</div> */}
                 <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input>

@@ -43,19 +43,18 @@ export default class Map2D extends Component {
 
   heatDataHander = (max, min, data) => {
     const { text } = this.props
-    const { color1, color2, color3, color4, color5 } = text
+    const { color1, color2, color3, color4, radius} = text
     const colorArr = [
-      [0.2, color1],
-      [0.6, color2],
+      [0.25, color1],
+      [0.55, color2],
       [0.85, color3],
-      [0.9, color4],
-      [1, color5]
+      [1, color4]
     ];
 
     const splitList = {}
     const category = []
     data.map((item, index) => {
-      const percent = (item.geometry.value - min) / (max - min)
+      const percent = (item.geometry.value * radius - min) / (max - min)
       splitList[index] = this.getColorFromColorStops(colorArr, percent)
       category.push(index)
     })

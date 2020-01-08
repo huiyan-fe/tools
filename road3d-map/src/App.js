@@ -41,14 +41,14 @@ const gradientOptions = [
     },
     { 
         0.25: "rgba(0, 0, 255, 1)",
-        0.55: "rgba(0, 255, 0, 1)",
-        0.85: "rgba(255, 255, 0, 1)",
+        0.55: "rgba(0, 102, 255, 1)",
+        0.85: "rgba(0, 187, 255, 1)",
         1.0: 'rgba(255, 255, 255, 1)'
     },
     { 
         0.25: 'rgba(255, 255, 255, 1)',
-        0.55: "rgba(255, 255, 0, 1)",
-        0.85: "rgba(0, 255, 0, 1)",
+        0.55: "rgba(0, 187, 255, 1)",
+        0.85: "rgba(0, 102, 255, 1)",
         1: "rgba(0, 0, 255, 1)"
     }
   ];
@@ -134,7 +134,6 @@ class App extends Component {
             heatMax * 1, "rgba(255, 0, 0, 1)")
         this.initCanvas();
         this.drawMapvgl();
-        // this.drawTimeText();
     }
 
     initCanvas = () => {
@@ -201,7 +200,7 @@ class App extends Component {
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         this.ctx.save();
-        this.ctx.scale(1/3, 1);
+        this.ctx.scale(1/4, 1);
         for (let i = 0; i <= 4; i++) {
             this.ctx.fillText(`${24/4*i}:00`, 0, this.canvasHeight / 4 * i);
         }

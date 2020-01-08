@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as mapvgl from 'mapvgl';
 import Color from 'color';
 import h337 from 'heatmap.js';
+import CustomOverlay from './utils/customOverlay'
 import TitleHeader from './components/TitleHeader';
 import Map3D from './components/Map3D';
 import Map2D from './components/Map2D';
@@ -68,15 +69,15 @@ class App extends Component {
 
     componentDidMount() {
         window.addEventListener('resize', this.onResize);
-        this.tRef.current.addEventListener("dragover", function (e) {
-			e.preventDefault()
-			e.stopPropagation()
-		})
-		this.tRef.current.addEventListener("dragenter", function (e) {
-			e.preventDefault()
-			e.stopPropagation()
-		})
-        this.tRef.current.addEventListener("drop", this.onDropUploadClick)
+        // this.tRef.current.addEventListener("dragover", function (e) {
+		// 	e.preventDefault()
+		// 	e.stopPropagation()
+		// })
+		// this.tRef.current.addEventListener("dragenter", function (e) {
+		// 	e.preventDefault()
+		// 	e.stopPropagation()
+		// })
+        // this.tRef.current.addEventListener("drop", this.onDropUploadClick)
 
         this.canvasContainer.addEventListener('click', (e) => {
             const { dataWeRender } = this.state
@@ -134,7 +135,16 @@ class App extends Component {
             heatMax * 1, "rgba(255, 0, 0, 1)")
         this.initCanvas();
         this.drawMapvgl();
+        this.drawTimeTextMap()
+        this.timeDomRender()
         // this.drawTimeText()
+    }
+
+    drawTimeTextMap = () => {
+        let mc = this.map.lnglatToMercator(103.9408877639,30.720915067483);
+        var myOverlay = new CustomOverlay(new window.BMapGL.Point(mc[0], mc[1]));
+        // var myOverlay = new CustomOverlay(this.map.getCenter());
+        this.map.addOverlay(myOverlay);
     }
 
     initCanvas = () => {
@@ -181,9 +191,16 @@ class App extends Component {
         this.img.src = this.imageData
         this.img.width = 299 
         this.img.height = 96 
+
         const _this = this
         this.img.onload = function () {
+            const lengthArrow = 42
             _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
+            for (let i = 0; i < 598; i += lengthArrow){
+                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            }
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
             _this.layer = new mapvgl.WallLayer({
                 texture: _this.mockCanvas,
                 height: 12000,
@@ -195,17 +212,60 @@ class App extends Component {
 
     }
 
-    drawTimeText = () => {
-        this.ctx.font = '20px normal 微软雅黑';
-        this.ctx.fillStyle = '#fff';
-        this.ctx.textAlign = 'left';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.save();
-        this.ctx.scale(1/4, 1);
+    drawLineArrow = (cavParam, fromX, fromY, toX, toY, color) => {
+        var headlen = 4;//自定义箭头线的长度
+        var theta = 45;//自定义箭头线与直线的夹角，个人觉得45°刚刚好
+        var arrowX, arrowY;//箭头线终点坐标
+        // 计算各角度和对应的箭头终点坐标
+        var angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
+        var angle1 = (angle + theta) * Math.PI / 180;
+        var angle2 = (angle - theta) * Math.PI / 180;
+        var topX = headlen * Math.cos(angle1);
+        var topY = headlen * Math.sin(angle1);
+        var botX = headlen * Math.cos(angle2);
+        var botY = headlen * Math.sin(angle2);
+        cavParam.beginPath();
+        //画直线
+        cavParam.moveTo(fromX, fromY);
+        cavParam.lineTo(toX, toY);
+
+        arrowX = toX + topX;
+        arrowY = toY + topY;
+        //画上边箭头线
+        cavParam.moveTo(arrowX, arrowY);
+        cavParam.lineTo(toX, toY);
+
+        arrowX = toX + botX;
+        arrowY = toY + botY;
+        //画下边箭头线
+        cavParam.lineTo(arrowX, arrowY);
+    
+        cavParam.strokeStyle = color;
+        cavParam.stroke();
+    }
+
+    // 时间dom
+    timeDomRender = () => {
+        const timeCanvas = document.createElement('canvas');
+        const timeCanvasCtx = timeCanvas.getContext('2d');
+        timeCanvas.width = 44
+        timeCanvas.height = 192
+        timeCanvas.style.cssText = "background: #070c17;z-index: 10;position: absolute;bottom: 40px; right: 596px"
+        this.drawTimeText(timeCanvasCtx)
+        document.getElementById('root').appendChild(timeCanvas)
+    }
+
+    drawTimeText = (ctx) => {
+        ctx.font = '16px normal 微软雅黑';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.save();
+        ctx.scale(1, 1);
         for (let i = 0; i <= 4; i++) {
-            this.ctx.fillText(`${24/4*i}:00`, 0, this.canvasHeight / 4 * i);
+            ctx.fillText(`${24/4*i}:00`, 0, (this.canvasHeight - 10) / 2 * i + 10);
         }
-        this.ctx.restore();
+        ctx.restore();
     }
 
     parseData = roadData => {
@@ -297,7 +357,12 @@ class App extends Component {
         const _this = this
 
         this.img.onload = function () {
+            const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
+            for (let i = 0; i < 598; i += lengthArrow){
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            }
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -306,60 +371,8 @@ class App extends Component {
         this.forceUpdate()
     }
 
-    getColorFromColorStops = (colorStops, percent) => { 
-        if (percent < 0) {
-          percent = 0;
-        }
-        if (percent > 1) {
-          percent = 1;
-        }
-        let i = 0;
-        for (let length = colorStops.length; i < length; ++i) {
-          const colorStop = colorStops[i];
-          if (colorStop[0] >= percent) {
-            break;
-          }
-        }
-        const startColorStop = colorStops[i - 1];
-        const endColorStop = colorStops[i];
-        let startPercent = 0;
-        let endPercent = 1;
-        let startColor = null;
-        let endColor = null;
-        if (startColorStop) {
-          startPercent = startColorStop[0];
-          startColor = startColorStop[1];
-        }
-        if (endColorStop) {
-          endPercent = endColorStop[0];
-          endColor = endColorStop[1];
-        }
-        if (!startColor) {
-          startColor = endColor || '#000';
-        }
-        if (!endColor) {
-          endColor = startColor || '#000';
-        }
-    
-        let relativePercent = (percent - startPercent) / (endPercent - startPercent);
-        const startColorObj = Color(startColor)
-        const endColorObj = Color(endColor);
-        const sr = startColorObj.red();
-        const sg = startColorObj.green();
-        const sb = startColorObj.blue();
-        const sa = startColorObj.alpha();
-        const er = endColorObj.red();
-        const eg = endColorObj.green();
-        const eb = endColorObj.blue();
-        const ea = endColorObj.alpha();
-        return `rgba(${(sr + (er - sr) * relativePercent).toFixed()},` +
-          `${(sg + (eg - sg) * relativePercent).toFixed()},` +
-          `${(sb + (eb - sb) * relativePercent).toFixed()},` +
-          `${(sa + (ea - sa) * relativePercent).toFixed()})`;
-      }
-
     changeHeatMapAllColor = () => {
-        const { max, color1Value, color2Value, color3Value, color4Value, gradient} = this.text
+        const { max, gradient} = this.text
 
         const nuConfig = {
             gradient,
@@ -388,7 +401,13 @@ class App extends Component {
     
         const _this = this
         this.img.onload = function () {
+            const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
+            for (let i = 0; i < 598; i += lengthArrow){
+                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            }
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -398,13 +417,6 @@ class App extends Component {
     }
     changeHeatMapColor = () => {
         const { max, color1Value, color2Value, color3Value, color4Value, color1, color2, color3, color4} = this.text
-        
-        const colorArr = [
-            [0.25, color1],
-            [0.55, color2],
-            [0.85, color3],
-            [1, color4]
-        ];
   
         const nuConfig = {
             gradient: {
@@ -412,19 +424,10 @@ class App extends Component {
                 [color2Value / max] : color2,
                 [color3Value / max] : color3,
                 [color4Value / max] : color4,
-                // [color1Value / max] : this.getColorFromColorStops(colorArr, color1Value / max),
-                // [color2Value / max] : this.getColorFromColorStops(colorArr, color2Value / max),
-                // [color3Value / max] : this.getColorFromColorStops(colorArr, color3Value / max),
-                // [color4Value / max] : this.getColorFromColorStops(colorArr, color4Value / max),
             },
             backgroundColor: '#000'
         };      
 
-        // this.color1.setValue(nuConfig.gradient[color1Value / max])
-        // this.color2.setValue(nuConfig.gradient[color2Value / max])
-        // this.color3.setValue(nuConfig.gradient[color3Value / max])
-        // this.color4.setValue(nuConfig.gradient[color4Value / max])
-        
         this.color1Value.max(max)
         this.color2Value.max(max)
         this.color3Value.max(max)
@@ -441,7 +444,13 @@ class App extends Component {
     
         const _this = this
         this.img.onload = function () {
+            const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
+            for (let i = 0; i < 598; i += lengthArrow){
+                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            }
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -523,20 +532,20 @@ class App extends Component {
         this.setState({ visible: !visible })
     }
 
-    onDropUploadClick = (e) => {
-        const _this = this
-        e.preventDefault()
-		e.stopPropagation()
-        var files = this.files || e.dataTransfer.files
-        var reader = new FileReader()
-        reader.readAsText(files[0], 'utf-8')
-        reader.onload = function (evt) {
-            _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
-                _this.view.removeLayer(_this.layer)
-                _this.drawMapvgl()
-            })
-        }
-    }
+    // onDropUploadClick = (e) => {
+    //     const _this = this
+    //     e.preventDefault()
+	// 	e.stopPropagation()
+    //     var files = this.files || e.dataTransfer.files
+    //     var reader = new FileReader()
+    //     reader.readAsText(files[0], 'utf-8')
+    //     reader.onload = function (evt) {
+    //         _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
+    //             _this.view.removeLayer(_this.layer)
+    //             _this.drawMapvgl()
+    //         })
+    //     }
+    // }
 
     onDropUploadClick = () => {
         this.getFileContent(this.tRef.current, dataWeRender => {

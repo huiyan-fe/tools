@@ -134,6 +134,7 @@ class App extends Component {
             heatMax * 1, "rgba(255, 0, 0, 1)")
         this.initCanvas();
         this.drawMapvgl();
+        // this.drawTimeText()
     }
 
     initCanvas = () => {
@@ -478,7 +479,7 @@ class App extends Component {
    
         this.setState({ text: this.text })
         
-        this.radiusText = this.gui.add(this.text, 'radius').min(0.1);
+        this.radiusText = this.gui.add(this.text, 'radius').min(0.5);
         this.minText = this.gui.add(this.text, 'min').max(max);
         this.maxText = this.gui.add(this.text, 'max');
 

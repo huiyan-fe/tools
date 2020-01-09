@@ -158,13 +158,13 @@ class App extends Component {
         } = this.parseData(dataWeRender);
 
         // 初始化 GUI面板
-        this.initGUIPanel(4, heatMax, heatMin, gradient, heatMax * .25, "rgba(0, 0, 255, 1)",
+        this.initGUIPanel(1, heatMax, heatMin, gradient, heatMax * .25, "rgba(0, 0, 255, 1)",
             heatMax * .55, "rgba(0, 255, 0, 1)",
             heatMax * .85, "rgba(255, 255, 0, 1)",
             heatMax * 1, "rgba(255, 0, 0, 1)")
 
         heatData.map(item => Object.assign(item, {
-            radius: 4
+            radius: 1
         }))
 
         this.heatmap.setData({

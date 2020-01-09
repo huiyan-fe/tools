@@ -13,9 +13,19 @@ CustomOverlay.prototype.setPosition = function (point) {
 
 CustomOverlay.prototype.getPixelSize = function () {
   var map = this._map;
+  var height = this.height / map.getZoomUnits();
+  if (map._webglMapCamera) {
+    var bottom = map._webglMapCamera.fromMCToScreenPixel(this._point.lng, this._point.lat, {
+      z: 0
+    });
+    var top = map._webglMapCamera.fromMCToScreenPixel(this._point.lng, this._point.lat, {
+      z: this.height
+    });
+    height = bottom.y - top.y;
+  }
   return {
     width: this.width,
-    height: this.height / map.getZoomUnits()
+    height: height
   };
 }
 
@@ -29,6 +39,9 @@ CustomOverlay.prototype.addNumber = function () {
   }
   if (height < 8 * 24) {
     allCount = 6;
+  }
+  if (height < 4 * 24) {
+    allCount = 3;
   }
   for (var i = 0; i < 24; i += 24 / allCount) {
     html.push('<div style="font-size: 16px; color: #fff; height:' + height / allCount + 'px">' + i + ':00</div>');
@@ -63,7 +76,7 @@ CustomOverlay.prototype.initialize = function (map) {
 CustomOverlay.prototype.draw = function () {
   var map = this._map;
   var pixel = map.pointToOverlayPixel(this._point);
-  this._div.style.left = pixel.x - this.getPixelSize().width * 2 + "px";
+  this._div.style.left = pixel.x - this.getPixelSize().width + "px";
   this._div.style.width = this.getPixelSize().width + "px";
   this._div.style.height = this.getPixelSize().height + "px";
   this._div.style.top = pixel.y - this.getPixelSize().height + "px";

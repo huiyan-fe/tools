@@ -144,17 +144,6 @@ export default class Map2D extends Component {
         zoom={zoom}
         enableScrollWheelZoom={true}
       >
-      {/* <Road
-        category={[1]}
-        splitList={{
-          1: '#0000FF'
-        }}
-        color='rgba(0,255,0,0.7)'
-        bgColor='rgba(255,255,255,0.1)'
-        arrowColor='rgba(255,0,0,0.7)'
-        lineWidth={40}
-        roadPath={highlightRoad}
-      /> */}
       <Road
         category={category}
         splitList={splitList}

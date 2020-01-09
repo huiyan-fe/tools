@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import * as mapvgl from 'mapvgl';
-import Color from 'color';
 import h337 from 'heatmap.js';
 import CustomOverlay from './utils/customOverlay'
 import TitleHeader from './components/TitleHeader';
@@ -14,7 +13,7 @@ function FizzyText(radius, max, min, gradient, color1Value, color1, color2Value,
     this.radius = radius;
     this.max = max;
     this.min = min;
-    this.gradient = gradient 
+    this.gradient = gradient
 
     this.color1Value = color1Value;
     this.color1 = color1;
@@ -27,32 +26,38 @@ function FizzyText(radius, max, min, gradient, color1Value, color1, color2Value,
 
 }
 
-const gradientOptions = [
-    { 
+const gradientOptions = [{
         0.25: "rgba(0, 0, 255, 1)",
         0.55: "rgba(0, 255, 0, 1)",
         0.85: "rgba(255, 255, 0, 1)",
         1.0: "rgba(255, 0, 0, 1)"
     },
-    { 
+    {
         0.25: "rgba(255, 0, 0, 1)",
         0.55: "rgba(255, 255, 0, 1)",
         0.85: "rgba(0, 255, 0, 1)",
         1.0: "rgba(0, 0, 255, 1)"
     },
-    { 
+    {
         0.25: "rgba(0, 0, 255, 1)",
         0.55: "rgba(0, 102, 255, 1)",
         0.85: "rgba(0, 187, 255, 1)",
         1.0: 'rgba(255, 255, 255, 1)'
     },
-    { 
+    {
         0.25: 'rgba(255, 255, 255, 1)',
         0.55: "rgba(0, 187, 255, 1)",
         0.85: "rgba(0, 102, 255, 1)",
         1: "rgba(0, 0, 255, 1)"
     }
-  ];
+];
+
+const gradient = {
+    0.25: "rgba(0, 0, 255, 1)",
+    0.55: "rgba(0, 255, 0, 1)",
+    0.85: "rgba(255, 255, 0, 1)",
+    1.0: "rgba(255, 0, 0, 1)"
+}
 
 class App extends Component {
 
@@ -69,36 +74,32 @@ class App extends Component {
 
     componentDidMount() {
         window.addEventListener('resize', this.onResize);
-        // this.tRef.current.addEventListener("dragover", function (e) {
-		// 	e.preventDefault()
-		// 	e.stopPropagation()
-		// })
-		// this.tRef.current.addEventListener("dragenter", function (e) {
-		// 	e.preventDefault()
-		// 	e.stopPropagation()
-		// })
-        // this.tRef.current.addEventListener("drop", this.onDropUploadClick)
-
         this.canvasContainer.addEventListener('click', (e) => {
-            const { dataWeRender } = this.state
-            const x = Math.ceil((e.pageX -  this.ctx.canvas.getBoundingClientRect().left) / 2)
+            const {
+                dataWeRender
+            } = this.state
+            const x = Math.ceil((e.pageX - this.ctx.canvas.getBoundingClientRect().left) / 2)
             const y = Math.ceil((e.pageY - this.ctx.canvas.getBoundingClientRect().top) / 2)
-            const { hotData } = this.parseData(dataWeRender);   
-            
-            const showPoint = hotData.filter(item => item[0] === x && item[1]  === y - 1 ) || []
+            const {
+                hotData
+            } = this.parseData(dataWeRender);
+
+            const showPoint = hotData.filter(item => item[0] === x && item[1] === y - 1) || []
             const selectValue = {
                 x,
                 y,
                 showPoint,
                 nowTime: this.parseTime(y / 96 * 24)
             }
-            this.setState({ selectValue })
-    
+            this.setState({
+                selectValue
+            })
+
         })
     }
 
     parseTime = (num) => {
-        return ('0' + Math.floor(num) % 24).slice(-2) + ':' + ((num % 1)*60 + '0').slice(0, 2);
+        return ('0' + Math.floor(num) % 24).slice(-2) + ':' + ((num % 1) * 60 + '0').slice(0, 2);
     }
 
     componentWillUnmount() {
@@ -117,39 +118,23 @@ class App extends Component {
     }
 
     initMapvgl = map => {
-        const { dataWeRender } = this.state
-        let { heatMax } = this.parseData(dataWeRender);
-       
         this.view = new mapvgl.View({
             map: map
         });
-        // 初始化 GUI面板
-        this.initGUIPanel(4, heatMax, 0, { 
-            0.25: "rgba(0, 0, 255, 1)",
-            0.55: "rgba(0, 255, 0, 1)",
-            0.85: "rgba(255, 255, 0, 1)",
-            1.0: "rgba(255, 0, 0, 1)"
-        },  heatMax * .25, "rgba(0, 0, 255, 1)",
-            heatMax * .55, "rgba(0, 255, 0, 1)",
-            heatMax * .85, "rgba(255, 255, 0, 1)",
-            heatMax * 1, "rgba(255, 0, 0, 1)")
         this.initCanvas();
         this.drawMapvgl();
         this.drawTimeTextMap()
         this.timeDomRender()
-        // this.drawTimeText()
     }
 
     drawTimeTextMap = () => {
-        let mc = this.map.lnglatToMercator(103.9408877639,30.720915067483);
+        let mc = this.map.lnglatToMercator(103.9408877639, 30.720915067483);
         var myOverlay = new CustomOverlay(new window.BMapGL.Point(mc[0], mc[1]));
         // var myOverlay = new CustomOverlay(this.map.getCenter());
         this.map.addOverlay(myOverlay);
     }
 
     initCanvas = () => {
-        const { gradient } = this.text
-
         const nuConfig = {
             container: this.canvasContainer,
             blur: 1,
@@ -163,25 +148,39 @@ class App extends Component {
     }
 
     drawMapvgl = () => {
-        const { dataWeRender } = this.state
-        const { heatMax, heatData, lineData } = this.parseData(dataWeRender);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            heatMax,
+            heatMin,
+            heatData,
+        } = this.parseData(dataWeRender);
 
-        this.maxText.setValue(heatMax)
-        this.color1Value.setValue(heatMax * .25)
-        this.color2Value.setValue(heatMax * .55)
-        this.color3Value.setValue(heatMax * .85)
-        this.color4Value.setValue(heatMax * 1)        
+        // 初始化 GUI面板
+        this.initGUIPanel(4, heatMax, heatMin, gradient, heatMax * .25, "rgba(0, 0, 255, 1)",
+            heatMax * .55, "rgba(0, 255, 0, 1)",
+            heatMax * .85, "rgba(255, 255, 0, 1)",
+            heatMax * 1, "rgba(255, 0, 0, 1)")
 
-        this.radiusText.setValue(2)
-
-        heatData.map(item =>  Object.assign(item, {radius: 4}))
+        heatData.map(item => Object.assign(item, {
+            radius: 4
+        }))
 
         this.heatmap.setData({
             max: heatMax,
-            min: 0,
+            min: heatMin,
             data: heatData
         });
         this.mockCanvas = document.createElement('canvas');
+        this.renderToMapCanvas()
+    }
+
+    // 绘制渲染canvas
+    renderToMapCanvas = () => {
+        const { dataWeRender } = this.state
+        const { lineData } = this.parseData(dataWeRender);
+
         this.mockCanvas.width = 256
         this.mockCanvas.height = 128
         this.mockCtx = this.mockCanvas.getContext('2d');
@@ -189,33 +188,31 @@ class App extends Component {
         this.imageData = this.canvas.toDataURL();
         let img = this.img = document.createElement('img');
         this.img.src = this.imageData
-        this.img.width = 299 
-        this.img.height = 96 
+        this.img.width = 299
+        this.img.height = 96
 
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
             _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow){
-                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
-                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            for (let i = 0; i < 598; i += lengthArrow) {
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
-            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
             _this.layer = new mapvgl.WallLayer({
                 texture: _this.mockCanvas,
                 height: 12000,
                 enablePreciseMap: true
             });
-            _this.view.addLayer(_this.layer);  
+            _this.view.addLayer(_this.layer);
             _this.layer.setData(lineData);
         }
-
     }
 
     drawLineArrow = (cavParam, fromX, fromY, toX, toY, color) => {
-        var headlen = 4;//自定义箭头线的长度
-        var theta = 45;//自定义箭头线与直线的夹角，个人觉得45°刚刚好
-        var arrowX, arrowY;//箭头线终点坐标
+        var headlen = 4; //自定义箭头线的长度
+        var theta = 45; //自定义箭头线与直线的夹角，个人觉得45°刚刚好
+        var arrowX, arrowY; //箭头线终点坐标
         // 计算各角度和对应的箭头终点坐标
         var angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
         var angle1 = (angle + theta) * Math.PI / 180;
@@ -239,7 +236,7 @@ class App extends Component {
         arrowY = toY + botY;
         //画下边箭头线
         cavParam.lineTo(arrowX, arrowY);
-    
+
         cavParam.strokeStyle = color;
         cavParam.stroke();
     }
@@ -248,7 +245,7 @@ class App extends Component {
     timeDomRender = () => {
         const timeCanvas = document.createElement('canvas');
         const timeCanvasCtx = timeCanvas.getContext('2d');
-        timeCanvas.width = 44
+        timeCanvas.width = 25
         timeCanvas.height = 192
         timeCanvas.style.cssText = "background: #070c17;z-index: 10;position: absolute;bottom: 40px; right: 596px"
         this.drawTimeText(timeCanvasCtx)
@@ -256,14 +253,14 @@ class App extends Component {
     }
 
     drawTimeText = (ctx) => {
-        ctx.font = '16px normal 微软雅黑';
+        ctx.font = '8px normal 微软雅黑';
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         ctx.save();
         ctx.scale(1, 1);
-        for (let i = 0; i <= 4; i++) {
-            ctx.fillText(`${24/4*i}:00`, 0, (this.canvasHeight - 10) / 2 * i + 10);
+        for (let i = 0; i <= 24; i++) {
+            ctx.fillText(`${i}:00`, 0, (this.canvasHeight - 4) / 12 * i + 4);
         }
         ctx.restore();
     }
@@ -287,13 +284,13 @@ class App extends Component {
             }
 
             let loc = link.loc.split(',');
-            for (let k = 0; k < loc.length; k+=2) {
+            for (let k = 0; k < loc.length; k += 2) {
                 const x = Number(loc[k]);
-                const y = Number(loc[k +1 ]);
+                const y = Number(loc[k + 1]);
                 path.push([x, y]);
             }
         }
- 
+
         lineData.push({
             geometry: {
                 type: 'LineString',
@@ -304,7 +301,7 @@ class App extends Component {
         var heatData = [];
         var preWidth = this.canvasWidth / dataMaxWidth;
         var preHeight = this.canvasHeight / dataMaxHeight;
-  
+
         hotData.forEach(data => {
             heatData.push({
                 x: data[0] * preWidth,
@@ -315,9 +312,10 @@ class App extends Component {
 
         return {
             heatMax: dataMaxValue,
+            heatMin: Math.floor(dataMinValue),
             heatData,
             lineData,
-            hotData 
+            hotData
         };
     }
 
@@ -326,20 +324,34 @@ class App extends Component {
     }
 
     layerSetData = () => {
-        const { dataWeRender } = this.state
-        const { lineData } = this.parseData(dataWeRender);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            lineData
+        } = this.parseData(dataWeRender);
 
         if (this.layer) {
-            this.view.addLayer(this.layer);  
+            this.view.addLayer(this.layer);
             this.layer.setData(lineData);
         }
     }
 
     changeHeatMap = () => {
-        const { dataWeRender } = this.state
-        const { heatData } = this.parseData(dataWeRender);
-        const { radius, max, min } = this.text
-        heatData.map(item =>  Object.assign(item, {radius}))
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            heatData
+        } = this.parseData(dataWeRender);
+        const {
+            radius,
+            max,
+            min
+        } = this.text
+        heatData.map(item => Object.assign(item, {
+            radius
+        }))
         this.heatmap.setDataMax(max)
         this.heatmap.setDataMin(min)
 
@@ -359,10 +371,10 @@ class App extends Component {
         this.img.onload = function () {
             const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow){
-                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            for (let i = 0; i < 598; i += lengthArrow) {
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
-            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -372,7 +384,10 @@ class App extends Component {
     }
 
     changeHeatMapAllColor = () => {
-        const { max, gradient} = this.text
+        const {
+            max,
+            gradient
+        } = this.text
 
         const nuConfig = {
             gradient,
@@ -384,12 +399,10 @@ class App extends Component {
         this.color3Value.setValue(max * 0.85)
         this.color4Value.setValue(max * 1)
 
-
-        
         this.color1.setValue(gradient['0.25'])
         this.color2.setValue(gradient['0.55'])
         this.color3.setValue(gradient['0.85'])
-        this.color4.setValue(gradient['1'])        
+        this.color4.setValue(gradient['1'])
 
         this.heatmap.configure(nuConfig)
 
@@ -398,16 +411,15 @@ class App extends Component {
         let imageData = this.heatmap._renderer.canvas.toDataURL();
 
         this.img.src = imageData
-    
+
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow){
-                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
-                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            for (let i = 0; i < 598; i += lengthArrow) {
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
-            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -416,23 +428,32 @@ class App extends Component {
         this.forceUpdate()
     }
     changeHeatMapColor = () => {
-        const { max, color1Value, color2Value, color3Value, color4Value, color1, color2, color3, color4} = this.text
-  
+        const {
+            max,
+            color1Value,
+            color2Value,
+            color3Value,
+            color4Value,
+            color1,
+            color2,
+            color3,
+            color4
+        } = this.text
+
+        if (color1Value > max || color2Value > max || color3Value > max || color4Value > max) {
+            alert('区间值务必小于最大阈值')
+            return;
+        }
+
         const nuConfig = {
             gradient: {
-                [color1Value / max] : color1,
-                [color2Value / max] : color2,
-                [color3Value / max] : color3,
-                [color4Value / max] : color4,
+                [color1Value / max]: color1,
+                [color2Value / max]: color2,
+                [color3Value / max]: color3,
+                [color4Value / max]: color4,
             },
             backgroundColor: '#000'
-        };      
-
-        this.color1Value.max(max)
-        this.color2Value.max(max)
-        this.color3Value.max(max)
-        this.color4Value.max(max)
-
+        };
 
         this.heatmap.configure(nuConfig)
 
@@ -441,16 +462,15 @@ class App extends Component {
         let imageData = this.heatmap._renderer.canvas.toDataURL();
 
         this.img.src = imageData
-    
+
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
             _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow){
-                // _this.drawLineArrow(_this.ctx, i + 5, 5, lengthArrow + i, 5, "#000");
-                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#000");
+            for (let i = 0; i < 598; i += lengthArrow) {
+                _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
-            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#000");
+            _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
             _this.layer.setOptions({
                 texture: _this.mockCanvas,
             })
@@ -460,13 +480,16 @@ class App extends Component {
     }
 
     onChangeClick = () => {
-        const { visible } = this.state
-        
-        this.setState({ visible: !visible })
+        const {
+            visible
+        } = this.state
+
+        this.setState({
+            visible: !visible
+        })
     }
-      
+
     initGUIPanel = (radius, max, min, gradient, color1Value, color1, color2Value, color2, color3Value, color3, color4Value, color4) => {
-       
         this.gui = new window.dat.GUI({
             nameMap: {
                 radius: '辐射半径',
@@ -483,39 +506,40 @@ class App extends Component {
                 color4: '四档颜色',
             }
         });
-
         this.text = new FizzyText(radius, max, min, gradient, color1Value, color1, color2Value, color2, color3Value, color3, color4Value, color4);
-   
-        this.setState({ text: this.text })
-        
-        this.radiusText = this.gui.add(this.text, 'radius').min(0.5);
-        this.minText = this.gui.add(this.text, 'min').max(max);
-        this.maxText = this.gui.add(this.text, 'max');
+
+        this.setState({
+            text: this.text
+        })
+
+        this.radiusText = this.gui.add(this.text, 'radius').min(0.5).max(20);
+        this.minText = this.gui.add(this.text, 'min').min(0).max(max);
+        this.maxText = this.gui.add(this.text, 'max').min(0).max(max);
 
         this.radiusText.onFinishChange(this.changeHeatMap);
         this.minText.onFinishChange(this.changeHeatMap);
         this.maxText.onFinishChange(this.changeHeatMap);
-        
+
         this.gradientOptions = this.gui.addGradient(this.text, 'gradient', gradientOptions);
         this.gradientOptions.onFinishChange(this.changeHeatMapAllColor);
 
         // 第一档
-        this.color1Value = this.gui.add(this.text, 'color1Value').max(max);
+        this.color1Value = this.gui.add(this.text, 'color1Value').min(0).max(max);
         this.color1Value.onFinishChange(this.changeHeatMapColor);
         this.color1 = this.gui.addColor(this.text, 'color1');
         this.color1.onFinishChange(this.changeHeatMapColor);
         // 第二档
-        this.color2Value = this.gui.add(this.text, 'color2Value').max(max);
+        this.color2Value = this.gui.add(this.text, 'color2Value').min(0).max(max);
         this.color2Value.onFinishChange(this.changeHeatMapColor);
         this.color2 = this.gui.addColor(this.text, 'color2');
         this.color2.onFinishChange(this.changeHeatMapColor);
         // 第三档
-        this.color3Value = this.gui.add(this.text, 'color3Value').max(max);
+        this.color3Value = this.gui.add(this.text, 'color3Value').min(0).max(max);;
         this.color3Value.onFinishChange(this.changeHeatMapColor);
         this.color3 = this.gui.addColor(this.text, 'color3');
         this.color3.onFinishChange(this.changeHeatMapColor);
         // 第四档
-        this.color4Value = this.gui.add(this.text, 'color4Value').max(max);
+        this.color4Value = this.gui.add(this.text, 'color4Value').min(0).max(max);;
         this.color4Value.onFinishChange(this.changeHeatMapColor);
         this.color4 = this.gui.addColor(this.text, 'color4');
         this.color4.onFinishChange(this.changeHeatMapColor);
@@ -527,46 +551,36 @@ class App extends Component {
 
     // 切换控制
     onChangeClick = () => {
-        const { visible } = this.state
+        const {
+            visible
+        } = this.state
 
-        this.setState({ visible: !visible })
+        this.setState({
+            visible: !visible
+        })
     }
-
-    // onDropUploadClick = (e) => {
-    //     const _this = this
-    //     e.preventDefault()
-	// 	e.stopPropagation()
-    //     var files = this.files || e.dataTransfer.files
-    //     var reader = new FileReader()
-    //     reader.readAsText(files[0], 'utf-8')
-    //     reader.onload = function (evt) {
-    //         _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
-    //             _this.view.removeLayer(_this.layer)
-    //             _this.drawMapvgl()
-    //         })
-    //     }
-    // }
 
     onDropUploadClick = () => {
         this.getFileContent(this.tRef.current, dataWeRender => {
-            this.setState({ dataWeRender: JSON.parse(dataWeRender) }, () => {
+            this.setState({
+                dataWeRender: JSON.parse(dataWeRender)
+            }, () => {
                 this.view.removeLayer(this.layer)
+                this.gui.destroy()
                 this.drawMapvgl()
             })
         });
     }
-    
+
     getFileContent = (fileInput, callback) => {
-        const _this = this
         if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0) {
             var file = fileInput.files[0];
             if (window.FileReader) {
                 var reader = new FileReader();
                 reader.onloadend = function (evt) {
-                    _this.setState({ dataWeRender: JSON.parse(evt.target.result) }, () => {
-                        _this.view.removeLayer(_this.layer)
-                        _this.drawMapvgl()
-                    })
+                    if (evt.target.readyState == FileReader.DONE) {
+                        callback(evt.target.result);
+                    }
                 };
                 // 包含中文内容用gbk编码
                 reader.readAsText(file, 'gbk');
@@ -575,8 +589,13 @@ class App extends Component {
     };
 
     render() {
-        const { innerHeight, visible, text, dataWeRender, selectValue } = this.state;
-        
+        const {
+            innerHeight,
+            visible,
+            text,
+            dataWeRender,
+            selectValue
+        } = this.state;
         return (
             <React.Fragment>
                 <TitleHeader />
@@ -590,7 +609,6 @@ class App extends Component {
                 <div className="show">
                     <p>当前点暂无数据</p>
                 </div>}
-                {/* <div ref={this.tRef} className="dashboard">请将数据拖入</div> */}
                 <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input>
                 <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
                 <Map3D
@@ -614,6 +632,7 @@ class App extends Component {
                 }
             </React.Fragment>
         );
+
     }
 }
 

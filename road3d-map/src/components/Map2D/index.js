@@ -41,24 +41,27 @@ export default class Map2D extends Component {
     return [data[index].geometry.coordinates]
   }
 
-  heatDataHander = (max, min, data) => {
+  heatDataHander = (data) => {
     const { text } = this.props
-    const { color1, color2, color3, color4, radius} = text
-    const colorArr = [
-      [0.25, color1],
-      [0.55, color2],
-      [0.85, color3],
-      [1, color4]
-    ];
+    const { color1, color1Value, color2, color2Value, color3, color3Value, color4, color4Value, radius, max, min } = text
+    const color1Ratio = color1Value / max
+    const color2Ratio = (color2Value - color1Value) / max
+    const color3Ratio = (color3Value - color2Value) / max
+    const color4Ratio = (color4Value - color3Value) / max
 
+    const colorArr = [
+      [color1Ratio, color1],
+      [color1Ratio + color2Ratio, color2],
+      [color1Ratio + color2Ratio + color3Ratio, color3],
+      [color1Ratio + color2Ratio + color3Ratio + color4Ratio, color4]
+    ];
     const splitList = {}
     const category = []
     data.map((item, index) => {
-      const percent = (item.geometry.value * radius - min) / (max - min)
+      const percent = (item.geometry.value - min) / (max - min)
       splitList[index] = this.getColorFromColorStops(colorArr, percent)
       category.push(index)
     })
-
     return { splitList, category }
   }
 
@@ -116,7 +119,7 @@ export default class Map2D extends Component {
 
 
   render() {
-    const { center, zoom, text, dataWeRender, selectValue } = this.props
+    const { center, zoom, dataWeRender, selectValue } = this.props
     const linksData = this.parseData(dataWeRender)
 
     // 路线绘制
@@ -124,9 +127,9 @@ export default class Map2D extends Component {
 
     // 高亮路线
     const highlightRoad = selectValue && this.highlightRoadHander(linksData, selectValue.x)
-    
+   
     // 颜色控制
-    const { splitList, category } = this.heatDataHander(text.max, text.min, linksData)
+    const { splitList, category } = this.heatDataHander(linksData)
     
     let markersIconUrl =
       'http://webmap1.map.bdstatic.com/wolfman/static/common/images/markers_new2x_fbb9e99.png';
@@ -139,7 +142,7 @@ export default class Map2D extends Component {
     return (
       <Map
         style={{ height: '100vh' }}
-        mapStyle={simpleMapStyle}
+        mapStyleV2={simpleMapStyle}
         center={{ lng: center[0], lat: center[1] }}
         zoom={zoom}
         enableScrollWheelZoom={true}

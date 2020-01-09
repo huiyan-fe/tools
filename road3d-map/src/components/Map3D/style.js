@@ -444,7 +444,7 @@ var darkStyle = [{
     "featureType": "poilabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "off"
+        "visibility": "on"
     }
 }, {
     "featureType": "airportlabel",
@@ -567,6 +567,6 @@ var darkStyle = [{
     "stylers": {
         "color": "#ffffff0"
     }
-}];
+}]
 
 export {darkStyle, snowStyle};

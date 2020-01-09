@@ -1,5 +1,5 @@
 function CustomOverlay(point) {
-  this.height = 12000;
+  this.height = 12000 * 4;
   this.width = 50;
   this._point = new window.BMapGL.Point(point.lng, point.lat);
 }
@@ -43,7 +43,7 @@ CustomOverlay.prototype.addNumber = function () {
   if (height < 4 * 24) {
     allCount = 3;
   }
-  for (var i = 0; i < 24; i += 24 / allCount) {
+  for (var i = 0; i <= 24; i += 24 / allCount) {
     html.push('<div style="font-size: 16px; color: #fff; height:' + height / allCount + 'px">' + i + ':00</div>');
   }
   this._div.innerHTML = html.join('');
@@ -76,7 +76,7 @@ CustomOverlay.prototype.initialize = function (map) {
 CustomOverlay.prototype.draw = function () {
   var map = this._map;
   var pixel = map.pointToOverlayPixel(this._point);
-  this._div.style.left = pixel.x - this.getPixelSize().width + "px";
+  this._div.style.left = pixel.x - this.getPixelSize().width - 10 + "px";
   this._div.style.width = this.getPixelSize().width + "px";
   this._div.style.height = this.getPixelSize().height + "px";
   this._div.style.top = pixel.y - this.getPixelSize().height + "px";

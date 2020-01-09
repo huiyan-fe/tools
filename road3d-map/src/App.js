@@ -513,8 +513,8 @@ class App extends Component {
         })
 
         this.radiusText = this.gui.add(this.text, 'radius').min(0.5).max(20);
-        this.minText = this.gui.add(this.text, 'min').min(0).max(max);
-        this.maxText = this.gui.add(this.text, 'max').min(0).max(max);
+        this.minText = this.gui.add(this.text, 'min').min(0).max(max * 1.2);
+        this.maxText = this.gui.add(this.text, 'max').min(0).max(max * 1.2);
 
         this.radiusText.onFinishChange(this.changeHeatMap);
         this.minText.onFinishChange(this.changeHeatMap);
@@ -524,22 +524,22 @@ class App extends Component {
         this.gradientOptions.onFinishChange(this.changeHeatMapAllColor);
 
         // 第一档
-        this.color1Value = this.gui.add(this.text, 'color1Value').min(0).max(max);
+        this.color1Value = this.gui.add(this.text, 'color1Value').min(0).max(max * 1.2);
         this.color1Value.onFinishChange(this.changeHeatMapColor);
         this.color1 = this.gui.addColor(this.text, 'color1');
         this.color1.onFinishChange(this.changeHeatMapColor);
         // 第二档
-        this.color2Value = this.gui.add(this.text, 'color2Value').min(0).max(max);
+        this.color2Value = this.gui.add(this.text, 'color2Value').min(0).max(max * 1.2);
         this.color2Value.onFinishChange(this.changeHeatMapColor);
         this.color2 = this.gui.addColor(this.text, 'color2');
         this.color2.onFinishChange(this.changeHeatMapColor);
         // 第三档
-        this.color3Value = this.gui.add(this.text, 'color3Value').min(0).max(max);;
+        this.color3Value = this.gui.add(this.text, 'color3Value').min(0).max(max * 1.2);;
         this.color3Value.onFinishChange(this.changeHeatMapColor);
         this.color3 = this.gui.addColor(this.text, 'color3');
         this.color3.onFinishChange(this.changeHeatMapColor);
         // 第四档
-        this.color4Value = this.gui.add(this.text, 'color4Value').min(0).max(max);;
+        this.color4Value = this.gui.add(this.text, 'color4Value').min(0).max(max * 1.2);;
         this.color4Value.onFinishChange(this.changeHeatMapColor);
         this.color4 = this.gui.addColor(this.text, 'color4');
         this.color4.onFinishChange(this.changeHeatMapColor);

@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "46c7159481ba2d04cb16450055fe1ee3",
+    "revision": "456932542da0858f6e488e2992b95266",
     "url": "/tools/road3d-map/build/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/tools/road3d-map/build/static/css/2.245eb8db.chunk.css"
   },
   {
-    "revision": "dccaaded02f3f6d2a04d",
+    "revision": "fe8ea1993df54a141c8e",
     "url": "/tools/road3d-map/build/static/css/main.2f108e12.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/tools/road3d-map/build/static/js/2.7fca210e.chunk.js"
   },
   {
-    "revision": "dccaaded02f3f6d2a04d",
-    "url": "/tools/road3d-map/build/static/js/main.9d03884f.chunk.js"
+    "revision": "fe8ea1993df54a141c8e",
+    "url": "/tools/road3d-map/build/static/js/main.b90820e2.chunk.js"
   },
   {
     "revision": "8dcfdbb7d5580de4d989",

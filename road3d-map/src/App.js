@@ -645,14 +645,14 @@ class App extends Component {
                 <Map3D
                     style={{ height: innerHeight }}
                     visible={visible}
-                    center={[11586045.04, 3566065.08]}
+                    center={[12958143.05,4826951.78]}
                     zoom={11}
                     onMapLoaded={this.onMapLoaded}
                 >
                 </Map3D>
                 {text &&
                     <Map2D
-                        center={[11586045.04,3566065.08]}
+                        center={[12958143.05,4826951.78]}
                         zoom={11}
                         dataWeRender={dataWeRender}
                         text={text}

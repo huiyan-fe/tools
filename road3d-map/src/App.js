@@ -135,7 +135,7 @@ class App extends Component {
             return;
         }
         let mc = this.map.lnglatToMercator(dataWeRender[0].loc.split(',')[0], dataWeRender[0].loc.split(',')[1]);
-        var myOverlay = new CustomOverlay(new window.BMapGL.Point(mc[0], mc[1]));
+        var myOverlay = this.myOverlay = new CustomOverlay(new window.BMapGL.Point(mc[0], mc[1]));
         // var myOverlay = new CustomOverlay(this.map.getCenter());
         this.map.addOverlay(myOverlay);
     }
@@ -256,7 +256,7 @@ class App extends Component {
     timeDomRender = () => {
         const { dataWeRender } = this.state
         const { dataMaxWidth } = this.parseData(dataWeRender);
-        const timeCanvas = document.createElement('canvas');
+        const timeCanvas = this.timeCanvas = document.createElement('canvas');
         const timeCanvasCtx = timeCanvas.getContext('2d');
         timeCanvas.width = 25
         timeCanvas.height = 192
@@ -603,7 +603,12 @@ class App extends Component {
             }, () => {
                 this.view.removeLayer(this.layer)
                 this.gui.destroy()
+                document.getElementById('root').removeChild(this.timeCanvas)
+                this.myOverlay.remove()
+                this.initCanvas();
                 this.drawMapvgl()
+                this.drawTimeTextMap()
+                this.timeDomRender()
             })
         });
     }
@@ -632,6 +637,13 @@ class App extends Component {
             dataWeRender,
             selectValue
         } = this.state;
+
+        if (!dataWeRender[0] || !dataWeRender[0].loc) {
+            alert('请您核对下上传数据')
+            return;
+        }
+        let mc = [dataWeRender[0].loc.split(',')[0], dataWeRender[0].loc.split(',')[1]];
+
         return (
             <React.Fragment>
                 <TitleHeader />
@@ -650,14 +662,14 @@ class App extends Component {
                 <Map3D
                     style={{ height: innerHeight }}
                     visible={visible}
-                    center={[12958143.05, 4826951.78]}
+                    center={mc}
                     zoom={11}
                     onMapLoaded={this.onMapLoaded}
                 >
                 </Map3D>
                 {text &&
                     <Map2D
-                        center={[12958143.05, 4826951.78]}
+                        center={mc}
                         zoom={11}
                         dataWeRender={dataWeRender}
                         text={text}

@@ -36,11 +36,17 @@ export default class Map3D extends Component {
                 'rgba(5, 5, 30, 1.0)'
             ]
         });
+        this.map = map;
         if (this.props.center && this.props.zoom) {
-            map.centerAndZoom(new window.BMapGL.Point(this.props.center[0], this.props.center[1]), this.props.zoom);
+            if (!this.map) {
+                alert('请确认上传数据')
+            }
+            
+            const mc = this.map.lnglatToMercator(this.props.center[0], this.props.center[1])
+            map.centerAndZoom(new window.BMapGL.Point(mc[0], mc[1]), this.props.zoom);
+            
         }
 
-        this.map = map;
         this.props.onMapLoaded && this.props.onMapLoaded(map);
     }
 

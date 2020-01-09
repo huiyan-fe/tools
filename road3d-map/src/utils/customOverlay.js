@@ -82,5 +82,9 @@ CustomOverlay.prototype.draw = function () {
   this._div.style.top = pixel.y - this.getPixelSize().height + "px";
   this.addNumber();
 }
+CustomOverlay.prototype.remove = function () {
+  var map = this._map;
+  map.getPanes().floatShadow.removeChild(this._div)
+}
 
 export default CustomOverlay

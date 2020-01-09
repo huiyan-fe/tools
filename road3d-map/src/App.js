@@ -247,20 +247,20 @@ class App extends Component {
         const timeCanvasCtx = timeCanvas.getContext('2d');
         timeCanvas.width = 25
         timeCanvas.height = 192
-        timeCanvas.style.cssText = "background: #070c17;z-index: 10;position: absolute;bottom: 40px; right: 596px"
+        timeCanvas.style.cssText = "background: #070c17;z-index: 10;position: absolute;bottom: 0px; right: 596px"
         this.drawTimeText(timeCanvasCtx)
         document.getElementById('root').appendChild(timeCanvas)
     }
 
     drawTimeText = (ctx) => {
-        ctx.font = '8px normal 微软雅黑';
+        ctx.font = '10px normal 微软雅黑';
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         ctx.save();
         ctx.scale(1, 1);
-        for (let i = 0; i <= 24; i++) {
-            ctx.fillText(`${i}:00`, 0, (this.canvasHeight - 4) / 12 * i + 4);
+        for (let i = 0; i <= 12; i++) {
+            ctx.fillText(`${i * 2}:00`, 0, (this.canvasHeight - 4) / 6 * i + 4);
         }
         ctx.restore();
     }

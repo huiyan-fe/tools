@@ -155,6 +155,7 @@ export default class Map2D extends Component {
         arrowColor='rgba(255,0,0,0.7)'
         lineWidth={10}
         roadPath={roadPath}
+        viewportOptions={{ margins: [20, 500, 80, 440] }}
         />
       {highlightRoad && <Marker
           position={{ lng: highlightRoad[0].split(',')[0], lat: highlightRoad[0].split(',')[1] }}

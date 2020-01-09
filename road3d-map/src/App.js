@@ -129,9 +129,7 @@ class App extends Component {
         const {
             dataWeRender
         } = this.state
-        const {
-            heatData
-        } = this.parseData(dataWeRender);
+
         if (!dataWeRender[0] || !dataWeRender[0].loc) {
             alert('请您核对下上传数据')
             return;
@@ -143,6 +141,11 @@ class App extends Component {
     }
 
     initCanvas = () => {
+        const { dataWeRender } = this.state
+        const { dataMaxWidth, dataMaxHeight } = this.parseData(dataWeRender);
+
+        this.canvasContainer.style.width = dataMaxWidth + 'px'
+        this.canvasContainer.style.height = dataMaxHeight + 'px'
         const nuConfig = {
             container: this.canvasContainer,
             blur: 1,
@@ -251,11 +254,13 @@ class App extends Component {
 
     // 时间dom
     timeDomRender = () => {
+        const { dataWeRender } = this.state
+        const { dataMaxWidth } = this.parseData(dataWeRender);
         const timeCanvas = document.createElement('canvas');
         const timeCanvasCtx = timeCanvas.getContext('2d');
         timeCanvas.width = 25
         timeCanvas.height = 192
-        timeCanvas.style.cssText = "background: #070c17;z-index: 10;position: absolute;bottom: 0px; right: 596px"
+        timeCanvas.style.cssText = `background: #070c17;z-index: 10;position: absolute;bottom: 0px; right: ${dataMaxWidth * 2}px`
         this.drawTimeText(timeCanvasCtx)
         document.getElementById('root').appendChild(timeCanvas)
     }
@@ -645,14 +650,14 @@ class App extends Component {
                 <Map3D
                     style={{ height: innerHeight }}
                     visible={visible}
-                    center={[12958143.05,4826951.78]}
+                    center={[12958143.05, 4826951.78]}
                     zoom={11}
                     onMapLoaded={this.onMapLoaded}
                 >
                 </Map3D>
                 {text &&
                     <Map2D
-                        center={[12958143.05,4826951.78]}
+                        center={[12958143.05, 4826951.78]}
                         zoom={11}
                         dataWeRender={dataWeRender}
                         text={text}

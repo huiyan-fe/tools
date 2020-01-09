@@ -38,6 +38,9 @@ export default class Map2D extends Component {
   }
 
   highlightRoadHander = (data, index = 0) => {
+    if (!data[index]) {
+      return;
+    }
     return [data[index].geometry.coordinates]
   }
 

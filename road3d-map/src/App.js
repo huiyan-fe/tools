@@ -60,9 +60,6 @@ const gradient = {
 }
 
 class App extends Component {
-
-    canvasWidth = 298;
-    canvasHeight = 96;
     state = {
         dataWeRender: ShenhaiData,
         innerHeight: window.innerHeight,
@@ -81,7 +78,8 @@ class App extends Component {
             const x = Math.ceil((e.pageX - this.ctx.canvas.getBoundingClientRect().left) / 2)
             const y = Math.ceil((e.pageY - this.ctx.canvas.getBoundingClientRect().top) / 2)
             const {
-                hotData
+                hotData,
+                dataMaxHeight
             } = this.parseData(dataWeRender);
 
             const showPoint = hotData.filter(item => item[0] === x && item[1] === y - 1) || []
@@ -89,7 +87,7 @@ class App extends Component {
                 x,
                 y,
                 showPoint,
-                nowTime: this.parseTime(y / 96 * 24)
+                nowTime: this.parseTime(y / dataMaxHeight * 24)
             }
             this.setState({
                 selectValue
@@ -128,7 +126,17 @@ class App extends Component {
     }
 
     drawTimeTextMap = () => {
-        let mc = this.map.lnglatToMercator(103.9408877639, 30.720915067483);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            heatData
+        } = this.parseData(dataWeRender);
+        if (!dataWeRender[0] || !dataWeRender[0].loc) {
+            alert('请您核对下上传数据')
+            return;
+        }
+        let mc = this.map.lnglatToMercator(dataWeRender[0].loc.split(',')[0], dataWeRender[0].loc.split(',')[1]);
         var myOverlay = new CustomOverlay(new window.BMapGL.Point(mc[0], mc[1]));
         // var myOverlay = new CustomOverlay(this.map.getCenter());
         this.map.addOverlay(myOverlay);
@@ -158,13 +166,13 @@ class App extends Component {
         } = this.parseData(dataWeRender);
 
         // 初始化 GUI面板
-        this.initGUIPanel(1, heatMax, heatMin, gradient, heatMax * .25, "rgba(0, 0, 255, 1)",
+        this.initGUIPanel(2, heatMax, heatMin, gradient, heatMax * .25, "rgba(0, 0, 255, 1)",
             heatMax * .55, "rgba(0, 255, 0, 1)",
             heatMax * .85, "rgba(255, 255, 0, 1)",
             heatMax * 1, "rgba(255, 0, 0, 1)")
 
         heatData.map(item => Object.assign(item, {
-            radius: 1
+            radius: 2
         }))
 
         this.heatmap.setData({
@@ -179,7 +187,7 @@ class App extends Component {
     // 绘制渲染canvas
     renderToMapCanvas = () => {
         const { dataWeRender } = this.state
-        const { lineData } = this.parseData(dataWeRender);
+        const { lineData, dataMaxWidth, dataMaxHeight } = this.parseData(dataWeRender);
 
         this.mockCanvas.width = 256
         this.mockCanvas.height = 128
@@ -188,14 +196,14 @@ class App extends Component {
         this.imageData = this.canvas.toDataURL();
         let img = this.img = document.createElement('img');
         this.img.src = this.imageData
-        this.img.width = 299
-        this.img.height = 96
+        this.img.width = dataMaxWidth
+        this.img.height = dataMaxHeight
 
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
-            _this.mockCtx.drawImage(img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow) {
+            _this.mockCtx.drawImage(img, 0, 0, dataMaxWidth, dataMaxHeight, 0, 0, 256, 128);
+            for (let i = 0; i < dataMaxWidth * 2; i += lengthArrow) {
                 _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
             _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
@@ -253,6 +261,13 @@ class App extends Component {
     }
 
     drawTimeText = (ctx) => {
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            dataMaxHeight
+        } = this.parseData(dataWeRender);
+
         ctx.font = '10px normal 微软雅黑';
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'left';
@@ -260,7 +275,7 @@ class App extends Component {
         ctx.save();
         ctx.scale(1, 1);
         for (let i = 0; i <= 12; i++) {
-            ctx.fillText(`${i * 2}:00`, 0, (this.canvasHeight - 4) / 6 * i + 4);
+            ctx.fillText(`${i * 2}:00`, 0, (dataMaxHeight - 4) / 6 * i + 4);
         }
         ctx.restore();
     }
@@ -299,13 +314,11 @@ class App extends Component {
         });
 
         var heatData = [];
-        var preWidth = this.canvasWidth / dataMaxWidth;
-        var preHeight = this.canvasHeight / dataMaxHeight;
 
         hotData.forEach(data => {
             heatData.push({
-                x: data[0] * preWidth,
-                y: data[1] * preHeight,
+                x: data[0],
+                y: data[1],
                 value: data[2]
             })
         });
@@ -315,7 +328,9 @@ class App extends Component {
             heatMin: Math.floor(dataMinValue),
             heatData,
             lineData,
-            hotData
+            hotData,
+            dataMaxWidth,
+            dataMaxHeight: dataMaxHeight + 1
         };
     }
 
@@ -342,6 +357,8 @@ class App extends Component {
             dataWeRender
         } = this.state
         const {
+            dataMaxWidth,
+            dataMaxHeight,
             heatData
         } = this.parseData(dataWeRender);
         const {
@@ -370,8 +387,8 @@ class App extends Component {
 
         this.img.onload = function () {
             const lengthArrow = 42
-            _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow) {
+            _this.mockCtx.drawImage(_this.img, 0, 0, dataMaxWidth, dataMaxHeight, 0, 0, 256, 128);
+            for (let i = 0; i < dataMaxWidth * 2; i += lengthArrow) {
                 _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
             _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
@@ -388,6 +405,13 @@ class App extends Component {
             max,
             gradient
         } = this.text
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            dataMaxWidth,
+            dataMaxHeight
+        } = this.parseData(dataWeRender);
 
         const nuConfig = {
             gradient,
@@ -415,8 +439,8 @@ class App extends Component {
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
-            _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow) {
+            _this.mockCtx.drawImage(_this.img, 0, 0, dataMaxWidth, dataMaxHeight, 0, 0, 256, 128);
+            for (let i = 0; i < dataMaxWidth * 2; i += lengthArrow) {
                 _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
             _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
@@ -439,6 +463,13 @@ class App extends Component {
             color3,
             color4
         } = this.text
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            dataMaxWidth,
+            dataMaxHeight
+        } = this.parseData(dataWeRender);
 
         if (color1Value > max || color2Value > max || color3Value > max || color4Value > max) {
             alert('区间值务必小于最大阈值')
@@ -466,8 +497,8 @@ class App extends Component {
         const _this = this
         this.img.onload = function () {
             const lengthArrow = 42
-            _this.mockCtx.drawImage(_this.img, 0, 0, 299, 96, 0, 0, 256, 128);
-            for (let i = 0; i < 598; i += lengthArrow) {
+            _this.mockCtx.drawImage(_this.img, 0, 0, dataMaxWidth, dataMaxHeight, 0, 0, 256, 128);
+            for (let i = 0; i < dataMaxWidth * 2; i += lengthArrow) {
                 _this.drawLineArrow(_this.mockCtx, i + 5, 5, lengthArrow + i, 5, "#fff");
             }
             _this.drawLineArrow(_this.ctx, 5, 5, lengthArrow, 5, "#fff");
@@ -512,7 +543,7 @@ class App extends Component {
             text: this.text
         })
 
-        this.radiusText = this.gui.add(this.text, 'radius').min(0.5).max(20);
+        this.radiusText = this.gui.add(this.text, 'radius').min(2).max(20);
         this.minText = this.gui.add(this.text, 'min').min(0).max(max * 1.2);
         this.maxText = this.gui.add(this.text, 'max').min(0).max(max * 1.2);
 

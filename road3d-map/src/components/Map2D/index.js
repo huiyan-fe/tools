@@ -58,8 +58,8 @@ export default class Map2D extends Component {
     const splitList = {}
     const category = []
     data.map((item, index) => {
-      const percent = (item.geometry.value * radius - min) / (max - min) 
-      splitList[index] = this.getColorFromColorStops(colorArr, percent)
+      const percent = (item.geometry.value - min) / (max - min) 
+      splitList[index] = this.getColorFromColorStops(colorArr, percent * radius)
       category.push(index)
     })
     return { splitList, category }

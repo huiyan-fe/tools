@@ -1,12 +1,20 @@
-import React, { Component } from 'react';
-import { Map, Road, Marker } from 'react-bmap';
+import React, {
+  Component
+} from 'react';
+import {
+  Map,
+  Road,
+  Marker
+} from 'react-bmap';
 import Color from 'color';
-import { simpleMapStyle } from './style';
+import {
+  simpleMapStyle
+} from './style';
 
 export default class Map2D extends Component {
   // 累加器
-  reducer = (accumulator, currentValue) =>  accumulator + currentValue[1]
-  
+  reducer = (accumulator, currentValue) => accumulator + currentValue[1]
+
   // 获取每个links的平均值
   getAverageValue = (items) => items.reduce(this.reducer, 0) / items.length
 
@@ -15,9 +23,9 @@ export default class Map2D extends Component {
     data.map(item => {
       lineData.push({
         geometry: {
-            type: 'LineString',
-            coordinates: item.loc,
-            value: this.getAverageValue(item.data) 
+          type: 'LineString',
+          coordinates: item.loc,
+          value: this.getAverageValue(item.data)
         }
       });
     })
@@ -45,8 +53,23 @@ export default class Map2D extends Component {
   }
 
   heatDataHander = (data) => {
-    const { text } = this.props
-    const { color1, color1Value, color2, color2Value, color3, color3Value, color4, color4Value, radius, max, min } = text
+    const {
+      text
+    } = this.props
+    const {
+      color1,
+      color1Value,
+      color2,
+      color2Value,
+      color3,
+      color3Value,
+      color4,
+      color4Value,
+      radius,
+      max,
+      min
+    } = text
+    
     const color1Ratio = color1Value / max
     const color2Ratio = (color2Value - color1Value) / max
     const color3Ratio = (color3Value - color2Value) / max
@@ -61,14 +84,17 @@ export default class Map2D extends Component {
     const splitList = {}
     const category = []
     data.map((item, index) => {
-      const percent = (item.geometry.value - min) / (max - min) 
+      const percent = (item.geometry.value - min) / (max - min)
       splitList[index] = this.getColorFromColorStops(colorArr, percent * radius)
       category.push(index)
     })
-    return { splitList, category }
+    return {
+      splitList,
+      category
+    }
   }
 
-  getColorFromColorStops = (colorStops, percent) => { 
+  getColorFromColorStops = (colorStops, percent) => {
     if (percent < 0) {
       percent = 0;
     }
@@ -122,7 +148,12 @@ export default class Map2D extends Component {
 
 
   render() {
-    const { center, zoom, dataWeRender, selectValue } = this.props
+    const {
+      center,
+      zoom,
+      dataWeRender,
+      selectValue
+    } = this.props
     const linksData = this.parseData(dataWeRender)
 
     // 路线绘制
@@ -130,10 +161,13 @@ export default class Map2D extends Component {
 
     // 高亮路线
     const highlightRoad = selectValue && this.highlightRoadHander(linksData, selectValue.x)
-   
+
     // 颜色控制
-    const { splitList, category } = this.heatDataHander(linksData)
-    
+    const {
+      splitList,
+      category
+    } = this.heatDataHander(linksData)
+
     let markersIconUrl =
       'http://webmap1.map.bdstatic.com/wolfman/static/common/images/markers_new2x_fbb9e99.png';
     const startIcon = new window.BMap.Icon(markersIconUrl, new window.BMap.Size(20, 26), {
@@ -142,30 +176,32 @@ export default class Map2D extends Component {
       imageSize: new window.BMap.Size(300, 300)
     });
 
-    return (
+    return ( 
       <Map
-        style={{ height: '100vh' }}
-        mapStyleV2={simpleMapStyle}
-        center={{ lng: center[0], lat: center[1] }}
-        zoom={zoom}
-        enableScrollWheelZoom={true}
-      >
-      <Road
-        category={category}
-        splitList={splitList}
-        color='rgba(0,255,0,0.7)'
-        bgColor='rgba(255,255,255,0.1)'
-        arrowColor='rgba(255,0,0,0.7)'
-        lineWidth={10}
-        roadPath={roadPath}
-        viewportOptions={{ margins: [20, 500, 80, 440] }}
-        />
-      {highlightRoad && <Marker
-          position={{ lng: highlightRoad[0].split(',')[0], lat: highlightRoad[0].split(',')[1] }}
-          icon={startIcon}
-      >
-      </Marker>}
-      </Map>
+      style={{ height: '100vh' }}
+      mapStyleV2={simpleMapStyle}
+      center={{ lng: center[0], lat: center[1] }}
+      zoom={zoom}
+      enableScrollWheelZoom={true}
+    >
+    <Road
+      category={category}
+      splitList={splitList}
+      color='rgba(0,255,0,0.7)'
+      bgColor='rgba(255,255,255,0.1)'
+      arrowColor='rgba(255,0,0,0.7)'
+      lineWidth={10}
+      roadPath={roadPath}
+      viewportOptions={{ margins: [20, 500, 80, 440] }}
+      />
+      { highlightRoad
+        && <Marker
+              position={{ lng: highlightRoad[0].split(',')[0], lat: highlightRoad[0].split(',')[1] }}
+              icon={startIcon}
+          >
+        </Marker>
+      }
+    </Map>
     );
 
 

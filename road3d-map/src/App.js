@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, {
+    Component
+} from 'react';
 import * as mapvgl from 'mapvgl';
 import h337 from 'heatmap.js';
 import CustomOverlay from './utils/customOverlay'
@@ -61,6 +63,7 @@ const gradient = {
 
 class App extends Component {
     state = {
+        uploadOnce: false,
         dataWeRender: ShenhaiData,
         innerHeight: window.innerHeight,
         visible: true,
@@ -141,8 +144,13 @@ class App extends Component {
     }
 
     initCanvas = () => {
-        const { dataWeRender } = this.state
-        const { dataMaxWidth, dataMaxHeight } = this.parseData(dataWeRender);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            dataMaxWidth,
+            dataMaxHeight
+        } = this.parseData(dataWeRender);
 
         this.canvasContainer.style.width = dataMaxWidth + 'px'
         this.canvasContainer.style.height = dataMaxHeight + 'px'
@@ -189,8 +197,14 @@ class App extends Component {
 
     // 绘制渲染canvas
     renderToMapCanvas = () => {
-        const { dataWeRender } = this.state
-        const { lineData, dataMaxWidth, dataMaxHeight } = this.parseData(dataWeRender);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            lineData,
+            dataMaxWidth,
+            dataMaxHeight
+        } = this.parseData(dataWeRender);
 
         this.mockCanvas.width = 256
         this.mockCanvas.height = 128
@@ -254,8 +268,12 @@ class App extends Component {
 
     // 时间dom
     timeDomRender = () => {
-        const { dataWeRender } = this.state
-        const { dataMaxWidth } = this.parseData(dataWeRender);
+        const {
+            dataWeRender
+        } = this.state
+        const {
+            dataMaxWidth
+        } = this.parseData(dataWeRender);
         const timeCanvas = this.timeCanvas = document.createElement('canvas');
         const timeCanvasCtx = timeCanvas.getContext('2d');
         timeCanvas.width = 25
@@ -601,14 +619,17 @@ class App extends Component {
             this.setState({
                 dataWeRender: JSON.parse(dataWeRender)
             }, () => {
+                const { uploadOnce } = this.state
                 this.view.removeLayer(this.layer)
                 this.gui.destroy()
                 document.getElementById('root').removeChild(this.timeCanvas)
                 this.myOverlay.remove()
-                this.initCanvas();
-                this.drawMapvgl()
-                this.drawTimeTextMap()
-                this.timeDomRender()
+                // 每次上传标志
+                this.setState({ uploadOnce : !uploadOnce })
+                // this.initCanvas();
+                // this.drawMapvgl()
+                // this.drawTimeTextMap()
+                // this.timeDomRender()
             })
         });
     }
@@ -631,6 +652,7 @@ class App extends Component {
 
     render() {
         const {
+            uploadOnce,
             innerHeight,
             visible,
             text,
@@ -646,39 +668,40 @@ class App extends Component {
 
         return (
             <React.Fragment>
-                <TitleHeader />
-                <div ref={this.bindCanvasRef} className="canvas"></div>
-                {selectValue && selectValue.showPoint[0] &&
-                <div className="show">
-                    <p>当前时间：{selectValue.nowTime}</p>
-                    <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
-                </div>}
-                {selectValue && !selectValue.showPoint[0] &&
-                <div className="show">
-                    <p>当前点暂无数据</p>
-                </div>}
-                <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input>
-                <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
-                <Map3D
-                    style={{ height: innerHeight }}
-                    visible={visible}
+            <TitleHeader />
+            <div ref={this.bindCanvasRef} className="canvas"></div>
+            {selectValue && selectValue.showPoint[0] &&
+            <div className="show">
+                <p>当前时间：{selectValue.nowTime}</p>
+                <p>当前值：{(selectValue.showPoint[0][2]).toFixed(2)}</p>
+            </div>}
+            {selectValue && !selectValue.showPoint[0] &&
+            <div className="show">
+                <p>当前点暂无数据</p>
+            </div>}
+            <input type='file' ref={this.tRef} className="fileUpload" onChange={this.onDropUploadClick}></input>
+            <div className="change" onClick={this.onChangeClick}><b>切换2D/3D</b></div>
+            <Map3D
+                style={{ height: innerHeight }}
+                visible={visible}
+                uploadOnce={uploadOnce}
+                center={mc}
+                zoom={11}
+                onMapLoaded={this.onMapLoaded}
+            >
+            </Map3D>
+            {text &&
+                <Map2D
                     center={mc}
                     zoom={11}
-                    onMapLoaded={this.onMapLoaded}
+                    dataWeRender={dataWeRender}
+                    text={text}
+                    visible={visible}
+                    selectValue={selectValue}
                 >
-                </Map3D>
-                {text &&
-                    <Map2D
-                        center={mc}
-                        zoom={11}
-                        dataWeRender={dataWeRender}
-                        text={text}
-                        visible={visible}
-                        selectValue={selectValue}
-                    >
-                    </Map2D> 
-                }
-            </React.Fragment>
+                </Map2D> 
+            }
+        </React.Fragment>
         );
 
     }

@@ -8,11 +8,19 @@ import {
 export default class Map3D extends Component {
 
     componentDidMount() {
-        this.initMap();
-        this.forceUpdate();
+        const { center } = this.props
+        this.initMap(center);
     }
 
-    initMap() {
+    shouldComponentUpdate(nextProps, nextState) {
+        const { uploadOnce } = this.props
+        if (nextProps.uploadOnce !== uploadOnce) {
+            this.initMap(nextProps.center);
+        }
+        return true
+    }
+
+    initMap(center) {
 
         let options = Object.assign({
             tilt: 60,
@@ -37,14 +45,14 @@ export default class Map3D extends Component {
             ]
         });
         this.map = map;
-        if (this.props.center && this.props.zoom) {
+        if (center && this.props.zoom) {
             if (!this.map) {
                 alert('请确认上传数据')
             }
-            
-            const mc = this.map.lnglatToMercator(this.props.center[0], this.props.center[1])
+
+            const mc = this.map.lnglatToMercator(center[0], center[1])
             map.centerAndZoom(new window.BMapGL.Point(mc[0], mc[1]), this.props.zoom);
-            
+
         }
 
         this.props.onMapLoaded && this.props.onMapLoaded(map);
@@ -91,6 +99,7 @@ export default class Map3D extends Component {
     }
 
     render() {
+        
         const {
             visible
         } = this.props

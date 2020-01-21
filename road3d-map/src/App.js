@@ -227,7 +227,7 @@ class App extends Component {
             _this.layer = new mapvgl.WallLayer({
                 texture: _this.mockCanvas,
                 height: 12000,
-                enablePreciseMap: true
+                enablePreciseMap: false
             });
             _this.view.addLayer(_this.layer);
             _this.layer.setData(lineData);

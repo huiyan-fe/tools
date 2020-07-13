@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <link rel="shortcut icon" href="http://api.map.baidu.com/favicon.ico">
+    <title>坐标展示工具</title>
+    <style type="text/css">
+        html,body{height:100%;margin:0px;padding:0px;font-family:"微软雅黑";font-size:14px;}
+        input,button {
+            outline: 0;
+            font-family: inherit;
+        }
+        #allmap{height:100%;width:50%;float:left;}
+        #r-result{width:100%;}
+        #r-result p{margin:5px 0 0 10px;}
+        #container {
+            height:100%;
+            width:50%;
+            float: right;
+        }
+        .search-container {
+            margin: 38px 0 0 0;
+            position: absolute;
+            z-index: 2;
+            pointer-events: auto;
+            float: left;
+            box-sizing: border-box;
+            box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+            top: 10px;
+            left: 10px;
+        }
+        #sole-input {
+            box-sizing: border-box;
+            border: 0;
+            padding: 9px 0;
+            border-left: 10px solid transparent;
+            border-right: 27px solid transparent;
+            line-height: 20px;
+            font-size: 16px;
+            height: 38px;
+            color: #333;
+            position: relative;
+            border-radius: 2px 0 0 2px;
+            float: left;
+        }
+        #search-button { 
+            pointer-events: auto;
+            width: 57px;
+            height: 38px;
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+            border-radius: 0 2px 2px 0;
+            box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+            background: url(http://webmap1.bdimg.com/wolfman/static/common/images/retina/new-route-retian_d99addb.png) no-repeat -353px -63px #3385ff;
+            background-size: 428px auto
+        }
+        #search-button:hover {
+            background-color: #2e77e5;
+        }
+        select{
+            border: solid 1px #fff;
+        }
+        #select-sole-input{
+            text-align: center;
+            pointer-events: auto;
+            width: 98px;
+            height: 38px;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 0 2px 2px 0;
+            float: left;
+        }
+        #BPointCard {
+            margin: 20px 0;
+            padding: 0 20px;
+            background-color: #fff;
+            border-radius: 5%;
+        }
+        #BPointCard li{
+            list-style: none;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: rgb(230, 189, 189);
+            line-height: 40px;
+            text-align: left;
+        }
+        #AMarker_map{
+            margin: 38px 0 0 0;
+            position: absolute;
+            z-index: 2;
+            pointer-events: auto;
+            float: right;
+            box-sizing: border-box;
+            box-shadow: 1px 2px 1px rgba(0,0,0,.15);
+            top: 0;
+            right: 10px;
+        }
+        #AMarker_map button{
+            box-shadow: rgba(0, 0, 0, 0.35) 2px 2px 3px; 
+            border-width: 1px;
+            border-style: solid; 
+            border-color: rgb(139, 164, 220); 
+            background: rgb(139, 164, 220); 
+            padding: 4px 8px; 
+            font-style: normal; 
+            font-variant: normal; 
+            font-stretch: normal; 
+            font-size: 12px; 
+            line-height: 1.4em; 
+            font-family: arial, sans-serif;
+            text-align: center; 
+            white-space: nowrap; 
+            border-radius: 0px 3px 3px 0px; 
+            color: #fff;
+            margin: 0 !important;
+        }
+    </style>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ePLDp62sDQGvwi4gyDQY6nvnqItC5e13"></script>
+    <script src="https://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=ad66f1dc2d74038560777290be9958b8"></script>
+</head>
+<body>
+<div id="allmap"></div>
+<div id="container" tabindex="0"></div>
+<div class="search-container">
+    <input id="sole-input" class="searchbox-content-common" type="text" name="word" autocomplete="off" maxlength="256" placeholder="请输出坐标点" value="" >
+    <select id="select-sole-input" >
+        <option value="5">百度坐标</option>
+        <option value="3">高德坐标</option>
+        <option value="1">WGS84坐标</option>
+    </select>
+    <button id="search-button" data-title="搜索" data-tooltip="2" onclick="BtnClick()"></button>
+    <div id="BPointCard">
+    </div>
+</div>
+<div id="AMarker_map">
+    <button class="btn" id="add-satellite-layer" style="margin-right:1rem;">地图</button>
+    <button class="btn" id="remove-satellite-layer">混合</button>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="http://lbsyun.baidu.com/custom/stylelist.js"></script>
+<script type="text/javascript">
+    var BMarker, AMarker;
+    // 百度地图
+    var map = new BMap.Map("allmap", {
+        enableMapClick: false
+    });
+    var point = new BMap.Point(116.404, 39.915);
+    map.enableScrollWheelZoom();                            //启用滚轮放大缩小
+    map.centerAndZoom(point, 14);
+    // 高德地图
+
+    var mapType1 = new BMap.MapTypeControl(
+		{
+			mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP],
+			anchor: BMAP_ANCHOR_TOP_LEFT
+		}
+	);
+
+	var overView = new BMap.OverviewMapControl();
+	var overViewOpen = new BMap.OverviewMapControl({isOpen:true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT});
+	//添加地图类型和缩略图
+    map.addControl(mapType1);          //2D图，混合图
+    map.addControl(overView);          //添加默认缩略地图控件
+
+    var map2 = new AMap.Map('container', {
+        center: [116.3976272911891, 39.90865673958457],
+        zoom: 13,
+        zoomEnable: false,
+        dragEnable: false,
+        doubleClickZoom: false
+    });
+
+    // 构造官方卫星、路网图层
+    var satelliteLayer = new AMap.TileLayer.Satellite();
+    var roadNetLayer =  new AMap.TileLayer.RoadNet();
+    //批量添加图层
+    map2.add([satelliteLayer, roadNetLayer]);
+    map2.remove(satelliteLayer);
+    document.querySelector("#add-satellite-layer").onclick = function() {
+        map2.add(satelliteLayer);
+    }
+
+    document.querySelector("#remove-satellite-layer").onclick = function() {
+        map2.remove(satelliteLayer);
+    }
+
+    // 地图拖动、缩放、点击
+    map.addEventListener('click', function (e) {
+        var pointnew = e.point;
+        $('#sole-input').val(pointnew.lng + ',' + pointnew.lat);
+        if (BMarker && AMarker) {
+            BMarker.setPosition(pointnew);
+            BPointToGCJ(pointnew,'','click');
+        }
+        else {
+            BMarker = new BMap.Marker(pointnew);
+            map.addOverlay(BMarker);
+            BPointToGCJ(pointnew,'','click');
+        }
+    });
+    map.addEventListener('moveend', setAmapCenterAndZoom);
+    map.addEventListener('zoomend', setAmapCenterAndZoom);
+
+    function BtnClick() {
+        var relinput = '';
+        var inputPoint = $('#sole-input').val();
+        if (inputPoint !== '' && typeof inputPoint === 'string' && inputPoint.split(',').length === 2 ) {
+             relinput = {
+                lng: inputPoint.split(',')[0],
+                lat: inputPoint.split(',')[1]
+            }
+            map.setCenter(new BMap.Point(inputPoint.split(',')[0], inputPoint.split(',')[1]));
+            if (BMarker && AMarker) {
+                BMarker.setPosition(new BMap.Point(inputPoint.split(',')[0], inputPoint.split(',')[1])); 
+                BPointToGCJ(relinput,'','click');
+            }
+            else {
+                BMarker = new BMap.Marker(relinput);
+                map.addOverlay(BMarker);
+                BPointToGCJ(relinput,'','click');
+            }
+        }
+    }
+    // 根据百度地图设置高德地图的显示中心和缩放层级
+    function setAmapCenterAndZoom () {
+        var zoom = map.getZoom();
+        var center = map.getCenter();
+        map2.setZoomAndCenter(zoom - 1,[center.lng,center.lat]);
+        BPointToGCJ(center,zoom)
+    }
+
+    const BaiduEleID = "baiduShowPointElementID" // 百度坐标展示框的li元素id
+    const ProfixBaidu = "百度坐标：" // 百度坐标展示框左边展示文案
+    const GaoDeEleID = "gaoDeShowPointElementID" // 高德坐标展示框的li元素id
+    const ProfixGaode = "高德坐标：" // 高德坐标展示框左边文案
+    
+
+    function BPointToGCJ(Bpoin,zoom, type){
+        var value = $("#select-sole-input option:selected").val()
+        var list = new Array()
+        if (value == 1) {
+            list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
+            list.push({eleID:GaoDeEleID,profix:"高德坐标：",data:null})
+            // 先把元素加上
+            InitBPointCard(list)
+            // 先请求百度的坐标
+            BPointRequest(Bpoin,zoom, type, 1, 5 , function(baiduPoint){
+                //  拿到百度的坐标设置marker位置
+                setBaiDuMarkerPosition(baiduPoint[0],baiduPoint[1])
+                //  再请求高德的坐标
+                BPointRequest({lng:baiduPoint[0],lat:baiduPoint[1]},zoom, type, 5, 3, function(gaodePoint){
+                    // 拿到高德的坐标设置marker位置
+                    setGaoDeMarkerPosition(gaodePoint[0] , gaodePoint[1])
+                })
+            })
+            list = []
+        } else if(value == 3) {
+            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
+            list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
+            InitBPointCard(list)
+            // 设置高德marker
+            setGaoDeMarkerPosition(Bpoin.lng, Bpoin.lat)
+            BPointRequest(Bpoin,zoom, type, 3, 5 , function(baiduPoint){
+                // 拿到百度的坐标之后设置百度marker
+                setBaiDuMarkerPosition(baiduPoint[0],baiduPoint[1])
+            })
+            list = []
+        } else if(value == 5) {
+            list.push({eleID:BaiduEleID,profix:"百度坐标：",data:[Bpoin.lng,Bpoin.lat]})
+            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:null})
+            InitBPointCard(list)
+            // 直接设置百度的marker
+            setBaiDuMarkerPosition(Bpoin.lng, Bpoin.lat)
+            // 请求转换高德坐标
+            BPointRequest(Bpoin,zoom, type, 5, 3 , function(gaodePoint){
+                // 拿到高德坐标，设置高德marker
+                setGaoDeMarkerPosition(gaodePoint[0] , gaodePoint[1])
+            })    
+            list = []
+        } else{
+            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
+            list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
+            InitBPointCard(list)
+            // 设置高德marker
+            setGaoDeMarkerPosition(Bpoin.lng,Bpoin.lat)
+            BPointRequest(Bpoin,zoom, type, 3, 5 , function(baiduPoint){
+                // 拿到百度的坐标之后设置百度marker
+                setBaiDuMarkerPosition(baiduPoint[0],baiduPoint[1])
+            })
+        }
+    }
+    // 请求坐标转换接口，进行坐标转换
+    // 拿到转换后的坐标之后，会调用successCallbackFunc
+    function BPointRequest(Bpoin,zoom, type, from, to , successCallbackFunc) {
+        if( (successCallbackFunc == null) || (typeof successCallbackFunc != "function" )) {
+            successCallbackFunc = function(){}
+        }
+        var promise1 = $.ajax({
+                type : 'GET',
+                url: 'http://api.map.baidu.com/geoconv/v1/?',
+                data: {
+                    coords: Bpoin.lng + ',' + Bpoin.lat,
+                    from: from,
+                    to: to,
+                    ak: 'UlW2H6b4A2hrm3PQ2Q2nZbObxY2cn6A6'
+                },
+                dataType: "jsonp"
+        });
+
+        promise1.then(function(data) {
+            if (!(data.status === 0 && data.result)) {
+                console.log("warning: dataStatus=" + data.status)
+                successCallbackFunc(null)
+                return
+            }
+            var point = []
+            if (type != 'click') {
+                map2.setZoomAndCenter(zoom - 1,[data.result[0].x,data.result[0].y]);
+            }
+            point = [data.result[0].x, data.result[0].y]
+            successCallbackFunc(point)
+        })
+    }
+
+    // 设置百度marker的位置
+    function setBaiDuMarkerPosition(x , y) {
+        updateCardLiByID(BaiduEleID,ProfixBaidu , [x, y])
+        var  pointnew = new BMap.Point(x,y)
+        if (BMarker) {
+            BMarker.setPosition(pointnew)
+        }else{
+            BMarker = new BMap.Marker(pointnew);
+            map.addOverlay(BMarker);
+            BPointToGCJ(pointnew,'','click');
+        }
+    }
+
+    // 设置高德marker的位置
+    function setGaoDeMarkerPosition(x , y ){
+        updateCardLiByID(GaoDeEleID,ProfixGaode , [x , y])
+        if (AMarker) {
+            AMarker.setPosition([x, y])
+        } else {
+            AMarker = new AMap.Marker({
+                position: new AMap.LngLat(x, y),
+            });
+            map2.add(AMarker);
+        }
+    }
+    // 初始化坐标展示框
+    function InitBPointCard(list) {
+        $("#BPointCard").css("display", "block")
+        $("#BPointCard").html("");
+        for(var i = 0; i < list.length; i++) {
+            var showData = list[i].profix
+            if (list[i].data != null) {
+                showData += list[i].data
+            } 
+            $("#BPointCard").append("<li id=\""+list[i].eleID+"\">" + showData + "</li>")
+        }
+    }
+    // 更新元素内容
+    function updateCardLiByID(eleID,profixData,pointData){
+        var showData = profixData + pointData
+        $("#" +　eleID).html(showData)
+    }
+</script>

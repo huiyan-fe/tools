@@ -131,7 +131,7 @@
     <input id="sole-input" class="searchbox-content-common" type="text" name="word" autocomplete="off" maxlength="256" placeholder="请输出坐标点" value="" >
     <select id="select-sole-input" >
         <option value="5">百度坐标</option>
-        <option value="3">高德坐标</option>
+        <option value="3">gcj02坐标</option>
         <option value="1">WGS84坐标</option>
     </select>
     <button id="search-button" data-title="搜索" data-tooltip="2" onclick="BtnClick()"></button>
@@ -154,8 +154,8 @@
     var point = new BMap.Point(116.404, 39.915);
     map.enableScrollWheelZoom();                            //启用滚轮放大缩小
     map.centerAndZoom(point, 14);
-    // 高德地图
 
+    // 高德地图
     var mapType1 = new BMap.MapTypeControl(
 		{
 			mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP],
@@ -197,12 +197,12 @@
         $('#sole-input').val(pointnew.lng + ',' + pointnew.lat);
         if (BMarker && AMarker) {
             BMarker.setPosition(pointnew);
-            BPointToGCJ(pointnew,'','click');
+            BPointToGCJ_(pointnew,'','click');
         }
         else {
             BMarker = new BMap.Marker(pointnew);
             map.addOverlay(BMarker);
-            BPointToGCJ(pointnew,'','click');
+            BPointToGCJ_(pointnew,'','click');
         }
     });
     map.addEventListener('moveend', setAmapCenterAndZoom);
@@ -218,7 +218,7 @@
             }
             map.setCenter(new BMap.Point(inputPoint.split(',')[0], inputPoint.split(',')[1]));
             if (BMarker && AMarker) {
-                BMarker.setPosition(new BMap.Point(inputPoint.split(',')[0], inputPoint.split(',')[1])); 
+                // BMarker.setPosition(new BMap.Point(inputPoint.split(',')[0], inputPoint.split(',')[1])); 
                 BPointToGCJ(relinput,'','click');
             }
             else {
@@ -238,8 +238,8 @@
 
     const BaiduEleID = "baiduShowPointElementID" // 百度坐标展示框的li元素id
     const ProfixBaidu = "百度坐标：" // 百度坐标展示框左边展示文案
-    const GaoDeEleID = "gaoDeShowPointElementID" // 高德坐标展示框的li元素id
-    const ProfixGaode = "高德坐标：" // 高德坐标展示框左边文案
+    const GaoDeEleID = "gaoDeShowPointElementID" // gcj02坐标展示框的li元素id
+    const ProfixGaode = "gcj02坐标：" // gcj02坐标展示框左边文案
     
 
     function BPointToGCJ(Bpoin,zoom, type){
@@ -247,7 +247,7 @@
         var list = new Array()
         if (value == 1) {
             list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
-            list.push({eleID:GaoDeEleID,profix:"高德坐标：",data:null})
+            list.push({eleID:GaoDeEleID,profix:"gcj02坐标：",data:null})
             // 先把元素加上
             InitBPointCard(list)
             // 先请求百度的坐标
@@ -262,7 +262,7 @@
             })
             list = []
         } else if(value == 3) {
-            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
+            list.push({eleID:GaoDeEleID,profix:"gcj02坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
             list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
             InitBPointCard(list)
             // 设置高德marker
@@ -274,18 +274,18 @@
             list = []
         } else if(value == 5) {
             list.push({eleID:BaiduEleID,profix:"百度坐标：",data:[Bpoin.lng,Bpoin.lat]})
-            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:null})
+            list.push({eleID:GaoDeEleID,profix:"gcj02坐标：" ,data:null})
             InitBPointCard(list)
             // 直接设置百度的marker
             setBaiDuMarkerPosition(Bpoin.lng, Bpoin.lat)
-            // 请求转换高德坐标
+            // 请求转换gcj02坐标
             BPointRequest(Bpoin,zoom, type, 5, 3 , function(gaodePoint){
-                // 拿到高德坐标，设置高德marker
+                // 拿到gcj02坐标，设置高德marker
                 setGaoDeMarkerPosition(gaodePoint[0] , gaodePoint[1])
             })    
             list = []
         } else{
-            list.push({eleID:GaoDeEleID,profix:"高德坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
+            list.push({eleID:GaoDeEleID,profix:"gcj02坐标：" ,data:[Bpoin.lng,Bpoin.lat]})
             list.push({eleID:BaiduEleID,profix:"百度坐标：",data:null})
             InitBPointCard(list)
             // 设置高德marker
@@ -371,4 +371,21 @@
         var showData = profixData + pointData
         $("#" +　eleID).html(showData)
     }
+
+    function BPointToGCJ_(Bpoin,zoom, type){
+        var list = new Array()
+        list.push({eleID:BaiduEleID,profix:"百度坐标：",data:[Bpoin.lng,Bpoin.lat]})
+        list.push({eleID:GaoDeEleID,profix:"gcj02坐标：" ,data:null})
+        InitBPointCard(list)
+        // 直接设置百度的marker
+        setBaiDuMarkerPosition(Bpoin.lng, Bpoin.lat)
+        // 请求转换gcj02坐标
+        BPointRequest(Bpoin,zoom, type, 5, 3 , function(gaodePoint){
+            // 拿到gcj02坐标，设置高德marker
+            setGaoDeMarkerPosition(gaodePoint[0] , gaodePoint[1])
+        })    
+        list = []
+        $("#sole-input").val("")
+    }
+    
 </script>

@@ -233,7 +233,7 @@
         var zoom = map.getZoom();
         var center = map.getCenter();
         map2.setZoomAndCenter(zoom - 1,[center.lng,center.lat]);
-        BPointToGCJ(center,zoom)
+        // BPointToGCJS(center,zoom)
     }
 
     const BaiduEleID = "baiduShowPointElementID" // 百度坐标展示框的li元素id
@@ -380,12 +380,12 @@
         // 直接设置百度的marker
         setBaiDuMarkerPosition(Bpoin.lng, Bpoin.lat)
         // 请求转换gcj02坐标
-        BPointRequest(Bpoin,zoom, type, 5, 3 , function(gaodePoint){
+        BPointRequest(Bpoin,zoom, type, 5, 3, function(gaodePoint){
             // 拿到gcj02坐标，设置高德marker
             setGaoDeMarkerPosition(gaodePoint[0] , gaodePoint[1])
         })    
         list = []
         $("#sole-input").val("")
     }
-    
+
 </script>

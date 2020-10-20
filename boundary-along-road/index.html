@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>沿路画面工具</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+    input {
+        height: 20px;
+        margin-top: 10px;
+        padding: 0 6px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    button.r {
+        position: absolute;
+        z-index: 10;
+        top: 20px;
+        right: 20px;
+        display: inline-block;
+        height: 40px;
+        border: 0;
+        color: #fff;
+        outline: none;
+        background: #0c88e8;
+        cursor: pointer;
+        box-shadow: 2px 2px 2px #ccc;
+
+        -webkit-appearance: none;
+           -moz-appearance: none;
+    }
+    #result {
+        -webkit-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+           -moz-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+                box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+    }
+
+    #result p {
+        display: inline-block;
+        width: 80%;
+        margin: 0;
+    }
+    #result span {
+        display: inline-block;
+        width: 185px;
+        padding: 5px;
+        color: #fff;
+        background: #0c88e8;
+    }
+    #result .btn {
+        margin: 0 5px;
+    }
+    #container {
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+           -moz-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+                box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+    }
+    </style>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0">
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        window.BMAP_AUTHENTIC_KEY = '1XjLLEhZhQNUzd93EjU5nOGQ';
+    </script>
+    <script src="//code.bdstatic.com/npm/jquery@2.1.1/dist/jquery.min.js"></script>
+    <!-- <script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script> -->
+    <script src="http://9ttsqe3c4vcrz.cfc-execute.bj.baidubce.com/bmapgltest/"></script>
+    <script src="../coord/clipboard.min.js"></script>
+    <button class="r" onclick="startDraw()" style="right: 120px;">开启沿路画面</button>
+    <button class="r" onclick="endDraw()">完成沿路画面</button>
+    <div id="result" style="position:absolute;bottom:0px;left:0px;right:0px;z-index:10;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
+    </div>
+    <script>
+    var map = new BMapGL.Map('map');
+    map.centerAndZoom(new BMapGL.Point(116.404, 39.915), 15);
+    map.enableScrollWheelZoom();
+    map.disableDoubleClickZoom();
+    map.addControl(new BMapGL.ScaleControl());
+    map.addControl(new BMapGL.NavigationControl3D());
+    map.addControl(new BMapGL.ZoomControl({
+        offset: new BMapGL.Size(13, 18)
+    }));
+    var menu = new BMapGL.ContextMenu();
+    menu.addItem(new BMapGL.MenuItem('开启沿路画面', startDraw));
+    menu.addItem(new BMapGL.MenuItem('完成沿路画面', endDraw));
+    map.addContextMenu(menu);
+
+    var _isOpen = false;
+    var tipLabel = new BMapGL.Label('单击添加沿路点，双击或点击右上按钮完成画面', {
+        offset: new BMapGL.Size(10, -5),
+        enableMassClear: true
+    });
+    tipLabel.setStyles({color : "#333", borderColor : "#ff0103"});
+
+    var overlays = [];
+    var points = [];
+    var lastPolygon;
+
+    function startDraw() {
+        if (_isOpen === true) {
+            return true;
+        }
+        _isOpen = true;
+        if (lastPolygon) {
+            map.removeOverlay(lastPolygon);
+        }
+
+        map.addOverlay(tipLabel);
+        map.addEventListener('mousemove', _bindMouseMoveEvent);
+        map.addEventListener('click', _bindClickEvent);
+        map.addEventListener('dblclick', _bindDblClickEvent);
+    }
+
+    function endDraw() {
+        if (_isOpen === false) {
+            return false;
+        }
+        _isOpen = false;
+
+        map.removeOverlay(tipLabel);
+        map.removeEventListener('mousemove', _bindMouseMoveEvent);
+        map.removeEventListener('click', _bindClickEvent);
+        map.removeEventListener('dblclick', _bindDblClickEvent);
+
+        let data = [];
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            data.push({
+                coord_type_input: 'bd09ll',
+                latitude: point.lat,
+                longitude: point.lng,
+                loc_time: i * 1000 + 1000000000
+            });
+        }
+        // const data = [{"coord_type_input":"bd09ll","loc_time":1576583765,"latitude":29.606528,"longitude":105.09307},{"coord_type_input":"bd09ll","loc_time":1576582672,"latitude":29.61989,"longitude":105.063513},{"coord_type_input":"bd09ll","loc_time":1576582552,"latitude":29.617213,"longitude":105.063363},{"coord_type_input":"bd09ll","loc_time":1576582572,"latitude":29.617246,"longitude":105.063329},{"coord_type_input":"bd09ll","loc_time":1576582592,"latitude":29.618038,"longitude":105.063187},{"coord_type_input":"bd09ll","loc_time":1576582612,"latitude":29.618686,"longitude":105.063375},{"coord_type_input":"bd09ll","loc_time":1576582632,"latitude":29.61928,"longitude":105.063503},{"coord_type_input":"bd09ll","loc_time":1576582652,"latitude":29.619891,"longitude":105.063518},{"coord_type_input":"bd09ll","loc_time":1576582692,"latitude":29.619856,"longitude":105.063329},{"coord_type_input":"bd09ll","loc_time":1576582712,"latitude":29.620212,"longitude":105.06313},{"coord_type_input":"bd09ll","loc_time":1576582802,"latitude":29.620434,"longitude":105.063242},{"coord_type_input":"bd09ll","loc_time":1576582843,"latitude":29.619862,"longitude":105.063729},{"coord_type_input":"bd09ll","loc_time":1576582863,"latitude":29.619861,"longitude":105.063682},{"coord_type_input":"bd09ll","loc_time":1576582883,"latitude":29.619861,"longitude":105.063663},{"coord_type_input":"bd09ll","loc_time":1576582943,"latitude":29.619861,"longitude":105.063658},{"coord_type_input":"bd09ll","loc_time":1576582973,"latitude":29.619857,"longitude":105.06362},{"coord_type_input":"bd09ll","loc_time":1576582993,"latitude":29.619882,"longitude":105.063617},{"coord_type_input":"bd09ll","loc_time":1576583013,"latitude":29.61991,"longitude":105.063619},{"coord_type_input":"bd09ll","loc_time":1576583033,"latitude":29.619624,"longitude":105.063459},{"coord_type_input":"bd09ll","loc_time":1576583053,"latitude":29.618763,"longitude":105.063355},{"coord_type_input":"bd09ll","loc_time":1576583073,"latitude":29.618158,"longitude":105.063052},{"coord_type_input":"bd09ll","loc_time":1576583093,"latitude":29.617425,"longitude":105.063227},{"coord_type_input":"bd09ll","loc_time":1576583144,"latitude":29.616408,"longitude":105.063273},{"coord_type_input":"bd09ll","loc_time":1576583174,"latitude":29.614242,"longitude":105.063683},{"coord_type_input":"bd09ll","loc_time":1576583204,"latitude":29.6143,"longitude":105.067135},{"coord_type_input":"bd09ll","loc_time":1576583234,"latitude":29.614328,"longitude":105.072342},{"coord_type_input":"bd09ll","loc_time":1576583284,"latitude":29.611302,"longitude":105.073893},{"coord_type_input":"bd09ll","loc_time":1576583324,"latitude":29.609742,"longitude":105.074269},{"coord_type_input":"bd09ll","loc_time":1576583394,"latitude":29.609437,"longitude":105.075192},{"coord_type_input":"bd09ll","loc_time":1576583444,"latitude":29.609609,"longitude":105.079786},{"coord_type_input":"bd09ll","loc_time":1576583485,"latitude":29.609736,"longitude":105.080932},{"coord_type_input":"bd09ll","loc_time":1576583515,"latitude":29.609665,"longitude":105.08654},{"coord_type_input":"bd09ll","loc_time":1576583565,"latitude":29.609681,"longitude":105.091071},{"coord_type_input":"bd09ll","loc_time":1576583605,"latitude":29.607764,"longitude":105.093347},{"coord_type_input":"bd09ll","loc_time":1576583635,"latitude":29.606811,"longitude":105.093147},{"coord_type_input":"bd09ll","loc_time":1576583665,"latitude":29.60608,"longitude":105.093416},{"coord_type_input":"bd09ll","loc_time":1576583715,"latitude":29.605934,"longitude":105.09385}];
+        $.ajax({
+            url: 'https://da42drxk9awgx.cfc-execute.bj.baidubce.com/map/api/trackrectify',
+            type: 'POST',
+            data: {
+                ak: 'rwDo54idcUa6YKDrLzmG13uXAGhQIw4T',
+                point_list: JSON.stringify(data),
+                rectify_option: 'need_mapmatch:1|transport_mode:driving|denoise_grade:1|vacuate_grade:1',
+                supplement_mode: 'no_supplement',
+                coord_type_output: 'bd09ll',
+                extensions: 'base'
+            },
+            success: data => {
+                const points = JSON.parse(data).points;
+                const ps = [];
+                for (let i = 0; i < points.length; i++) {
+                    const p = points[i];
+                    ps.push(new BMapGL.Point(p.longitude, p.latitude));
+                }
+                var polygon = new BMapGL.Polygon(ps, {
+                    enableEditing: true
+                });
+                map.addOverlay(polygon);
+                polygon.addEventListener('editend', e => {
+                    showResult(e.overlay);
+                });
+                map.setViewport(ps);
+                clearMarkers();
+                showResult(polygon);
+                lastPolygon = polygon;
+            }
+        })
+    }
+
+    function clearMarkers() {
+        for (let i = 0; i < overlays.length; i++) {
+            const overlay = overlays[i];
+            map.removeOverlay(overlay);
+        }
+        overlays = [];
+        points = [];
+    }
+
+    var _bindClickEvent = function(e) {
+        var point = e.latlng;
+        var marker = new BMapGL.Marker(point);
+        map.addOverlay(marker);
+        overlays.push(marker);
+        points.push(point);
+    };
+
+    var _bindMouseMoveEvent = function(e) {
+        tipLabel.setPosition(e.latlng);
+    };
+
+    var _bindDblClickEvent = function(e) {
+        points.pop();
+        var last = overlays.pop();
+        map.removeOverlay(last);
+        endDraw();
+    }
+
+    var project = new BMapGL.Projection();
+
+    var trigger = document.getElementsByClassName('copyText');
+    var clipboard = new Clipboard('.btn', {
+        target: function (trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+    clipboard.on('success', function (e) {
+        console.log(this);
+    });
+
+    function showResult(overlay) {
+        var bounds = overlay.getBounds();
+        var ne = bounds.getNorthEast();
+        var sw = bounds.getSouthWest();
+        var neMc = project.lngLatToPoint(ne);
+        var swMc = project.lngLatToPoint(sw);
+        var pathStr = '';
+        var geojsonStr = '';
+        var pathmcStr = '';
+        var path = overlay.getPath();
+        var coordinates = [];
+        for (var i = 0; i < path.length; i++) {
+            pathStr += path[i].lng + ',' + path[i].lat + ',';
+            var mc = project.lngLatToPoint(path[i]);
+            pathmcStr += mc.x + ',' + mc.y + ',';
+            coordinates.push([path[i].lng, path[i].lat]);
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay.toString() == 'Polyline') {
+            geojsonStr = {
+                type: 'LineString',
+                coordinates: coordinates
+            };
+        }
+        else if (overlay.toString() == 'Polygon' || overlay.toString() === 'Circle') {
+            geojsonStr = {
+                type: 'Polygon',
+                coordinates: [coordinates]
+            };
+        }
+
+        document.getElementById('result').innerHTML = '<div><span>左下角,右上角(经纬度)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + sw.lng + ',' + sw.lat + ',' + ne.lng + ',' + ne.lat + '</p></div>'
+            + '<div><span>左下角,右上角(墨卡托坐标)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + swMc.x + ',' + swMc.y + ',' + neMc.x + ',' + neMc.y + '</p></div>'
+            + '<div><span>坐标集(经纬度)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + pathStr + '</p></div>'
+            + '<div><span>坐标集(墨卡托坐标)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + pathmcStr + '</p></div>'
+            + '<div><span>geojson：</span><button class=\'btn\'>复制</button><p class=\'copyText\' style=\'white-space:nowrap;\'>' + JSON.stringify(geojsonStr) + '</p></div>';
+    }
+    </script>
+</body>
+</html>

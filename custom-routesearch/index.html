@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义轨迹工具</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+    input {
+        height: 20px;
+        margin-top: 10px;
+        padding: 0 6px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    button.r {
+        position: absolute;
+        z-index: 10;
+        top: 20px;
+        right: 20px;
+        display: inline-block;
+        height: 40px;
+        border: 0;
+        color: #fff;
+        outline: none;
+        background: #0c88e8;
+        cursor: pointer;
+        box-shadow: 2px 2px 2px #ccc;
+
+        -webkit-appearance: none;
+           -moz-appearance: none;
+    }
+    #result {
+        -webkit-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+           -moz-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+                box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+    }
+
+    #result p {
+        display: inline-block;
+        width: 80%;
+        margin: 0;
+    }
+    #result span {
+        display: inline-block;
+        width: 185px;
+        padding: 5px;
+        color: #fff;
+        background: #0c88e8;
+    }
+    #result .btn {
+        margin: 0 5px;
+    }
+    #container {
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+           -moz-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+                box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+    }
+    </style>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0">
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        window.BMAP_AUTHENTIC_KEY = '1XjLLEhZhQNUzd93EjU5nOGQ';
+    </script>
+    <script src="//code.bdstatic.com/npm/jquery@2.1.1/dist/jquery.min.js"></script>
+    <!-- <script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script> -->
+    <script src="http://9ttsqe3c4vcrz.cfc-execute.bj.baidubce.com/bmapgltest/"></script>
+    <script src="../coord/clipboard.min.js"></script>
+    <button class="r" onclick="startDraw()" style="right: 50px;">开始设置起点</button>
+    <!-- <button class="r" onclick="endDraw()">设置终点</button> -->
+    <div id="result" style="position:absolute;bottom:0px;left:0px;right:0px;z-index:10;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
+    </div>
+    <script>
+    var map = new BMapGL.Map('map');
+    map.centerAndZoom(new BMapGL.Point(116.404, 39.915), 15);
+    map.enableScrollWheelZoom();
+    map.disableDoubleClickZoom();
+    map.addControl(new BMapGL.ScaleControl());
+    map.addControl(new BMapGL.NavigationControl3D());
+    map.addControl(new BMapGL.ZoomControl({
+        offset: new BMapGL.Size(13, 18)
+    }));
+
+    /**
+     * _step为当前的绘制状态
+     * 0：默认状态
+     * 1：绘制状态，未确认起点
+     * 2：绘制状态，已确认起点，待插入途径点或确认终点
+     */
+    var _step = 0;
+    var tipLabel = new BMapGL.Label('单击设置起点', {
+        offset: new BMapGL.Size(10, -5),
+        enableMassClear: true
+    });
+    tipLabel.setStyles({color : "#333", borderColor : "#ff0103"});
+
+    var polyline;
+    var startMarker;
+    var endMarker;
+    var midMarkers = [];
+
+    function startDraw() {
+        if (_step !== 0) {
+            return true;
+        }
+        _step = 1;
+        clearOverlays();
+
+        tipLabel.setContent('单击设置起点')
+        map.addOverlay(tipLabel);
+        map.addEventListener('mousemove', _bindMouseMoveEvent);
+        map.addEventListener('click', _bindClickEvent);
+        map.addEventListener('rightclick', _bindRightClickEvent);
+    }
+
+    function endDraw() {
+        if (_step !== 2) {
+            return false;
+        }
+        _step = 0;
+
+        map.removeOverlay(tipLabel);
+        map.removeEventListener('mousemove', _bindMouseMoveEvent);
+        map.removeEventListener('click', _bindClickEvent);
+        map.removeEventListener('rightclick', _bindRightClickEvent);
+
+        var origin = `${startMarker.latLng.lat},${startMarker.latLng.lng}`;
+        var destination = `${endMarker.latLng.lat},${endMarker.latLng.lng}`;
+        var waypoints = '';
+        for (let i = 0; i < midMarkers.length; i++) {
+            const marker = midMarkers[i];
+            var p = marker.latLng;
+            waypoints += `${p.lat},${p.lng}`;
+            if (i !== midMarkers.length - 1) {
+                waypoints += '|';
+            }
+        }
+        $.ajax({
+            url: '//api.map.baidu.com/directionlite/v1/driving',
+            type: 'GET',
+            dataType: 'jsonp',
+            jsonpCallback: 'jqcbk',
+            data: {
+                ak: 'rwDo54idcUa6YKDrLzmG13uXAGhQIw4T',
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints,
+                tactics: 3,
+            },
+            success: rs => {
+                if(rs.status === 0) {
+                    let data = rs.result.routes[0].steps;
+                    let ps = [];
+                    for (let i = 0; i < data.length; i++) {
+                        const path = data[i].path;
+                        const arr = path.split(';');
+                        arr.forEach(p => {
+                            ps.push(new BMapGL.Point(p.split(',')[0], p.split(',')[1]));
+                        });
+                    }
+                    polyline = new BMapGL.Polyline(ps, {
+                        enableEditing: true
+                    });
+                    map.addOverlay(polyline);
+                    polyline.addEventListener('editend', e => {
+                        showResult(e.overlay);
+                    });
+                    map.setViewport(ps);
+                    showResult(polyline);
+                } else {
+                    alert(rs.message)
+                }
+            }
+        })
+    }
+
+    function clearOverlays() {
+        if (startMarker) {
+            map.removeOverlay(startMarker);
+        }
+        if (endMarker) {
+            map.removeOverlay(endMarker);
+        }
+        if (polyline) {
+            map.removeOverlay(polyline);
+        }
+        for (let i = 0; i < midMarkers.length; i++) {
+            const marker = midMarkers[i];
+            map.removeOverlay(marker);
+        }
+        midMarkers = [];
+    }
+
+    var _bindClickEvent = function(e) {
+        var point = e.latlng;
+        var iconUrl = '//huiyan.baidu.com/cms/react-bmap/markers_new2x_fbb9e99.png';
+        var icon = new BMapGL.Icon(iconUrl, new BMapGL.Size(25, 40), {
+            'imageSize': new BMapGL.Size(300, 300),
+            'imageOffset': new BMapGL.Size(200, 139)
+        });
+        if (_step === 1) {
+            startMarker = new BMapGL.Marker(point, {
+                icon: icon
+            });
+            map.addOverlay(startMarker);
+            tipLabel.setContent('再次单击确认终点，右键增加途径点');
+            _step = 2;
+        } else {
+            icon.setImageOffset(new BMapGL.Size(225, 139));
+            endMarker = new BMapGL.Marker(point, {
+                icon: icon
+            });
+            map.addOverlay(endMarker);
+            endDraw();
+        }
+    };
+
+    var _bindMouseMoveEvent = function(e) {
+        tipLabel.setPosition(e.latlng);
+    };
+
+    var _bindRightClickEvent = function(e) {
+        if (midMarkers.length === 5) {
+            alert('途径点不能大于5个！')
+            return;
+        }
+        if (_step === 2) {
+            var point = e.latlng;
+            var iconUrl = '//huiyan.baidu.com/cms/react-bmap/markers_new2x_fbb9e99.png';
+            var icon = new BMapGL.Icon(iconUrl, new BMapGL.Size(26, 40), {
+                'imageSize': new BMapGL.Size(300, 300),
+                'imageOffset': new BMapGL.Size(268, 210)
+            });
+            var marker = new BMapGL.Marker(point, {
+                icon: icon
+            });
+            map.addOverlay(marker);
+            midMarkers.push(marker);
+        }
+    }
+
+    var project = new BMapGL.Projection();
+
+    var trigger = document.getElementsByClassName('copyText');
+    var clipboard = new Clipboard('.btn', {
+        target: function (trigger) {
+            return trigger.nextElementSibling;
+        }
+    });
+    clipboard.on('success', function (e) {
+        console.log(this);
+    });
+
+    function showResult(overlay) {
+        var bounds = overlay.getBounds();
+        var ne = bounds.getNorthEast();
+        var sw = bounds.getSouthWest();
+        var neMc = project.lngLatToPoint(ne);
+        var swMc = project.lngLatToPoint(sw);
+        var pathStr = '';
+        var geojsonStr = '';
+        var pathmcStr = '';
+        var path = overlay.getPath();
+        var coordinates = [];
+        for (var i = 0; i < path.length; i++) {
+            pathStr += path[i].lng + ',' + path[i].lat + ',';
+            var mc = project.lngLatToPoint(path[i]);
+            pathmcStr += mc.x + ',' + mc.y + ',';
+            coordinates.push([path[i].lng, path[i].lat]);
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay.toString() == 'Polyline') {
+            geojsonStr = {
+                type: 'LineString',
+                coordinates: coordinates
+            };
+        }
+        else if (overlay.toString() == 'Polygon' || overlay.toString() === 'Circle') {
+            geojsonStr = {
+                type: 'Polygon',
+                coordinates: [coordinates]
+            };
+        }
+
+        document.getElementById('result').innerHTML = '<div><span>左下角,右上角(经纬度)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + sw.lng + ',' + sw.lat + ',' + ne.lng + ',' + ne.lat + '</p></div>'
+            + '<div><span>左下角,右上角(墨卡托坐标)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + swMc.x + ',' + swMc.y + ',' + neMc.x + ',' + neMc.y + '</p></div>'
+            + '<div><span>坐标集(经纬度)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + pathStr + '</p></div>'
+            + '<div><span>坐标集(墨卡托坐标)：</span><button class=\'btn\'>复制</button><p class=\'copyText\'>' + pathmcStr + '</p></div>'
+            + '<div><span>geojson：</span><button class=\'btn\'>复制</button><p class=\'copyText\' style=\'white-space:nowrap;\'>' + JSON.stringify(geojsonStr) + '</p></div>';
+    }
+    </script>
+</body>
+</html>

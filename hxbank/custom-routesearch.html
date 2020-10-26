@@ -104,7 +104,7 @@
 </head>
 <body>
     <header>
-        <h2>百度地图 X 华夏银行</h2>
+        <h2>华夏银行系统地图</h2>
         <a href="./index.html">沿路画面工具</a>
         <a class="active" href="./custom-routesearch.html">自定义轨迹工具</a>
     </header>
@@ -128,6 +128,11 @@
                     导出图上所有线的数据
                 </button>
             </div>
+            <div style="font-size: 12px;margin-top: 5px;">个性化底图配置：
+            <select class="browser-default" id="select">
+                <option value="midnight" selected>午夜蓝风格</option>
+                <option value="normal">默认风格</option>
+            </select>
         </div>
         <div id="result" style="position:absolute;bottom:0px;left:0px;right:0px;z-index:10;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
         </div>
@@ -145,15 +150,21 @@
             indoor: false
         }
     });
-    map.setMapStyleV2({
-        styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'
-    });
     map.centerAndZoom(new BMapGL.Point(116.404, 39.915), 15);
     map.enableScrollWheelZoom();
     map.disableDoubleClickZoom();
     map.addControl(new BMapGL.ScaleControl());
     map.addControl(new BMapGL.NavigationControl3D());
     map.addControl(new BMapGL.ZoomControl());
+    map.setMapStyleV2({styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'});
+    $('#select').bind('change', function () {
+        var style = $(this).val();
+        if (style === 'midnight') {
+            map.setMapStyleV2({styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'});
+        } else {
+            map.setMapStyleV2({styleId: ''});
+        }
+    });
 
     /**
      * _step为当前的绘制状态
@@ -364,12 +375,12 @@
         });
         polyline.addEventListener('click', function (e) {
             polyline.enableEditing();
+            showResult(e.target);
         });
         map.addOverlay(polyline);
         polylines.push(polyline);
         return polyline;
     }
-
 
     function morePolyline() {
         var tex = document.getElementById('more').value;

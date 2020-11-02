@@ -122,7 +122,10 @@
                 搜索
             </button>
             <br>
-            <textarea type="text" style="width: 300px;height: 100px;margin-top:20px;outline: none;" id="more" placeholder="需要转换的数据格式示例：116.391639,39.915941,116.391639,39.910849"></textarea>
+            <textarea type="text" 
+                style="width: 300px;height: 100px;margin-top:20px;outline: none;"
+                id="more"
+                placeholder="需要转换的数据格式示例：{15: 116.391639,39.915941,116.391639,39.910849}"></textarea>
             <div style="margin-top:10px;">
                 <button onclick="morePolygon()">
                     根据输入数据画面
@@ -136,6 +139,7 @@
                 <option value="midnight" selected>午夜蓝风格</option>
                 <option value="normal">默认风格</option>
             </select>
+            <div class="zoom">当前地图级别：<span id="zoom-value"></span></div>
         </div>
     </div>
     <div id="result" style="position:absolute;bottom:0px;left:0px;right:0px;z-index:10;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
@@ -149,6 +153,8 @@
     <script src="../coord/clipboard.min.js"></script>
     <script>
     var map = new BMapGL.Map('map', {
+        maxZoom: 15,
+        minZoom: 9,
         displayOptions: {
             indoor: false
         }
@@ -176,24 +182,43 @@
     });
     tipLabel.setStyles({color: '#333', borderColor: '#ff0103'});
 
-    var polygons = [];
+    var zoomPolygons = {};
     var markers = [];
     var points = [];
+    var zoomLevel = getZoom();
 
     map.addEventListener('click', function (e) {
+        let polygons = zoomPolygons[zoomLevel] || [];
         for (let i = 0; i < polygons.length; i++) {
             const p = polygons[i];
             p.disableEditing();
         }
     });
-
+    document.getElementById('zoom-value').innerHTML = getZoom();
+    map.addEventListener('zoomend', e => {
+        if (zoomLevel !== getZoom()) {
+            zoomLevel = getZoom();
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('zoom-value').innerHTML = zoomLevel;
+            Object.keys(zoomPolygons)
+                .forEach(key =>{
+                    if (Number(key) === zoomLevel) {
+                        zoomPolygons[key].forEach(item => map.addOverlay(item));
+                    } else {
+                        zoomPolygons[key].forEach(item => map.removeOverlay(item));
+                    }
+                });
+        }
+    });
+    function getZoom() {
+        return Math.ceil(map.getZoom());
+    }
     function startDraw() {
         if (_isOpen === true) {
             return true;
         }
 
         _isOpen = true;
-        clearMarkers();
 
         map.addOverlay(tipLabel);
         map.addEventListener('mousemove', _bindMouseMoveEvent);
@@ -245,7 +270,8 @@
                 var polygon = createPolygon(ps);
                 polygon.enableEditing();
                 showResult(polygon);
-                map.setViewport(ps);
+                clearMarkers();
+                // map.setViewport(ps);
             }
         });
     }
@@ -292,58 +318,90 @@
         console.log(this);
     });
 
-    function createPolygon(points) {
+    function createPolygon(points, zoom) {
+        zoom = Number(zoom) || getZoom();
         var polygon = new BMapGL.Polygon(points, {
             strokeColor: '#f00'
         });
         polygon.id = (new Date()).valueOf();
+        polygon.zoomLevel = zoom;
         polygon.addEventListener('editend', function (e) {
-            showResult(e.overlay);
+            if (zoom === polygon.zoomLevel) {
+                showResult(e.overlay);
+            }
         });
         polygon.addEventListener('click', function (e) {
-            polygon.enableEditing();
-            showResult(e.target);
+            if (zoom === polygon.zoomLevel) {
+                polygon.enableEditing();
+                showResult(e.target);
+            }
         });
-        map.addOverlay(polygon);
+        if (getZoom() === zoom) {
+            map.addOverlay(polygon);
+        }
+        let polygons = zoomPolygons[zoom];
+        polygons = polygons || [];
         polygons.push(polygon);
+        zoomPolygons[zoom] = polygons;
         return polygon;
     }
-
+    function clearAllPolygons() {
+        zoomPolygons = {};
+        map.clearOverlays();
+        document.getElementById('result').innerHTML = '';
+    }
     function morePolygon() {
+        clearAllPolygons();
         var tex = document.getElementById('more').value;
-        var polys = tex.split(';');
-        var allPointArr = [];
-        for (var j = 0; j < polys.length; j++) {
-            var points = polys[j].split(',');
-            var pointArr = [];
-            for (var i = 0; i < points.length; i += 2) {
-                if (points[i] > 10000) {
-                    point = project.pointToLngLat(new BMapGL.Pixel(points[i], points[i + 1]));
-                }
-                else {
-                    point = new BMapGL.Point(points[i], points[i + 1]);
-                }
-                pointArr.push(point);
-                allPointArr.push(point);
-            }
-            var polygon = createPolygon(pointArr);
+        if (!tex) {
+            return alert('数据不能为空！');
         }
-        map.setViewport(allPointArr);
+        var data = [];
+        try {
+            data = JSON.parse(tex);
+        } catch (e) {
+            alert('解析失败');
+        }
+        let zoom = getZoom();
+        Object.keys(data).forEach(key => {
+            var item = data[key];
+            var polys = item.split(';');
+            var allPointArr = [];
+            for (var j = 0; j < polys.length; j++) {
+                var points = polys[j].split(',');
+                var pointArr = [];
+                var point = null;
+                for (var i = 0; i < points.length; i += 2) {
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMapGL.Pixel(points[i], points[i + 1]));
+                    }
+                    else {
+                        point = new BMapGL.Point(points[i], points[i + 1]);
+                    }
+                    pointArr.push(point);
+                    allPointArr.push(point);
+                }
+                let polygon = createPolygon(pointArr, key);
+            }
+            if (Number(key) === zoom) {
+                map.setViewport(allPointArr);
+            }
+        });
     }
 
     function savePolygon() {
-        var points = '';
-        for (let i = 0; i < polygons.length; i++) {
-            const polygon = polygons[i];
-            let path = polygon.getPath();
-            path.pop();
-            points += path.map(point => {
-                return `${point.lng},${point.lat}`;
-            });
-            points += ';';
-        }
-        points = points.substr(0, points.length - 1);
-        exportFile('面数据导出.txt', points);
+        var data = {};
+        Object.keys(zoomPolygons).forEach(level => {
+            var points = zoomPolygons[level].map(item => {
+                let path = item.getPath();
+                path.pop();
+                return path.map(point => {
+                    return `${point.lng},${point.lat}`;
+                }).join(',');
+            }).join(';');
+            data[level] = points;
+        });
+        exportFile('面数据导出.json', JSON.stringify(data));
     }
 
     var local = new BMapGL.LocalSearch(map, {

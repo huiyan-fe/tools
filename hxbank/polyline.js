@@ -36,10 +36,10 @@ var currentLine;
 var startMarker;
 var endMarker;
 var midMarkers = [];
-var zoomLevel = getZoom();
 var zoomPolylines = {
     data: {},
     enableZooms: {},
+    zoomLevel: getZoom(),
     auto: false,
     init() {
         map.addEventListener('click', e => {
@@ -47,10 +47,10 @@ var zoomPolylines = {
         });
 
         map.addEventListener('zoomend', e => {
-            if (zoomLevel !== getZoom()) {
-                zoomLevel = getZoom();
+            if (this.zoomLevel !== getZoom()) {
+                this.zoomLevel = getZoom();
                 document.getElementById('result').innerHTML = '';
-                document.getElementById('zoom-value').innerHTML = zoomLevel;
+                document.getElementById('zoom-value').innerHTML = this.zoomLevel;
                 if (zoomPolylines.auto) {
                     zoomPolylines.enableAuto();
                 }
@@ -76,7 +76,7 @@ var zoomPolylines = {
     },
     setData(zoom, polygons) {
         this.data[zoom] = polygons;
-        this.enableZooms[zoom] = true;
+        this.enableZooms[zoom] = zoom === this.zoomLevel;
         this.showEnablePolygons();
     },
     getData(zoom) {
@@ -99,7 +99,7 @@ var zoomPolylines = {
     enableAuto() {
         this.auto = true;
         Object.keys(this.enableZooms).forEach(zoom => {
-            if (zoom == zoomLevel) {
+            if (zoom == this.zoomLevel) {
                 this.enableZooms[zoom] = true;
             } else {
                 this.enableZooms[zoom] = false;
@@ -154,7 +154,6 @@ var zoomPolylines = {
     importPolyline() {
         document.getElementById('result').innerHTML = '';
         this.clearData();
-        this.clearAllPolylines();
         var tex = document.getElementById('more').value;
         if (!tex) {
             return alert('数据不能为空！');
@@ -209,10 +208,10 @@ var zoomPolylines = {
                 .join(';');
             data[level] = points;
         });
-        data.type = 'polygon';
         exportFile('线数据导出.json', JSON.stringify(data));
     }
 };
+zoomPolylines.init();
 function setEnableZoom(event, zoom) {
     if (event.target.checked) {
         zoomPolylines.enableZoom(zoom);

@@ -130,10 +130,13 @@
                 id="more"
                 placeholder="需要转换的数据格式示例：{15: 116.391639,39.915941,116.391639,39.910849}"></textarea>
             <div style="margin-top:10px;">
-                <button onclick="morePolygon()">
-                    根据输入数据画面
+                <button onclick="zoomPolygons.importPolygon()">
+                    导入面数据
                 </button>
-                <button onclick="savePolygon()">
+                <button onclick="zoomPolylines.importPolyline()">
+                    导入线数据
+                </button>
+                <button onclick="zoomPolygons.savePolygon()">
                     导出图上所有面的数据
                 </button>
             </div>
@@ -144,8 +147,8 @@
             </select>
             <div class="zoom">当前地图级别：<span id="zoom-value"></span></div>
             <div class="zoom-fixed">
-                <label for="">选择需要固定显示的级别</label>
-                <div id="zoom-list">暂无数据</div>
+                <label for="">选择需要固定显示面的级别</label>
+                <div id="zoom-list">暂无面数据</div>
             </div>
         </div>
     </div>

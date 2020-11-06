@@ -21,20 +21,34 @@ $('#select').bind('change', function () {
     }
 });
 
-var _isOpen = false;
 var tipLabel = new BMapGL.Label('单击添加沿路点，右键添加最后一个点并完成画面', {
     offset: new BMapGL.Size(10, -5),
     enableMassClear: true
 });
 tipLabel.setStyles({color: '#333', borderColor: '#ff0103'});
-
+document.getElementById('zoom-value').innerHTML = getZoom();
 var markers = [];
 var points = [];
-var zoomLevel = getZoom();
 var zoomPolygons = {
     data: {},
     enableZooms: {},
+    zoomLevel: getZoom(),
     auto: false,
+    init() {
+        map.addEventListener('click', e => {
+            this.disableEditing();
+        });
+        map.addEventListener('zoomend', e => {
+            if (this.zoomLevel !== getZoom()) {
+                this.zoomLevel = getZoom();
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('zoom-value').innerHTML = this.zoomLevel;
+                if (this.auto) {
+                    this.enableAuto();
+                }
+            }
+        });
+    },
     syncChexboxes() {
         let zooms = Object.keys(this.enableZooms);
         let html = zooms
@@ -54,7 +68,7 @@ var zoomPolygons = {
     },
     setData(zoom, polygons) {
         this.data[zoom] = polygons;
-        this.enableZooms[zoom] = zoom === zoomLevel;
+        this.enableZooms[zoom] = zoom === this.zoomLevel;
         this.showEnablePolygons();
     },
     getData(zoom) {
@@ -69,12 +83,15 @@ var zoomPolygons = {
         this.showEnablePolygons();
     },
     clearData() {
+        Object.keys(this.data).forEach(key => {
+            this.data[key].forEach(item => map.removeOverlay(item));
+        });
         this.data = {};
     },
     enableAuto() {
         this.auto = true;
         Object.keys(this.enableZooms).forEach(zoom => {
-            if (zoom == zoomLevel) {
+            if (zoom == this.zoomLevel) {
                 this.enableZooms[zoom] = true;
             } else {
                 this.enableZooms[zoom] = false;
@@ -103,40 +120,291 @@ var zoomPolygons = {
         Object.keys(this.data).forEach(key => {
             this.data[key].forEach(p => p.disableEditing());
         });
+    },
+    // 初次创建多边形
+    createPolygon(points, zoom) {
+        zoom = Number(zoom) || getZoom();
+        var polygon = new BMapGL.Polygon(points, {
+            strokeColor: '#f00'
+        });
+        polygon.id = new Date().valueOf();
+        polygon.zoomLevel = zoom;
+        polygon.addEventListener('editend', e => {
+            showResult(e.overlay);
+        });
+        polygon.addEventListener('click', e => {
+            polygon.enableEditing();
+            showResult(e.target);
+        });
+        if (getZoom() === zoom) {
+            map.addOverlay(polygon);
+        }
+        let polygons = zoomPolygons.getData(zoom);
+        polygons = polygons || [];
+        polygons.push(polygon);
+        zoomPolygons.setData(zoom, polygons);
+        return polygon;
+    },
+    // 导入数据
+    importPolygon() {
+        document.getElementById('result').innerHTML = '';
+        var tex = document.getElementById('more').value;
+        if (!tex) {
+            return alert('数据不能为空！');
+        }
+        this.clearData();
+        var data = [];
+        try {
+            data = JSON.parse(tex);
+        } catch (e) {
+            alert('解析失败');
+        }
+        let zoom = getZoom();
+        Object.keys(data).forEach(key => {
+            var item = data[key];
+            var polys = item.split(';');
+            var allPointArr = [];
+            for (var j = 0; j < polys.length; j++) {
+                var points = polys[j].split(',');
+                var pointArr = [];
+                var point = null;
+                for (var i = 0; i < points.length; i += 2) {
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMapGL.Pixel(points[i], points[i + 1]));
+                    } else {
+                        point = new BMapGL.Point(points[i], points[i + 1]);
+                    }
+                    pointArr.push(point);
+                    allPointArr.push(point);
+                }
+                zoomPolygons.createPolygon(pointArr, key);
+            }
+            if (Number(key) === zoom) {
+                map.setViewport(allPointArr);
+            }
+        });
+    },
+    // 导出数据
+    savePolygon() {
+        var data = {};
+        Object.keys(zoomPolygons.data).forEach(level => {
+            var points = zoomPolygons.data[level]
+                .map(item => {
+                    let path = item.getPath();
+                    path.pop();
+                    return path
+                        .map(point => {
+                            return `${point.lng},${point.lat}`;
+                        })
+                        .join(',');
+                })
+                .join(';');
+            data[level] = points;
+        });
+        exportFile('面数据导出.json', JSON.stringify(data));
     }
 };
-map.addEventListener('click', function (e) {
-    zoomPolygons.disableEditing();
-});
-document.getElementById('zoom-value').innerHTML = getZoom();
-map.addEventListener('zoomend', e => {
-    if (zoomLevel !== getZoom()) {
-        zoomLevel = getZoom();
-        document.getElementById('result').innerHTML = '';
-        document.getElementById('zoom-value').innerHTML = zoomLevel;
-        if (zoomPolygons.auto) {
-            zoomPolygons.enableAuto();
+var zoomPolylines = {
+    data: {},
+    enableZooms: {},
+    zoomLevel: getZoom(),
+    auto: false,
+    init() {
+        map.addEventListener('click', e => {
+            this.disableEditing();
+        });
+
+        map.addEventListener('zoomend', e => {
+            console.log('zoomend');
+            if (this.zoomLevel !== getZoom()) {
+                this.zoomLevel = getZoom();
+                // document.getElementById('result').innerHTML = '';
+                // document.getElementById('zoom-value').innerHTML = zoomLevel;
+                if (this.auto) {
+                    this.enableAuto();
+                }
+            }
+        });
+    },
+    syncChexboxes() {
+        // let zooms = Object.keys(this.enableZooms);
+        // let html = zooms
+        //     .map(item => {
+        //         return `<label>
+        //         ${item}
+        //         <input type="checkbox" ${
+        //             this.enableZooms[item] ? 'checked' : ''
+        //         } onclick="setEnableZoom(event, ${item})"/>
+        //         </label>`;
+        //     })
+        //     .join('');
+        // html += `<label>自动<input type="checkbox" ${
+        //     this.auto ? 'checked' : ''
+        // } onclick="setEnableZoomAuto(event)"/></label>`;
+        // document.getElementById('zoom-list').innerHTML = html;
+    },
+    setData(zoom, polygons) {
+        this.data[zoom] = polygons;
+        this.enableZooms[zoom] = zoom === this.zoomLevel;
+        this.showEnablePolygons();
+    },
+    getData(zoom) {
+        return this.data[zoom];
+    },
+    enableZoom(zoom) {
+        this.enableZooms[zoom] = true;
+        this.showEnablePolygons();
+    },
+    disableZoom(zoom) {
+        this.enableZooms[zoom] = false;
+        this.showEnablePolygons();
+    },
+    clearData() {
+        Object.keys(this.data).forEach(key => {
+            this.data[key].forEach(item => map.removeOverlay(item));
+        });
+        this.data = {};
+    },
+    enableAuto() {
+        this.auto = true;
+        Object.keys(this.enableZooms).forEach(zoom => {
+            if (zoom == this.zoomLevel) {
+                this.enableZooms[zoom] = true;
+            } else {
+                this.enableZooms[zoom] = false;
+            }
+        });
+        this.showEnablePolygons();
+    },
+    disableAuto() {
+        this.auto = false;
+    },
+    getEnableData() {
+        let zooms = Object.keys(this.enableZooms).filter(item => item);
+        return zooms.map(zoom => this.data[zoom]);
+    },
+    showEnablePolygons() {
+        this.syncChexboxes();
+        Object.keys(this.data).forEach(key => {
+            if (this.enableZooms[key]) {
+                this.data[key].forEach(item => map.addOverlay(item));
+            } else {
+                this.data[key].forEach(item => map.removeOverlay(item));
+            }
+        });
+    },
+    disableEditing() {
+        Object.keys(this.data).forEach(key => {
+            this.data[key].forEach(p => p.disableEditing());
+        });
+    },
+    createPolyline(points, zoom) {
+        zoom = Number(zoom) || getZoom();
+        var polyline = new BMapGL.Polyline(points, {
+            strokeColor: '#f00'
+        });
+        polyline.id = new Date().valueOf();
+        polyline.addEventListener('editend', function (e) {
+            showResult(e.overlay);
+        });
+        polyline.addEventListener('click', function (e) {
+            polyline.enableEditing();
+            showResult(e.target);
+        });
+        if (getZoom() === zoom) {
+            map.addOverlay(polyline);
         }
+        let polylines = this.getData(zoom);
+        polylines = polylines || [];
+        polylines.push(polyline);
+        this.setData(zoom, polylines);
+        return polyline;
+    },
+    importPolyline() {
+        document.getElementById('result').innerHTML = '';
+        this.clearData();
+        var tex = document.getElementById('more').value;
+        if (!tex) {
+            return alert('数据不能为空！');
+        }
+        var data = [];
+        try {
+            data = JSON.parse(tex);
+        } catch (e) {
+            alert('解析失败');
+        }
+        let zoom = getZoom();
+        Object.keys(data).forEach(key => {
+            if (Number.isNaN(Number(key))) {
+                return;
+            }
+            var item = data[key];
+            var polys = item.split(';');
+            var allPointArr = [];
+            for (var j = 0; j < polys.length; j++) {
+                var points = polys[j].split(',');
+                var pointArr = [];
+                var point = null;
+                for (var i = 0; i < points.length; i += 2) {
+                    if (points[i] > 10000) {
+                        point = project.pointToLngLat(new BMapGL.Pixel(points[i], points[i + 1]));
+                    } else {
+                        point = new BMapGL.Point(points[i], points[i + 1]);
+                    }
+                    pointArr.push(point);
+                    allPointArr.push(point);
+                }
+                zoomPolylines.createPolyline(pointArr, key);
+            }
+            if (Number(key) === zoom) {
+                map.setViewport(allPointArr);
+            }
+        });
+    },
+    exportPolyline() {
+        var data = {};
+        Object.keys(this.data).forEach(level => {
+            var points = this.data[level]
+                .map(item => {
+                    let path = item.getPath();
+                    path.pop();
+                    return path
+                        .map(point => {
+                            return `${point.lng},${point.lat}`;
+                        })
+                        .join(',');
+                })
+                .join(';');
+            data[level] = points;
+        });
+        exportFile('线数据导出.json', JSON.stringify(data));
     }
-});
+};
+zoomPolygons.init();
+zoomPolylines.init();
 function setEnableZoom(event, zoom) {
     console.log(event);
     if (event.target.checked) {
         zoomPolygons.enableZoom(zoom);
+        zoomPolylines.enableZoom(zoom);
     } else {
         zoomPolygons.disableZoom(zoom);
+        zoomPolylines.disableZoom(zoom);
     }
 }
 function setEnableZoomAuto(event) {
     if (event.target.checked) {
         zoomPolygons.enableAuto();
+        zoomPolylines.enableAuto();
     } else {
         zoomPolygons.disableAuto();
+        zoomPolylines.disableAuto();
     }
 }
 function getZoom() {
     return Math.ceil(map.getZoom());
 }
+var _isOpen = false;
 function startDraw() {
     if (_isOpen === true) {
         return true;
@@ -191,7 +459,7 @@ function endDraw() {
                 const p = points[i];
                 ps.push(new BMapGL.Point(p.longitude, p.latitude));
             }
-            var polygon = createPolygon(ps);
+            var polygon = zoomPolygons.createPolygon(ps);
             polygon.enableEditing();
             showResult(polygon);
             clearMarkers();
@@ -243,95 +511,6 @@ var clipboard = new Clipboard('.btn', {
 clipboard.on('success', function (e) {
     console.log(this);
 });
-
-function createPolygon(points, zoom) {
-    zoom = Number(zoom) || getZoom();
-    var polygon = new BMapGL.Polygon(points, {
-        strokeColor: '#f00'
-    });
-    polygon.id = new Date().valueOf();
-    polygon.zoomLevel = zoom;
-    polygon.addEventListener('editend', function (e) {
-        if (zoom === polygon.zoomLevel) {
-            showResult(e.overlay);
-        }
-    });
-    polygon.addEventListener('click', function (e) {
-        if (zoom === polygon.zoomLevel) {
-            polygon.enableEditing();
-            showResult(e.target);
-        }
-    });
-    if (getZoom() === zoom) {
-        map.addOverlay(polygon);
-    }
-    let polygons = zoomPolygons.getData(zoom);
-    polygons = polygons || [];
-    polygons.push(polygon);
-    zoomPolygons.setData(zoom, polygons);
-    return polygon;
-}
-function clearAllPolygons() {
-    zoomPolygons.clearData();
-    map.clearOverlays();
-    document.getElementById('result').innerHTML = '';
-}
-function morePolygon() {
-    clearAllPolygons();
-    var tex = document.getElementById('more').value;
-    if (!tex) {
-        return alert('数据不能为空！');
-    }
-    var data = [];
-    try {
-        data = JSON.parse(tex);
-    } catch (e) {
-        alert('解析失败');
-    }
-    let zoom = getZoom();
-    Object.keys(data).forEach(key => {
-        var item = data[key];
-        var polys = item.split(';');
-        var allPointArr = [];
-        for (var j = 0; j < polys.length; j++) {
-            var points = polys[j].split(',');
-            var pointArr = [];
-            var point = null;
-            for (var i = 0; i < points.length; i += 2) {
-                if (points[i] > 10000) {
-                    point = project.pointToLngLat(new BMapGL.Pixel(points[i], points[i + 1]));
-                } else {
-                    point = new BMapGL.Point(points[i], points[i + 1]);
-                }
-                pointArr.push(point);
-                allPointArr.push(point);
-            }
-            let polygon = createPolygon(pointArr, key);
-        }
-        if (Number(key) === zoom) {
-            map.setViewport(allPointArr);
-        }
-    });
-}
-
-function savePolygon() {
-    var data = {};
-    Object.keys(zoomPolygons.data).forEach(level => {
-        var points = zoomPolygons.data[level]
-            .map(item => {
-                let path = item.getPath();
-                path.pop();
-                return path
-                    .map(point => {
-                        return `${point.lng},${point.lat}`;
-                    })
-                    .join(',');
-            })
-            .join(';');
-        data[level] = points;
-    });
-    exportFile('面数据导出.json', JSON.stringify(data));
-}
 
 var local = new BMapGL.LocalSearch(map, {
     renderOptions: {

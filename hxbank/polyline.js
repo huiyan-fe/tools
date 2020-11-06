@@ -59,9 +59,9 @@ var drawManager = {
 
         tipLabel.setContent('单击设置起点');
         map.addOverlay(tipLabel);
-        map.addEventListener('mousemove', e => this.bindMouseMoveEvent(e));
-        map.addEventListener('click', e => this.bindClickEvent(e));
-        map.addEventListener('rightclick', e => this.bindRightClickEvent(e));
+        map.addEventListener('mousemove', this.bindMouseMoveEvent);
+        map.addEventListener('click', this.bindClickEvent);
+        map.addEventListener('rightclick', this.bindRightClickEvent);
     },
     endDraw(isRepaint) {
         if (this.step !== 2 && !(isRepaint && this.step === 0)) {
@@ -69,9 +69,9 @@ var drawManager = {
         }
         this.step = 0;
         map.removeOverlay(tipLabel);
-        map.removeEventListener('mousemove', e => this.bindMouseMoveEvent(e));
-        map.removeEventListener('click', e => this.bindClickEvent(e));
-        map.removeEventListener('rightclick', e => this.bindRightClickEvent(e));
+        map.removeEventListener('mousemove', this.bindMouseMoveEvent);
+        map.removeEventListener('click', this.bindClickEvent);
+        map.removeEventListener('rightclick', this.bindRightClickEvent);
         var origin = `${this.startMarker.latLng.lat},${this.startMarker.latLng.lng}`;
         var destination = `${this.endMarker.latLng.lat},${this.endMarker.latLng.lng}`;
         var waypoints = '';
@@ -131,34 +131,35 @@ var drawManager = {
         this.midMarkers = [];
     },
     bindClickEvent(e) {
+        let that = drawManager;
         var point = e.latlng;
         var iconUrl = '//huiyan.baidu.com/cms/react-bmap/markers_new2x_fbb9e99.png';
         var icon = new BMapGL.Icon(iconUrl, new BMapGL.Size(25, 40), {
             imageSize: new BMapGL.Size(300, 300),
             imageOffset: new BMapGL.Size(200, 139)
         });
-        if (this.step === 1) {
-            this.startMarker = new BMapGL.Marker(point, {
+        if (that.step === 1) {
+            that.startMarker = new BMapGL.Marker(point, {
                 icon: icon,
                 enableDragging: true
             });
-            this.startMarker.addEventListener('dragend', e => {
-                this.endDraw(true);
+            that.startMarker.addEventListener('dragend', e => {
+                that.endDraw(true);
             });
-            map.addOverlay(this.startMarker);
+            map.addOverlay(that.startMarker);
             tipLabel.setContent('再次单击确认终点，右键增加途径点');
-            this.step = 2;
+            that.step = 2;
         } else {
             icon.setImageOffset(new BMapGL.Size(225, 139));
-            this.endMarker = new BMapGL.Marker(point, {
+            that.endMarker = new BMapGL.Marker(point, {
                 icon: icon,
                 enableDragging: true
             });
-            this.endMarker.addEventListener('dragend', e => {
-                this.endDraw(true);
+            that.endMarker.addEventListener('dragend', e => {
+                that.endDraw(true);
             });
-            map.addOverlay(this.endMarker);
-            this.endDraw();
+            map.addOverlay(that.endMarker);
+            that.endDraw();
         }
     },
     bindMouseMoveEvent(e) {
@@ -166,12 +167,13 @@ var drawManager = {
     },
 
     bindRightClickEvent(e) {
-        if (this.midMarkers.length === 5) {
+        let that = drawManager;
+        if (that.midMarkers.length === 5) {
             alert('途径点不能大于5个！');
             return;
         }
 
-        if (this.step === 2) {
+        if (that.step === 2) {
             var point = e.latlng;
             var iconUrl = '//huiyan.baidu.com/cms/react-bmap/markers_new2x_fbb9e99.png';
             var icon = new BMapGL.Icon(iconUrl, new BMapGL.Size(26, 40), {
@@ -183,11 +185,11 @@ var drawManager = {
                 enableDragging: true
             });
             marker.addEventListener('dragend', e => {
-                this.endDraw(true);
+                that.endDraw(true);
             });
 
             map.addOverlay(marker);
-            this.midMarkers.push(marker);
+            that.midMarkers.push(marker);
         }
     }
 };

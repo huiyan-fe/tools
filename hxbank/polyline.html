@@ -109,11 +109,11 @@
     <header>
         <h2>华夏银行系统地图</h2>
         <a href="./index.html">沿路画面工具</a>
-        <a class="active" href="./custom-routesearch.html">自定义轨迹工具</a>
+        <a class="active" href="./polyline.html">自定义轨迹工具</a>
     </header>
     <div class="wrapper">
         <div id="map"></div>
-        <button class="r" onclick="startDraw()" style="right: 50px;">
+        <button class="r" onclick="drawManager.startDraw()" style="right: 50px;">
             开始设置起点
         </button>
         <div id="container" style="position:absolute;left:0px;top:0;z-index:10;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
@@ -122,13 +122,19 @@
                 搜索
             </button>
             <br>
-            <textarea type="text" style="width: 300px;height: 100px;margin-top:20px;outline: none;" id="more" placeholder="需要转换的数据格式示例：116.391639,39.915941,116.391639,39.910849"></textarea>
+            <textarea type="text" 
+                style="width: 300px;height: 100px;margin-top:20px;outline: none;" 
+                id="more"
+                placeholder="需要转换的数据格式示例：{'15':'116.41303937661993,39.91476553612482,116.41296957827993,39.91433608870185,116.41296957827993,39.91433608870185}'"></textarea>
             <div style="margin-top:10px;">
-                <button onclick="zoomPolylines.importPolyline()">
-                    根据输入数据画线
+                <button onclick="zoomPolygons.importData()">
+                    导入面数据
                 </button>
-                <button onclick="zoomPolylines.exportPolyline()">
-                    导出图上所有线的数据
+                <button onclick="zoomPolylines.importData()">
+                    导入线数据
+                </button>
+                <button onclick="zoomPolylines.exportData()">
+                    导出所有线数据
                 </button>
             </div>
             <div style="font-size: 12px;margin-top: 5px;">个性化底图配置：
@@ -139,7 +145,8 @@
             <div class="zoom">当前地图级别：<span id="zoom-value"></span></div>
             <div class="zoom-fixed">
                 <label for="">选择需要固定显示的级别</label>
-                <div id="zoom-list">暂无数据</div>
+                <div>面数据：<span id="zoom-list-polygon">暂无面数据</span></div>
+                <div>线数据：<span id="zoom-list-polyline">暂无线数据</span></div>
             </div>
         </div>
     </div>
@@ -152,6 +159,7 @@
     <!-- <script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=kiOd4V5aN0FijwNkj7EjdF2NE2ryPagf"></script> -->
     <script src="http://9ttsqe3c4vcrz.cfc-execute.bj.baidubce.com/bmapgltest/"></script>
     <script src="../coord/clipboard.min.js"></script>
+    <script src="common.js"></script>
     <script src="polyline.js"></script>
 </body>
 </html>

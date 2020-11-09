@@ -175,6 +175,9 @@ function createPolyInstance(map, instanceType, options) {
                 var polys = item.split(';');
 
                 for (var j = 0; j < polys.length; j++) {
+                    if (!polys[j]) {
+                        continue;
+                    }
                     var points = polys[j].split(',');
                     var pointArr = [];
                     var point = null;
@@ -206,6 +209,7 @@ function createPolyInstance(map, instanceType, options) {
                             })
                             .join(',');
                     })
+                    .filter(item => !!item)
                     .join(';');
                 data[level] = points;
             });

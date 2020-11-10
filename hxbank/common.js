@@ -202,7 +202,6 @@ function createPolyInstance(map, instanceType, options) {
                 var points = zoomPolygons.data[level]
                     .map(item => {
                         let path = item.getPath();
-                        path.pop();
                         return path
                             .map(point => {
                                 return `${point.lng},${point.lat}`;

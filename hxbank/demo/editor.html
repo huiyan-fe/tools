@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MapVGL</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <link rel="stylesheet" href="./css/index.min.css">
+    <link rel="stylesheet" href="./css/style.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <script src="//api.map.baidu.com/api?v=2.0&ak=mEgbC3vGaaPnAxDeeHUollEZ"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="btn btn-l btn-home">
+            <a class="home-a" href="./">首页</a>
+        </div>
+        <div class="btn btn-l">
+            <span class="lines line lines-arrow"></span>
+        </div>
+        <!--
+        <div class="left l-trf">
+            <div class="nav">
+                <ul>
+                </ul>
+            </div>
+        </div>
+        -->
+        <div class="code left l-trf">
+            <textarea name="code" id="code"></textarea>
+            <div class="oprbtns refresh-show">
+                <div class="btn btn-r btn-src">
+                    运行
+                </div>
+                <div class="btn btn-refresh">
+                    还原
+                </div>
+            </div>
+        </div>
+        <!-- end of left -->
+        <div class="right r-trf">
+            <div class="effect effect-r">
+                <iframe src="" frameborder="0" name="iframes" id="iframes"></iframe>
+            </div>
+        </div>
+        <!-- end of right -->
+    </div>
+    <!-- end of .container -->
+    <script src="https://code.bdstatic.com/npm/jquery@2.1.1/dist/jquery.min.js"></script>
+    <script src="js/codemirror.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

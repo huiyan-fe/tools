@@ -45,6 +45,10 @@
             map.addControl(new BMapGL.NavigationControl3D());
             map.addControl(new BMapGL.ZoomControl());
             map.setMapStyleV2({styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'});
+            var currPoint = {};
+            map.addEventListener('mousemove', e => {
+                currPoint = e.latlng;
+            });
 
             // mapvgl文档地址 https://mapv.baidu.com/gl/docs/
             // mapvgl示例地址 https://mapv.baidu.com/gl/examples/
@@ -75,7 +79,7 @@
             var shapeLayer = new mapvgl.PolygonLayer({
                 enablePicked: true, // 是否可以拾取
                 selectedIndex: -1, // 选中数据项索引
-                selectedColor: '#ff0000', // 选中项颜色
+                selectedColor: '#0f0', // 选中项颜色
                 autoSelect: true, // 根据鼠标位置来自动设置选中项
                 onClick(e) {
                     // 点击事件
@@ -95,7 +99,8 @@
             shapeLayer.setData(polygonPoints);
 
             // 画线
-            coordinates = '116.41155690303994,39.91430392154138,116.44783419027704, 39.84154836747059';
+            coordinates =
+                '116.47942172837939,39.84397667088308,116.47942172837939,39.84397667088308,116.48450155620937,39.84683469243699,116.48450155620937,39.84683469243699,116.4858659026194,39.84829596049009,116.4858659026194,39.84829596049009,116.48624417906939,39.84856192549143,116.48624417906939,39.84856192549143,116.48876150059941,39.8500735646891,116.48876150059941,39.8500735646891,116.4901252181994,39.85189751340991,116.4901252181994,39.85189751340991,116.4924561413294,39.85756036135987,116.4924561413294,39.85756036135987,116.4941818760494,39.8679437603156,116.4941818760494,39.8679437603156,116.4956641699694,39.874581518327844,116.4956641699694,39.874581518327844,116.4971151130294,39.8757181918591,116.4971151130294,39.8757181918591,116.49658601107936,39.885837708231186,116.49658601107936,39.885837708231186,116.49660325854938,39.89028713904158,116.49660325854938,39.89028713904158,116.49660325854938,39.89035717052713,116.49660325854938,39.89035717052713,116.49666649925939,39.89821622409629,116.49666649925939,39.89821622409629,116.49670521622939,39.899306628446325,116.49670521622939,39.899306628446325,116.49650579239936,39.89997273588069,116.49650579239936,39.89997273588069,116.49637230419937,39.904458879347665,116.49637230419937,39.904458879347665,116.4968829010594,39.910746274375825,116.4968829010594,39.910746274375825,116.4972197656194,39.91173215544774,116.4972197656194,39.91173215544774,116.4974283521594,39.91186594804266,116.4974283521594,39.91186594804266,116.49776602519937,39.91213207968754,116.49776602519937,39.91213207968754,116.49777590655938,39.91211229452754,116.49777590655938,39.91211229452754';
             coordinates = coordinates.split(',');
             var polylines = [];
             points = [];
@@ -110,33 +115,40 @@
             });
             var lineLayer = new mapvgl.LineLayer({
                 color: '#f00',
-                width: 4
+                name: '路线一',
+                width: 4,
+                enablePicked: true, // 是否可以拾取
+                selectedIndex: -1, // 选中数据项索引
+                selectedColor: '#0f0', // 选中项颜色
+                autoSelect: true, // 根据鼠标位置来自动设置选中项
+                onMousemove(e) {
+                    if (!this.label) {
+                        this.label = new BMapGL.Label(this.name, {
+                            offset: new BMapGL.Size(10, -5)
+                        });
+                        this.label.setStyles({color: '#333', borderColor: '#ff0103'});
+                    }
+                    if (!e.dataItem && this.showLabel) {
+                        map.removeOverlay(this.label);
+                        this.showLabel = false;
+                    } else if (e.dataItem) {
+                        if (!this.showLabel) {
+                            map.addOverlay(this.label);
+                            this.showLabel = true;
+                        }
+                        this.label.setPosition(currPoint);
+                    }
+                }
             });
             lineLayer.setData(polylines);
             view.addLayer(lineLayer);
-
-            // 设置鼠标移动上去显示的信息
-            // polyline.addEventListener('mousemove', function (e) {
-            //     polyline.setStrokeColor('#0f0');
-            //     if (!polyline.label) {
-            //         polyline.label = new BMapGL.Label('路线1', {
-            //             offset: new BMapGL.Size(10, -5)
-            //         });
-            //         polyline.label.setStyles({color: '#333', borderColor: '#ff0103'});
-            //         map.addOverlay(polyline.label);
-            //         polyline.showLabel = true;
-            //     }
-            //     if (!polyline.showLabel) {
-            //         map.addOverlay(polyline.label);
-            //     }
-            //     var point = e.latLng;
-            //     polyline.label.setPosition(point);
-            // });
-            // polyline.addEventListener('mouseout', function (e) {
-            //     polyline.setStrokeColor('#f00');
-            //     map.removeOverlay(polyline.label);
-            //     polyline.showLabel = false;
-            // });
+            // 设置法线偏移量，形成平行的路线
+            var lineLayer1 = new mapvgl.LineLayer({...lineLayer.getOptions(), offset: 10, name: '路线二'});
+            lineLayer1.setData(polylines);
+            view.addLayer(lineLayer1);
+            var lineLayer2 = new mapvgl.LineLayer({...lineLayer.getOptions(), offset: -10, name: '路线三'});
+            lineLayer2.setData(polylines);
+            view.addLayer(lineLayer2);
 
             // 将指定的所有点定位到可视区域
             // map.setViewport(polygonPoints.concat(polylinePoints));

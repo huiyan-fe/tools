@@ -16,31 +16,39 @@ function createPolyInstance(map, instanceType, options) {
             map.addEventListener('zoomend', e => {
                 if (this.zoomLevel !== getZoom()) {
                     this.zoomLevel = getZoom();
-                    document.getElementById('result').innerHTML = '';
-                    document.getElementById('zoom-value').innerHTML = this.zoomLevel;
                     if (this.auto) {
                         this.enableAuto();
                     }
                 }
             });
+            this.initKeyEvent();
+        },
+        initKeyEvent() {
             $(document).keydown(e => {
                 if ((e.which === 8 || e.which === 46) && this.currentEdit) {
-                    // 找到当前正在编辑的overlay删除
-                    Object.keys(this.data).find(key => {
-                        let item = this.data[key];
-                        for (let i = 0; i < item.length; i++) {
-                            if (item[i] === this.currentEdit) {
-                                map.removeOverlay(this.currentEdit);
-                                this.clearMarkers();
-                                document.getElementById('result').innerHTML = '';
-                                return item.splice(i, 1);
-                            }
-                        }
-                    });
+                    this.deleteCurrent();
+                }
+            });
+        },
+        deleteCurrent() {
+            // 找到当前正在编辑的overlay删除
+            Object.keys(this.data).find(key => {
+                let item = this.data[key];
+                for (let i = 0; i < item.length; i++) {
+                    if (item[i] === this.currentEdit) {
+                        map.removeOverlay(this.currentEdit);
+                        this.currentEdit = null;
+                        this.clearMarkers();
+                        document.getElementById('result').innerHTML = '';
+                        return item.splice(i, 1);
+                    }
                 }
             });
         },
         syncChexboxes() {
+            if (this.instanceType === 'marker') {
+                return;
+            }
             let zooms = Object.keys(this.enableZooms);
             let html = zooms
                 .map(item => {
@@ -64,6 +72,18 @@ function createPolyInstance(map, instanceType, options) {
         },
         getData(zoom) {
             return this.data[zoom];
+        },
+        deleteData(overlay) {
+            // 找到当前正在编辑的overlay删除
+            Object.keys(this.data).find(key => {
+                let item = this.data[key];
+                for (let i = 0; i < item.length; i++) {
+                    if (item[i] === overlay) {
+                        map.removeOverlay(overlay);
+                        return item.splice(i, 1);
+                    }
+                }
+            });
         },
         enableZoom(zoom) {
             this.enableZooms[zoom] = true;
@@ -114,8 +134,13 @@ function createPolyInstance(map, instanceType, options) {
             document.getElementById('result').innerHTML = '';
             this.currentEdit = null;
             Object.keys(this.data).forEach(key => {
-                this.data[key].forEach(p => p.disableEditing());
+                this.data[key].forEach(p => p.disableEditing && p.disableEditing());
             });
+            this.onCancelEdit && this.onCancelEdit();
+        },
+        enableEdit(polygon){
+            polygon.enableEditing();
+            this.currentEdit = polygon;
         },
         // 初次创建图层
         createOverlay(points, zoom) {
@@ -125,6 +150,11 @@ function createPolyInstance(map, instanceType, options) {
                 polygon = new BMapGL.Polygon(points, {
                     strokeColor: '#f00'
                 });
+            } else if (this.instanceType === 'marker') {
+                points = Array.isArray(points) ? points[0] : points;
+                polygon = new BMapGL.Marker(points, {
+                    enableDragging: true
+                });
             } else {
                 polygon = new BMapGL.Polyline(points, {
                     strokeColor: '#f00'
@@ -133,14 +163,32 @@ function createPolyInstance(map, instanceType, options) {
             polygon.id = new Date().valueOf();
             polygon.zoomLevel = zoom;
             if (!this.disableEdit) {
-                polygon.addEventListener('editend', e => {
-                    showResult(e.overlay);
-                });
-                polygon.addEventListener('click', e => {
-                    this.currentEdit = polygon;
-                    polygon.enableEditing();
-                    showResult(e.target);
-                });
+                if (this.instanceType === 'marker') {
+                    polygon.addEventListener('rightclick', e => {
+                        this.currentEdit = polygon;
+                        this.deleteCurrent();
+                    });
+                    polygon.addEventListener('click', e => {
+                        e.domEvent.stopPropagation();
+                        this.currentEdit = polygon;
+                        showMarkerResult(e.target);
+                    });
+                    polygon.addEventListener('dragstart', e => {
+                        this.markerDraged = true;
+                    });
+                } else {
+                    polygon.addEventListener('editend', e => {
+                        showResult(e.overlay);
+                    });
+                    polygon.addEventListener('click', e => {
+                        this.enableEdit(polygon);
+                        showResult(e.target);
+                        this.onClick && this.onClick(polygon, e);
+                    });
+                    polygon.addEventListener('dblclick', e => {
+                        this.onDbClick && this.onDbClick(polygon, e);
+                    });
+                }
             }
             if (getZoom() === zoom) {
                 map.addOverlay(polygon);
@@ -198,9 +246,17 @@ function createPolyInstance(map, instanceType, options) {
         // 导出数据
         exportData() {
             var data = {};
-            Object.keys(this.data).forEach(level => {
+            let keys = Object.keys(this.data);
+            if (keys.length < 1) {
+                return alert('暂无此类数据');
+            }
+            keys.forEach(level => {
                 var points = zoomPolygons.data[level]
                     .map(item => {
+                        if (this.instanceType === 'marker') {
+                            let point = item.getPosition();
+                            return `${point.lng},${point.lat}`;
+                        }
                         let path = item.getPath();
                         return path
                             .map(point => {
@@ -212,7 +268,10 @@ function createPolyInstance(map, instanceType, options) {
                     .join(';');
                 data[level] = points;
             });
-            exportFile(this.instanceType === 'polygon' ? '面数据导出.json' : '线数据导出.json', JSON.stringify(data));
+            exportFile(
+                options.exportName + '.json',
+                JSON.stringify(data)
+            );
         }
     };
     function getZoom() {
@@ -266,8 +325,7 @@ function showResult(overlay) {
         <button class='btn'>复制</button><p class='copyText'>
         ${sw.lng},${sw.lat},${ne.lng}, ${ne.lat}</p></div>
         <div><span>左下角,右上角(墨卡托坐标)：</span>
-        <button class='btn'>复制</button>
-        <p class='copyText'>
+        <button class='btn'>复制</button><p class='copyText'>
         ${swMc.x}, ${swMc.y},${neMc.x},${neMc.y},</p></div>
         <div><span>坐标集(经纬度)：</span>
         <button class='btn'>复制</button><p class='copyText'>
@@ -287,4 +345,17 @@ function exportFile(name, data) {
     save_link.href = urlObject.createObjectURL(export_blob);
     save_link.download = name;
     save_link.click();
+}
+function showMarkerResult(marker) {
+    var project = new BMapGL.Projection();
+    var position = marker.getPosition();
+    var positionMc = project.lngLatToPoint(position);
+    document.getElementById('result').innerHTML = `<div> 鼠标右键直接删除地点</div>
+    <div><span>地点坐标(经纬度)：</span>
+    <button class='btn'>复制</button><p class='copyText'>
+    ${position.lng},${position.lat}</p></div>
+    <div><span>地点坐标(墨卡托坐标)：</span>
+    <button class='btn'>复制</button><p class='copyText'>
+    ${positionMc.x}, ${positionMc.y}</p></div>
+    </div>`;
 }

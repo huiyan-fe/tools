@@ -12,6 +12,14 @@ map.disableDoubleClickZoom();
 map.addControl(new BMapGL.ScaleControl());
 map.addControl(new BMapGL.NavigationControl3D());
 map.addControl(new BMapGL.ZoomControl());
+map.addEventListener('zoomend', e => {
+    document.getElementById('result').innerHTML = '';
+    let zoom = Math.ceil(e.currentTarget.getZoom());
+    let zoomDom = document.getElementById('zoom-value');
+    if (zoomDom.innerHTML !== zoom) {
+        zoomDom.innerHTML = zoom;
+    }
+});
 map.setMapStyleV2({styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'});
 $('#select').bind('change', function () {
     var style = $(this).val();
@@ -28,36 +36,139 @@ var tipLabel = new BMapGL.Label('单击添加沿路点，右键添加最后一�
 });
 tipLabel.setStyles({color: '#333', borderColor: '#ff0103'});
 document.getElementById('zoom-value').innerHTML = Math.ceil(map.getZoom());
-var markers = [];
-var points = [];
-var zoomPolygons = createPolyInstance(map, 'polygon');
+
+var zoomPolygons = createPolyInstance(map, 'polygon', {exportName: '沿路面数据导出'});
+var zoomAreas = createPolyInstance(map, 'polygon', {exportName: '楼宇面数据导出'});
 var zoomPolylines = createPolyInstance(map, 'polyline', {disableEdit: true});
+zoomAreas.init();
 zoomPolygons.init();
 zoomPolylines.init();
 zoomPolygons.clearMarkers = clearMarkers;
+zoomPolygons.onCancelEdit = function () {
+    document.getElementById('createArea').setAttribute('disabled', '');
+};
+zoomPolygons.onClick = function () {
+    document.getElementById('createArea').removeAttribute('disabled');
+};
+zoomAreas.parents = [];
+zoomAreas.onClick = function (polygon, e) {
+    zoomPolygons.disableEditing();
+};
+function createAreas() {
+    var polygon = zoomPolygons.currentEdit;
+    if (!polygon) {
+        return;
+    }
+    let index = zoomAreas.parents.findIndex(item => item.polygon === polygon);
+    if (index > -1) {
+        zoomAreas.parents[index].overlays.forEach(item => zoomAreas.deleteData(item));
+        zoomAreas.parents.splice(index, 1);
+    }
+    var bounds = polygon.getBounds();
+    var sw = bounds.getSouthWest();
+    var ne = bounds.getNorthEast();
+    var row = document.getElementById('row').value;
+    var column = document.getElementById('column').value;
+    var stepX = (ne.lng - sw.lng) / row;
+    var stepY = (ne.lat - sw.lat) / column;
+    var overlays = [];
+    for (let i = 0; i < row; i++) {
+        let lng1 = sw.lng + i * stepX;
+        let lng2 = sw.lng + (i + 1) * stepX;
+        for (let j = 0; j < column; j++) {
+            let lat1 = sw.lat + j * stepY;
+            let lat2 = sw.lat + (j + 1) * stepY;
+            let ol = zoomAreas.createOverlay(
+                [
+                    new BMapGL.Point(lng1, lat1),
+                    new BMapGL.Point(lng2, lat1),
+                    new BMapGL.Point(lng2, lat2),
+                    new BMapGL.Point(lng1, lat2)
+                ],
+                polygon.zoomLevel
+            );
+            overlays.push(ol);
+        }
+    }
+    zoomAreas.parents.push({polygon: polygon, overlays: overlays});
+    Object.keys(zoomPolygons.enableZooms).forEach(item => zoomAreas.enableZoom(item));
+}
 zoomPolylines.setData = function (zoom, polygons) {
     this.data[zoom] = polygons;
     this.enableZooms[zoom] = zoomPolygons.enableZooms[zoom];
     this.showEnablePolygons();
 };
+
+var editMarkers = false;
+var zoomMarkers = createPolyInstance(map, 'marker', {exportName: '点数据导出'});
+zoomMarkers.init();
+map.addEventListener('click', e => {
+    // marker拖拽完毕还会触发click事件，处理一下
+    if (editMarkers && !zoomMarkers.markerDraged) {
+        zoomMarkers.createOverlay(e.latlng);
+    }
+    zoomMarkers.markerDraged = false;
+});
+
+function changeEditMarkers(status) {
+    if (typeof status !== 'undefined') {
+        editMarkers = status;
+    } else {
+        editMarkers = !editMarkers;
+    }
+    document.getElementById('editMarker').innerHTML = editMarkers ? '取消绘制地点' : '开启绘制地点';
+}
+
 function setEnableZoom(event, zoom, type) {
     console.log(event);
     if (event.target.checked) {
-        type === 'polygon' ? zoomPolygons.enableZoom(zoom) : zoomPolylines.enableZoom(zoom);
+        if (type === 'polygon') {
+            zoomPolygons.enableZoom(zoom);
+            zoomAreas.enableZoom(zoom);
+        } else {
+            zoomPolylines.enableZoom(zoom);
+        }
     } else {
-        type === 'polygon' ? zoomPolygons.disableZoom(zoom) : zoomPolylines.disableZoom(zoom);
+        if (type === 'polygon') {
+            zoomPolygons.disableZoom(zoom);
+            zoomAreas.disableZoom(zoom);
+        } else {
+            zoomPolylines.disableZoom(zoom);
+        }
     }
 }
 function setEnableZoomAuto(event, type) {
     if (event.target.checked) {
-        type === 'polygon' ? zoomPolygons.enableAuto() : zoomPolylines.enableAuto();
+        if (type === 'polygon') {
+            zoomPolygons.enableAuto();
+            zoomAreas.enableAuto();
+        } else {
+            zoomPolylines.enableAuto();
+        }
     } else {
-        type === 'polygon' ? zoomPolygons.disableAuto() : zoomPolylines.disableAuto();
+        if (type === 'polygon') {
+            zoomPolygons.disableAuto();
+            zoomAreas.disableAuto();
+        } else {
+            zoomPolylines.disableAuto();
+        }
     }
 }
 
+var markers = [];
+var points = [];
 var _isOpen = false;
+function changeDraw(open) {
+    if (_isOpen) {
+        endDraw();
+    } else {
+        startDraw();
+    }
+    document.getElementById('changeDraw').innerHTML = _isOpen ? '完成沿路画面' : '开启沿路画面';
+}
 function startDraw() {
+    changeEditMarkers(false);
+    document.getElementById('editMarker').setAttribute('disabled', '');
     if (_isOpen === true) {
         return true;
     }
@@ -71,11 +182,14 @@ function startDraw() {
 }
 
 function endDraw() {
+    document.getElementById('editMarker').removeAttribute('disabled');
     if (_isOpen === false) {
         return false;
     }
-
     _isOpen = false;
+    if (points.length < 1) {
+        return false;
+    }
 
     map.removeOverlay(tipLabel);
     map.removeEventListener('mousemove', _bindMouseMoveEvent);
@@ -112,7 +226,8 @@ function endDraw() {
                 ps.push(new BMapGL.Point(p.longitude, p.latitude));
             }
             var polygon = zoomPolygons.createOverlay(ps);
-            polygon.enableEditing();
+            zoomPolygons.enableEdit(polygon);
+            document.getElementById('createArea').removeAttribute('disabled');
             showResult(polygon);
             clearMarkers();
             // map.setViewport(ps);

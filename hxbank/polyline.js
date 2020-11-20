@@ -13,6 +13,14 @@ map.addControl(new BMapGL.ScaleControl());
 map.addControl(new BMapGL.NavigationControl3D());
 map.addControl(new BMapGL.ZoomControl());
 map.setMapStyleV2({styleId: 'b55cfcedd9c54d1fd7169bfd39fac37f'});
+map.addEventListener('zoomend', e => {
+    document.getElementById('result').innerHTML = '';
+    let zoom = Math.ceil(e.currentTarget.getZoom());
+    let zoomDom = document.getElementById('zoom-value');
+    if (zoomDom.innerHTML !== zoom) {
+        zoomDom.innerHTML = zoom;
+    }
+});
 $('#select').bind('change', function () {
     var style = $(this).val();
     if (style === 'midnight') {

@@ -73,11 +73,11 @@ function createAreas() {
     var stepY = (ne.lat - sw.lat) / column;
     var overlays = [];
     for (let i = 0; i < row; i++) {
-        let lng1 = sw.lng + i * stepX;
-        let lng2 = sw.lng + (i + 1) * stepX;
+        let lng1 = sw.lng + i * stepX + stepX * 0.05;
+        let lng2 = sw.lng + (i + 1) * stepX -  stepX * 0.05;
         for (let j = 0; j < column; j++) {
-            let lat1 = sw.lat + j * stepY;
-            let lat2 = sw.lat + (j + 1) * stepY;
+            let lat1 = sw.lat + j * stepY + stepY * 0.05;
+            let lat2 = sw.lat + (j + 1) * stepY - stepY * 0.05;
             let ol = zoomAreas.createOverlay(
                 [
                     new BMapGL.Point(lng1, lat1),
@@ -187,15 +187,14 @@ function endDraw() {
         return false;
     }
     _isOpen = false;
-    if (points.length < 1) {
-        return false;
-    }
 
     map.removeOverlay(tipLabel);
     map.removeEventListener('mousemove', _bindMouseMoveEvent);
     map.removeEventListener('click', _bindClickEvent);
     map.removeEventListener('rightclick', _bindRightClickEvent);
-
+    if (points.length < 1) {
+        return false;
+    }
     let data = [];
     for (let i = 0; i < points.length; i++) {
         const point = points[i];

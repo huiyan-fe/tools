@@ -46,7 +46,7 @@ function createPolyInstance(map, instanceType, options) {
             });
         },
         syncChexboxes() {
-            if (this.instanceType === 'marker') {
+            if (this.instanceType === 'marker' || options.syncChexboxes === false) {
                 return;
             }
             let zooms = Object.keys(this.enableZooms);
@@ -138,7 +138,7 @@ function createPolyInstance(map, instanceType, options) {
             });
             this.onCancelEdit && this.onCancelEdit();
         },
-        enableEdit(polygon){
+        enableEdit(polygon) {
             polygon.enableEditing();
             this.currentEdit = polygon;
         },
@@ -268,10 +268,7 @@ function createPolyInstance(map, instanceType, options) {
                     .join(';');
                 data[level] = points;
             });
-            exportFile(
-                options.exportName + '.json',
-                JSON.stringify(data)
-            );
+            exportFile(options.exportName + '.json', JSON.stringify(data));
         }
     };
     function getZoom() {

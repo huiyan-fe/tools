@@ -38,7 +38,7 @@ tipLabel.setStyles({color: '#333', borderColor: '#ff0103'});
 document.getElementById('zoom-value').innerHTML = Math.ceil(map.getZoom());
 
 var zoomPolygons = createPolyInstance(map, 'polygon', {exportName: '沿路面数据导出'});
-var zoomAreas = createPolyInstance(map, 'polygon', {exportName: '楼宇面数据导出'});
+var zoomAreas = createPolyInstance(map, 'polygon', {exportName: '楼宇面数据导出', syncChexboxes: false});
 var zoomPolylines = createPolyInstance(map, 'polyline', {disableEdit: true});
 zoomAreas.init();
 zoomPolygons.init();
@@ -100,7 +100,7 @@ zoomPolylines.setData = function (zoom, polygons) {
 };
 
 var editMarkers = false;
-var zoomMarkers = createPolyInstance(map, 'marker', {exportName: '点数据导出'});
+var zoomMarkers = createPolyInstance(map, 'marker', {exportName: '点数据导出', syncChexboxes: false});
 zoomMarkers.init();
 map.addEventListener('click', e => {
     // marker拖拽完毕还会触发click事件，处理一下

@@ -184,8 +184,19 @@
             height: 1000
         }
     });
+    // 楼块贴图canavs https://mapv.baidu.com/gl/examples/editor.html#shape-texture.html
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = 100;
+    canvas.height = 100;
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.fillStyle = '#00f';
+    ctx.fillRect(0, 50, 100, 50);
     var building = new mapvgl.ShapeLayer({
-        color: 'rgba(222, 222, 0, 0.8)'
+        color: 'rgba(222, 222, 0, 0.8)',
+        isTextureFull: true,    // 此处若为false，则可通过 textureScale 属性来使纹理重复
+        texture: canvas // 此处可传图片
     });
     building.setData(polys);
     view.addLayer(building);

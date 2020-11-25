@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>沿路画面工具</title>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <link href="//mapopen.bj.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.css" rel="stylesheet">
     <style>
         html,
         body {
@@ -106,6 +107,7 @@
             -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .26);
             -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .26);
             box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .26);
+            font-size: 12px;
         }
 
         .buttons {
@@ -124,7 +126,6 @@
         }
         .createAreas {
             margin: 10px 0;
-            font-size: 12px;
         }
         .createAreas input {
             width: 30px;
@@ -161,32 +162,24 @@
             </button>
             <br>
             <textarea type="text" style="width: 300px;height: 100px;margin-top:20px;outline: none;" id="more"
-                placeholder="需要转换的数据格式示例：{15: 116.391639,39.915941,116.391639,39.910849}"></textarea>
+                placeholder='需要转换的数据格式示例：{"15": "116.391639,39.915941,116.391639,39.910849"}'></textarea>
             <div style="margin-top:10px;">
-                <button onclick="zoomPolygons.importData()">
-                    导入沿路面
-                </button>
-                <button onclick="zoomAreas.importData()">
-                    导入楼宇面
-                </button>
-                <button onclick="zoomPolylines.importData()">
-                    导入线数据
-                </button>
-                <button onclick="zoomMarkers.importData()">
-                    导入点数据
-                </button>
-                <br>
-                <button onclick="zoomMarkers.exportData()">
-                    导出点数据
-                </button>
-                <button onclick="zoomPolygons.exportData()">
-                    导出沿路面
-                </button>
-                <button onclick="zoomAreas.exportData()">
-                    导出楼宇面
+                数据操作：
+                <select name="data-load-type" id="data-load-type" onchange="setDataLoadType(event)">
+                    <option value="导入沿路面">导入沿路面</option>
+                    <option value="导入楼宇面">导入楼宇面</option>
+                    <option value="导入线数据">导入线数据</option>
+                    <option value="导入点数据">导入点数据</option>
+                    <option value="导出点数据">导出点数据</option>
+                    <option value="导出线数据">导出线数据</option>
+                    <option value="导出沿路面">导出沿路面</option>
+                    <option value="导出楼宇面">导出楼宇面</option>
+                </select>
+                <button onclick="doAction()">
+                    确定
                 </button>
             </div>
-            <div style="font-size: 12px;margin-top: 5px;">个性化底图配置：
+            <div style="margin-top: 10px;">个性化底图配置：
                 <select class="browser-default" id="select">
                     <option value="midnight" selected>午夜蓝风格</option>
                     <option value="normal">默认风格</option>
@@ -213,12 +206,13 @@
         <div id="result"
             style="position:absolute;bottom:0px;left:0px;right:0px;z-index:10;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
         </div>
+        <div id="selectbox_Drawing" class="selectbox_Drawing"></div>
         <script>
             window.BMAP_AUTHENTIC_KEY = 'kiOd4V5aN0FijwNkj7EjdF2NE2ryPagf';
         </script>
         <script src="https://code.bdstatic.com/npm/jquery@2.1.1/dist/jquery.min.js"></script>
         <script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=kiOd4V5aN0FijwNkj7EjdF2NE2ryPagf"></script>
-        <!-- <script src="http://9ttsqe3c4vcrz.cfc-execute.bj.baidubce.com/bmapgltest/"></script> -->
+        <script src="//mapopen.bj.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.js"></script>
         <script src="../coord/clipboard.min.js"></script>
         <script src="common.js"></script>
         <script src="index.js"></script>

@@ -31,7 +31,7 @@ $('#select').bind('change', function () {
 });
 document.getElementById('zoom-value').innerHTML = Math.ceil(map.getZoom());
 
-var zoomPolylines = createPolyInstance(map, 'polyline');
+var zoomPolylines = createPolyInstance(map, 'polyline', {exportName: '线数据导出'});
 var zoomPolygons = createPolyInstance(map, 'polygon', {disableEdit: true});
 zoomPolylines.init();
 zoomPolygons.init();

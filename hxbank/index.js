@@ -39,7 +39,7 @@ document.getElementById('zoom-value').innerHTML = Math.ceil(map.getZoom());
 
 var zoomPolygons = createPolyInstance(map, 'polygon', {exportName: '沿路面数据导出'});
 var zoomAreas = createPolyInstance(map, 'polygon', {exportName: '楼宇面数据导出', syncChexboxes: false});
-var zoomPolylines = createPolyInstance(map, 'polyline', {disableEdit: true});
+var zoomPolylines = createPolyInstance(map, 'polyline', {exportName: '线数据导出'});
 zoomAreas.init();
 zoomPolygons.init();
 zoomPolylines.init();
@@ -74,7 +74,7 @@ function createAreas() {
     var overlays = [];
     for (let i = 0; i < row; i++) {
         let lng1 = sw.lng + i * stepX + stepX * 0.05;
-        let lng2 = sw.lng + (i + 1) * stepX -  stepX * 0.05;
+        let lng2 = sw.lng + (i + 1) * stepX - stepX * 0.05;
         for (let j = 0; j < column; j++) {
             let lat1 = sw.lat + j * stepY + stepY * 0.05;
             let lat2 = sw.lat + (j + 1) * stepY - stepY * 0.05;
@@ -120,7 +120,6 @@ function changeEditMarkers(status) {
 }
 
 function setEnableZoom(event, zoom, type) {
-    console.log(event);
     if (event.target.checked) {
         if (type === 'polygon') {
             zoomPolygons.enableZoom(zoom);
@@ -273,3 +272,84 @@ function poisearch() {
     var text = document.getElementById('searchText').value;
     local.search(text);
 }
+var action = '导入沿路面';
+function setDataLoadType(event) {
+    action = event.target.value;
+}
+function doAction() {
+    let fun = {
+        '导入沿路面': () => zoomPolygons.importData(),
+        '导入楼宇面': () => zoomAreas.importData(),
+        '导入线数据': () => zoomPolylines.importData(),
+        '导入点数据': () => zoomMarkers.importData(),
+        '导出点数据': () => zoomMarkers.exportData(),
+        '导出线数据': () => zoomPolylines.exportData(),
+        '导出沿路面': () => zoomPolygons.exportData(),
+        '导出楼宇面': () => zoomAreas.exportData()
+    }[action];
+    if (/导入/.test(action)) {
+        var quest = window.confirm('确定' + action + '吗？这将会覆盖当前类型数据!');
+        if (!quest) {
+            return;
+        }
+    }
+    fun && fun();
+}
+
+var styleOptions = {
+    strokeColor: '#f00', // 边线颜色。
+    fillColor: '#fff', // 填充颜色。当参数为空时，圆形将没有填充效果。
+    strokeWeight: 2, // 边线的宽度，以像素为单位。
+    strokeOpacity: 1, // 边线透明度，取值范围0 - 1。
+    fillOpacity: 0.6 // 填充的透明度，取值范围0 - 1。
+};
+var labelOptions = {
+    borderRadius: '2px',
+    background: '#FFFBCC',
+    border: '1px solid #E1E1E1',
+    color: '#703A04',
+    fontSize: '12px',
+    letterSpacing: '0',
+    padding: '5px'
+};
+
+// 实例化鼠标绘制工具
+var drawingManager = new BMapGLLib.DrawingManager(map, {
+    enableDrawingTool: true, // 是否显示工具栏
+    enableCalculate: false, // 绘制是否进行测距(画线时候)、测面(画圆、多边形、矩形)
+    enableSorption: true,
+    drawingToolOptions: {
+        enableTips: true,
+        customContainer: 'selectbox_Drawing',
+        hasCustomStyle: true,
+        anchor: BMAP_ANCHOR_TOP_RIGHT,
+        offset: new BMapGL.Size(210, 20), // 偏离值
+        scale: 0.8, // 工具栏缩放比例
+        drawingModes: [
+            BMAP_DRAWING_MARKER,
+            BMAP_DRAWING_POLYLINE,
+            BMAP_DRAWING_RECTANGLE,
+            BMAP_DRAWING_POLYGON,
+            BMAP_DRAWING_CIRCLE
+        ]
+    },
+    enableSorption: true, // 是否开启边界吸附功能
+    sorptionDistance: 20, // 边界吸附距离
+    enableGpc: true, // 是否开启延边裁剪功能
+    enableLimit: false, // 是否开启超限提示
+    circleOptions: styleOptions, // 圆的样式
+    polylineOptions: styleOptions, // 线的样式
+    polygonOptions: styleOptions, // 多边形的样式
+    rectangleOptions: styleOptions, // 矩形的样式
+    labelOptions: labelOptions // label的样式
+});
+drawingManager.addEventListener('overlaycomplete', e => {
+    map.removeOverlay(e.overlay);
+    if (e.drawingMode === 'polyline') {
+        zoomPolylines.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
+    } else if (e.drawingMode === 'polygon' || e.drawingMode === 'circle' || e.drawingMode === 'rectangle') {
+        zoomPolygons.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
+    } else if (e.drawingMode === 'marker') {
+        zoomMarkers.createOverlay(e.overlay.getPosition(), Math.ceil(map.getZoom()));
+    }
+});

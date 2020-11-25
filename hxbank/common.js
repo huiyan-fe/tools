@@ -49,7 +49,7 @@ function createPolyInstance(map, instanceType, options) {
             if (this.instanceType === 'marker' || options.syncChexboxes === false) {
                 return;
             }
-            let zooms = Object.keys(this.enableZooms);
+            let zooms = Object.keys(this.enableZooms).filter(item => this.data[item].length > 0);
             let html = zooms
                 .map(item => {
                     return `<label>
@@ -67,7 +67,11 @@ function createPolyInstance(map, instanceType, options) {
         },
         setData(zoom, polygons) {
             this.data[zoom] = polygons;
-            this.enableZooms[zoom] = zoom === this.zoomLevel;
+            if (this.instanceType === 'marker') {
+                this.enableZooms[zoom] = true;
+            } else {
+                this.enableZooms[zoom] = zoom === this.zoomLevel;
+            }
             this.showEnablePolygons();
         },
         getData(zoom) {
@@ -124,9 +128,9 @@ function createPolyInstance(map, instanceType, options) {
             this.syncChexboxes();
             Object.keys(this.data).forEach(key => {
                 if (this.enableZooms[key]) {
-                    this.data[key].forEach(item => map.addOverlay(item));
+                    this.data[key] && this.data[key].forEach(item => map.addOverlay(item));
                 } else {
-                    this.data[key].forEach(item => map.removeOverlay(item));
+                    this.data[key] && this.data[key].forEach(item => map.removeOverlay(item));
                 }
             });
         },
@@ -181,23 +185,56 @@ function createPolyInstance(map, instanceType, options) {
                         showResult(e.overlay);
                     });
                     polygon.addEventListener('click', e => {
+                        map.disableDoubleClickZoom();
                         this.enableEdit(polygon);
                         showResult(e.target);
                         this.onClick && this.onClick(polygon, e);
                     });
                     polygon.addEventListener('dblclick', e => {
+                        let div = document.createElement('div');
+                        div.append('修改层级：');
+                        let input = document.createElement('input');
+                        input.style.width = '40px';
+                        input.type = 'number';
+                        input.value = polygon.zoomLevel;
+                        input.onchange = e => (polygon.targetLevel = e.target.value);
+                        div.appendChild(input);
+                        let button = document.createElement('button');
+                        button.innerText = '确定';
+                        button.onclick = e => {
+                            this.changeZoomLevel(polygon);
+                            map.closeInfoWindow(this.infoWindow);
+                        };
+                        div.appendChild(button);
+
+                        this.infoWindow = new BMapGL.InfoWindow(div, {title: '修改属性'});
+                        map.openInfoWindow(this.infoWindow, e.latLng);
                         this.onDbClick && this.onDbClick(polygon, e);
                     });
                 }
-            }
-            if (getZoom() === zoom) {
-                map.addOverlay(polygon);
             }
             let polygons = zoomPolygons.getData(zoom);
             polygons = polygons || [];
             polygons.push(polygon);
             zoomPolygons.setData(zoom, polygons);
             return polygon;
+        },
+        changeZoomLevel(polygon) {
+            if (polygon.targetLevel && polygon.targetLevel !== polygon.zoomLevel) {
+                // 删掉原层级里的polygon
+                let targetData = this.data[polygon.targetLevel];
+                let i = this.data[polygon.zoomLevel].findIndex(item => item === polygon);
+                this.data[polygon.zoomLevel].splice(i, 1);
+                polygon.zoomLevel = polygon.targetLevel;
+                // 放入目标层级
+                if (targetData) {
+                    targetData.push(polygon);
+                } else {
+                    this.data[polygon.targetLevel] = [polygon];
+                }
+                this.setData(polygon.targetLevel, this.data[polygon.targetLevel]);
+                this.disableEditing();
+            }
         },
         // 导入数据
         importData() {
@@ -306,7 +343,7 @@ function showResult(overlay) {
     }
     pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
     pathStr = pathStr.substr(0, pathStr.length - 1);
-    if (overlay.toString() == 'Polyline') {
+    if (overlay.toString() === 'Polyline') {
         geojsonStr = {
             type: 'LineString',
             coordinates: coordinates
@@ -317,15 +354,15 @@ function showResult(overlay) {
             coordinates: [coordinates]
         };
     }
-    document.getElementById('result').innerHTML = `<div> 按delete键或backspace键删除该图层；鼠标右键删除编辑点。</div>
+    document.getElementById(
+        'result'
+    ).innerHTML = `<div> 按delete键或backspace键删除该图层；鼠标右键删除编辑点；双击修改属性。</div>
         <div><span>左下角,右上角(经纬度)：</span>
         <button class='btn'>复制</button><p class='copyText'>
         ${sw.lng},${sw.lat},${ne.lng}, ${ne.lat}</p></div>
-        <div><span>左下角,右上角(墨卡托坐标)：</span>
-        <button class='btn'>复制</button><p class='copyText'>
+        <div><span>左下角,右上角(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>
         ${swMc.x}, ${swMc.y},${neMc.x},${neMc.y},</p></div>
-        <div><span>坐标集(经纬度)：</span>
-        <button class='btn'>复制</button><p class='copyText'>
+        <div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>
         ${pathStr}
         </p></div>
         <div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>

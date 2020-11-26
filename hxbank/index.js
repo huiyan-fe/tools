@@ -99,25 +99,66 @@ zoomPolylines.setData = function (zoom, polygons) {
     this.showEnablePolygons();
 };
 
-var editMarkers = false;
 var zoomMarkers = createPolyInstance(map, 'marker', {exportName: '点数据导出', syncChexboxes: false});
 zoomMarkers.init();
-map.addEventListener('click', e => {
-    // marker拖拽完毕还会触发click事件，处理一下
-    if (editMarkers && !zoomMarkers.markerDraged) {
-        zoomMarkers.createOverlay(e.latlng);
-    }
-    zoomMarkers.markerDraged = false;
-});
+// 地图鼠标绘制工具
+var styleOptions = {
+    strokeColor: '#f00', // 边线颜色。
+    fillColor: '#fff', // 填充颜色。当参数为空时，圆形将没有填充效果。
+    strokeWeight: 2, // 边线的宽度，以像素为单位。
+    strokeOpacity: 1, // 边线透明度，取值范围0 - 1。
+    fillOpacity: 0.6 // 填充的透明度，取值范围0 - 1。
+};
+var labelOptions = {
+    borderRadius: '2px',
+    background: '#FFFBCC',
+    border: '1px solid #E1E1E1',
+    color: '#703A04',
+    fontSize: '12px',
+    letterSpacing: '0',
+    padding: '5px'
+};
 
-function changeEditMarkers(status) {
-    if (typeof status !== 'undefined') {
-        editMarkers = status;
-    } else {
-        editMarkers = !editMarkers;
+// 实例化鼠标绘制工具
+var drawingManager = new BMapGLLib.DrawingManager(map, {
+    enableDrawingTool: true, // 是否显示工具栏
+    enableCalculate: false, // 绘制是否进行测距(画线时候)、测面(画圆、多边形、矩形)
+    enableSorption: true,
+    drawingToolOptions: {
+        enableTips: true,
+        customContainer: 'selectbox_Drawing',
+        hasCustomStyle: true,
+        anchor: BMAP_ANCHOR_TOP_RIGHT,
+        offset: new BMapGL.Size(110, 20), // 偏离值
+        scale: 0.85, // 工具栏缩放比例
+        drawingModes: [
+            BMAP_DRAWING_MARKER,
+            BMAP_DRAWING_POLYLINE,
+            BMAP_DRAWING_RECTANGLE,
+            BMAP_DRAWING_POLYGON,
+            BMAP_DRAWING_CIRCLE
+        ]
+    },
+    enableSorption: true, // 是否开启边界吸附功能
+    sorptionDistance: 20, // 边界吸附距离
+    enableGpc: true, // 是否开启延边裁剪功能
+    enableLimit: false, // 是否开启超限提示
+    circleOptions: styleOptions, // 圆的样式
+    polylineOptions: styleOptions, // 线的样式
+    polygonOptions: styleOptions, // 多边形的样式
+    rectangleOptions: styleOptions, // 矩形的样式
+    labelOptions: labelOptions // label的样式
+});
+drawingManager.addEventListener('overlaycomplete', e => {
+    map.removeOverlay(e.overlay);
+    if (e.drawingMode === 'polyline') {
+        zoomPolylines.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
+    } else if (e.drawingMode === 'polygon' || e.drawingMode === 'circle' || e.drawingMode === 'rectangle') {
+        zoomPolygons.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
+    } else if (e.drawingMode === 'marker') {
+        zoomMarkers.createOverlay(e.overlay.getPosition(), Math.ceil(map.getZoom()));
     }
-    document.getElementById('editMarker').innerHTML = editMarkers ? '取消绘制地点' : '开启绘制地点';
-}
+});
 
 function setEnableZoom(event, zoom, type) {
     if (event.target.checked) {
@@ -166,8 +207,10 @@ function changeDraw(open) {
     document.getElementById('changeDraw').innerHTML = _isOpen ? '完成沿路画面' : '开启沿路画面';
 }
 function startDraw() {
-    changeEditMarkers(false);
-    document.getElementById('editMarker').setAttribute('disabled', '');
+    document.getElementById('selectbox_Drawing').style.display = 'none';
+    let cancelOperate = document.getElementById('cancelOperate');
+    cancelOperate && cancelOperate.click();
+    drawingManager.close();
     if (_isOpen === true) {
         return true;
     }
@@ -181,7 +224,7 @@ function startDraw() {
 }
 
 function endDraw() {
-    document.getElementById('editMarker').removeAttribute('disabled');
+    document.getElementById('selectbox_Drawing').style.display = 'block';
     if (_isOpen === false) {
         return false;
     }
@@ -295,61 +338,3 @@ function doAction() {
     }
     fun && fun();
 }
-
-var styleOptions = {
-    strokeColor: '#f00', // 边线颜色。
-    fillColor: '#fff', // 填充颜色。当参数为空时，圆形将没有填充效果。
-    strokeWeight: 2, // 边线的宽度，以像素为单位。
-    strokeOpacity: 1, // 边线透明度，取值范围0 - 1。
-    fillOpacity: 0.6 // 填充的透明度，取值范围0 - 1。
-};
-var labelOptions = {
-    borderRadius: '2px',
-    background: '#FFFBCC',
-    border: '1px solid #E1E1E1',
-    color: '#703A04',
-    fontSize: '12px',
-    letterSpacing: '0',
-    padding: '5px'
-};
-
-// 实例化鼠标绘制工具
-var drawingManager = new BMapGLLib.DrawingManager(map, {
-    enableDrawingTool: true, // 是否显示工具栏
-    enableCalculate: false, // 绘制是否进行测距(画线时候)、测面(画圆、多边形、矩形)
-    enableSorption: true,
-    drawingToolOptions: {
-        enableTips: true,
-        customContainer: 'selectbox_Drawing',
-        hasCustomStyle: true,
-        anchor: BMAP_ANCHOR_TOP_RIGHT,
-        offset: new BMapGL.Size(210, 20), // 偏离值
-        scale: 0.8, // 工具栏缩放比例
-        drawingModes: [
-            BMAP_DRAWING_MARKER,
-            BMAP_DRAWING_POLYLINE,
-            BMAP_DRAWING_RECTANGLE,
-            BMAP_DRAWING_POLYGON,
-            BMAP_DRAWING_CIRCLE
-        ]
-    },
-    enableSorption: true, // 是否开启边界吸附功能
-    sorptionDistance: 20, // 边界吸附距离
-    enableGpc: true, // 是否开启延边裁剪功能
-    enableLimit: false, // 是否开启超限提示
-    circleOptions: styleOptions, // 圆的样式
-    polylineOptions: styleOptions, // 线的样式
-    polygonOptions: styleOptions, // 多边形的样式
-    rectangleOptions: styleOptions, // 矩形的样式
-    labelOptions: labelOptions // label的样式
-});
-drawingManager.addEventListener('overlaycomplete', e => {
-    map.removeOverlay(e.overlay);
-    if (e.drawingMode === 'polyline') {
-        zoomPolylines.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
-    } else if (e.drawingMode === 'polygon' || e.drawingMode === 'circle' || e.drawingMode === 'rectangle') {
-        zoomPolygons.createOverlay(e.overlay.getPath(), Math.ceil(map.getZoom()));
-    } else if (e.drawingMode === 'marker') {
-        zoomMarkers.createOverlay(e.overlay.getPosition(), Math.ceil(map.getZoom()));
-    }
-});

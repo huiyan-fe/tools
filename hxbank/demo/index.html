@@ -75,10 +75,10 @@
     polyline.addEventListener('mousemove', function (e) {
         polyline.setStrokeColor('#0f0');
         if (!polyline.label) {
-            polyline.label = new BMapGL.Label('路线1', {
+            polyline.label = new BMapGL.Label('<div style="font-size: 20px;">路线1</div>', {
                 offset: new BMapGL.Size(10, -5)
             });
-            polyline.label.setStyles({color: '#333', borderColor: '#ff0103'});
+            polyline.label.setStyles({color: '#333', borderColor: 'rgba(0,0,0,0)'});
             map.addOverlay(polyline.label);
             polyline.showLabel = true;
         }

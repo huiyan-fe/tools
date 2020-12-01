@@ -147,7 +147,8 @@ function createPolyInstance(map, instanceType, options) {
             this.currentEdit = polygon;
         },
         // 初次创建图层
-        createOverlay(points, zoom) {
+        createOverlay(points, zoom, props) {
+            props = props || {};
             zoom = Number(zoom) || getZoom();
             var polygon = null;
             if (this.instanceType === 'polygon') {
@@ -164,7 +165,7 @@ function createPolyInstance(map, instanceType, options) {
                     strokeColor: '#f00'
                 });
             }
-            polygon.id = new Date().valueOf();
+            polygon.key = props.key || '';
             polygon.zoomLevel = zoom;
             if (!this.disableEdit) {
                 if (this.instanceType === 'marker') {
@@ -191,18 +192,35 @@ function createPolyInstance(map, instanceType, options) {
                         this.onClick && this.onClick(polygon, e);
                     });
                     polygon.addEventListener('dblclick', e => {
-                        let div = document.createElement('div');
-                        div.append('修改层级：');
+                        let div1 = document.createElement('div');
+                        div1.append('修改层级：');
                         let input = document.createElement('input');
                         input.style.width = '40px';
                         input.type = 'number';
                         input.value = polygon.zoomLevel;
                         input.onchange = e => (polygon.targetLevel = e.target.value);
-                        div.appendChild(input);
+                        div1.appendChild(input);
+
+                        let div2 = document.createElement('div');
+                        div2.append('修改Key值：');
+                        input = document.createElement('input');
+                        input.style.width = '80px';
+                        input.type = 'text';
+                        input.value = polygon.key;
+                        input.onchange = e => (polygon.targetKey = e.target.value);
+                        div2.appendChild(input);
+
+                        let div = document.createElement('div');
+                        div.classList.add('info-window');
+                        div.appendChild(div1);
+                        div.appendChild(div2);
                         let button = document.createElement('button');
                         button.innerText = '确定';
                         button.onclick = e => {
                             this.changeZoomLevel(polygon);
+                            if (typeof polygon.targetKey !== 'undefined' && polygon.targetKey !== polygon.key) {
+                                polygon.key = polygon.targetKey;
+                            }
                             map.closeInfoWindow(this.infoWindow);
                         };
                         div.appendChild(button);
@@ -252,18 +270,25 @@ function createPolyInstance(map, instanceType, options) {
             }
             var project = new BMapGL.Projection();
             var allPointArr = [];
-            Object.keys(data).forEach(key => {
-                if (Number.isNaN(Number(key))) {
+            Object.keys(data).forEach(level => {
+                if (Number.isNaN(Number(level))) {
                     return;
                 }
-                var item = data[key];
-                var polys = item.split(';');
+                var item = data[level];
+                var polys = [];
+                var isObj = typeof item === 'object';
+                if (isObj) {
+                    polys = item;
+                } else {
+                    polys = item.split(';');
+                }
 
                 for (var j = 0; j < polys.length; j++) {
                     if (!polys[j]) {
                         continue;
                     }
-                    var points = polys[j].split(',');
+                    var key = isObj ? polys[j].key : '';
+                    var points = isObj ? polys[j].coordinates.split(',') : polys[j].split(',');
                     var pointArr = [];
                     var point = null;
                     for (var i = 0; i < points.length; i += 2) {
@@ -275,7 +300,7 @@ function createPolyInstance(map, instanceType, options) {
                         pointArr.push(point);
                         allPointArr.push(point);
                     }
-                    this.createOverlay(pointArr, key);
+                    this.createOverlay(pointArr, level, {key: key});
                 }
             });
             map.setViewport(allPointArr);
@@ -295,14 +320,12 @@ function createPolyInstance(map, instanceType, options) {
                             return `${point.lng},${point.lat}`;
                         }
                         let path = item.getPath();
-                        return path
-                            .map(point => {
-                                return `${point.lng},${point.lat}`;
-                            })
-                            .join(',');
+                        return {
+                            coordinates: path.map(point => `${point.lng},${point.lat}`).join(','),
+                            key: item.key
+                        };
                     })
-                    .filter(item => !!item)
-                    .join(';');
+                    .filter(item => !!item.coordinates);
                 data[level] = points;
             });
             exportFile(options.exportName + '.json', JSON.stringify(data));

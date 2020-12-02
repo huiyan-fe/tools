@@ -313,19 +313,29 @@ function createPolyInstance(map, instanceType, options) {
                 return alert('暂无此类数据');
             }
             keys.forEach(level => {
-                var points = zoomPolygons.data[level]
-                    .map(item => {
-                        if (this.instanceType === 'marker') {
-                            let point = item.getPosition();
-                            return `${point.lng},${point.lat}`;
-                        }
-                        let path = item.getPath();
-                        return {
-                            coordinates: path.map(point => `${point.lng},${point.lat}`).join(','),
-                            key: item.key
-                        };
-                    })
-                    .filter(item => !!item.coordinates);
+                var points = zoomPolygons.data[level].map(item => {
+                    if (this.instanceType === 'marker') {
+                        let point = item.getPosition();
+                        return `${point.lng},${point.lat}`;
+                    }
+                    let path = item.getPath();
+                    return {
+                        coordinates: path.map(point => `${point.lng},${point.lat}`).join(','),
+                        key: item.key
+                    };
+                });
+                if (this.instanceType === 'marker') {
+                    points = points
+                        .filter(item => {
+                            return !!item;
+                        })
+                        .join(';');
+                } else {
+                    points = points.filter(item => {
+                        return !!item.coordinates;
+                    });
+                }
+
                 data[level] = points;
             });
             exportFile(options.exportName + '.json', JSON.stringify(data));

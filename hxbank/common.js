@@ -178,6 +178,31 @@ function createPolyInstance(map, instanceType, options) {
                         this.currentEdit = polygon;
                         showMarkerResult(e.target);
                     });
+                    polygon.addEventListener('dblclick', e => {
+                        let div2 = document.createElement('div');
+                        div2.append('修改Key值：');
+                        let input = document.createElement('input');
+                        input.style.width = '80px';
+                        input.type = 'text';
+                        input.value = polygon.key;
+                        input.onchange = e => (polygon.targetKey = e.target.value);
+                        div2.appendChild(input);
+                        let div = document.createElement('div');
+                        div.appendChild(div2);
+                        let button = document.createElement('button');
+                        button.style.margin = '5px 0 10px 5px';
+                        button.innerText = '确定';
+                        button.onclick = e => {
+                            if (typeof polygon.targetKey !== 'undefined' && polygon.targetKey !== polygon.key) {
+                                polygon.key = polygon.targetKey;
+                            }
+                            map.closeInfoWindow(this.infoWindow);
+                        };
+                        div.appendChild(button);
+
+                        this.infoWindow = new BMapGL.InfoWindow(div, {title: '修改属性'});
+                        map.openInfoWindow(this.infoWindow, e.latLng);
+                    });
                     polygon.addEventListener('dragstart', e => {
                         this.markerDraged = true;
                     });
@@ -316,7 +341,10 @@ function createPolyInstance(map, instanceType, options) {
                 var points = zoomPolygons.data[level].map(item => {
                     if (this.instanceType === 'marker') {
                         let point = item.getPosition();
-                        return `${point.lng},${point.lat}`;
+                        return {
+                            coordinates: `${point.lng},${point.lat}`,
+                            key: item.key
+                        };
                     }
                     let path = item.getPath();
                     return {
@@ -324,17 +352,9 @@ function createPolyInstance(map, instanceType, options) {
                         key: item.key
                     };
                 });
-                if (this.instanceType === 'marker') {
-                    points = points
-                        .filter(item => {
-                            return !!item;
-                        })
-                        .join(';');
-                } else {
-                    points = points.filter(item => {
-                        return !!item.coordinates;
-                    });
-                }
+                points = points.filter(item => {
+                    return !!item.coordinates;
+                });
 
                 data[level] = points;
             });
@@ -417,7 +437,7 @@ function showMarkerResult(marker) {
     var project = new BMapGL.Projection();
     var position = marker.getPosition();
     var positionMc = project.lngLatToPoint(position);
-    document.getElementById('result').innerHTML = `<div> 鼠标右键直接删除地点</div>
+    document.getElementById('result').innerHTML = `<div> 鼠标右键直接删除地点；双击修改属性。</div>
     <div><span>地点坐标(经纬度)：</span>
     <button class='btn'>复制</button><p class='copyText'>
     ${position.lng},${position.lat}</p></div>

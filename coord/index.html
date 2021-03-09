@@ -498,10 +498,10 @@ function getPathStr(overlay) {
     return pathStr;
 }
 
-function showResult (overlay) {
+function showResult (overlay, minSw, maxNe) {
     var bounds = overlay.getBounds();
-    var ne = bounds.getNorthEast();
-    var sw = bounds.getSouthWest();
+    var ne = maxNe || bounds.getNorthEast();
+    var sw = minSw || bounds.getSouthWest();
     var neMc = mercatorProjection.lngLatToPoint(ne);
     var swMc = mercatorProjection.lngLatToPoint(sw);
     var pathStr = "";
@@ -581,6 +581,7 @@ var styleOptions = {
             }
             var pointArray = [];
             var pathArr = [];
+            var overlayArr = [];
             for (var i = 0; i < count; i++) {
                 var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.2, strokeColor: "#0000ff"}); //建立多边形覆盖物
 
@@ -592,7 +593,7 @@ var styleOptions = {
                 pathArr.push(getPathStr(ply));
 
                 map.addOverlay(ply);  //添加覆盖物
-                showResult(ply);
+                
                 var path = ply.getPath();
                 var result = [];
                 for (var j = 0; j < path.length; j++) {
@@ -600,10 +601,34 @@ var styleOptions = {
                     result.push(px.x + ',' + px.y);
                 }
                 pointArray = pointArray.concat(path);
-            }    
-            console.log(pathArr.join('|'));
+                overlayArr.push(ply);
+            }   
+            const { maxNe, minSw } = getMaxMin(overlayArr);
+            showResult(ply, maxNe, minSw);
             map.setViewport(pointArray);    //调整视野                 
         }); 
+    }
+
+    function getMaxMin(overlayArr){
+        var bounds0 = overlayArr[0].getBounds();
+        var ne0 = bounds0.getNorthEast();
+        var sw0 = bounds0.getSouthWest();
+
+        let maxLng = ne0.lng;
+        let minLng = sw0.lng;
+        let maxNe;
+        let minSw;
+        for(let i=0; i<overlayArr.length; i++){
+            var bounds = overlayArr[i].getBounds();
+            var ne = bounds.getNorthEast();
+            var sw = bounds.getSouthWest();
+
+            if(maxLng <= ne.lng) maxNe = ne;
+            if(minLng >= sw.lng) minSw = sw;
+            
+        }
+
+        return { maxNe, minSw };
     }
 
     function boundarySearch(){

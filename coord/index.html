@@ -558,8 +558,8 @@ function showResult (overlay, minSw, maxNe) {
                 pathmcStr += mc.x + "," + mc.y + ",";
                 coordinates.push([pathItem[j].lng, pathItem[j].lat]);
             }
-            pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1) + ';';
-            pathStr = pathStr.substr(0, pathStr.length - 1) + ';';
+            pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1) + '|';
+            pathStr = pathStr.substr(0, pathStr.length - 1) + '|';
         }
         pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
         pathStr = pathStr.substr(0, pathStr.length - 1);

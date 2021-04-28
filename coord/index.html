@@ -210,7 +210,42 @@
                     labels.push(label);
                     map.addOverlay(label); 
                 }
-            } else {
+            }else if (tex.indexOf('|') > 0) {
+                var points=tex.split(";");
+                for (var i=0; i < points.length; i++) {
+                    var item = points[i].split(",");
+                    if (item[1] > 10000) {
+                        point = project.pointToLngLat(new BMap.Pixel(item[1], item[2]));
+                    } else {
+                        point = new BMap.Point(item[1], item[2]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMap.Marker(point, {
+                        icon: myIcon
+                    });
+                    marker.enableDragging();
+                    map.addOverlay(marker);
+
+                    var opts = {
+                      position : point,    // 指定文本标注所在的地理位置
+                      offset   : new BMap.Size(-item[0].length * 12 / 2 - 5, 3)    //设置文本偏移量
+                    }
+
+                    var label = new BMap.Label(item[0], opts);  // 创建文本标注对象
+                        label.setStyle({
+                             color : "#fff",
+                             padding: '3px 5px',
+                             border: 0,
+                             background: '#ee5d5b',
+                             fontSize : "12px",
+                             height : "20px",
+                             lineHeight : "20px",
+                             fontFamily:"微软雅黑"
+                         });
+                    labels.push(label);
+                    map.addOverlay(label); 
+                }
+            }else {
                 var points=tex.split(",");
                 for (var i = 0; i < points.length; i += 2) {
                     if (points[i] > 10000) {
@@ -499,35 +534,75 @@ function getPathStr(overlay) {
 }
 
 function showResult (overlay, minSw, maxNe) {
-    var bounds = overlay.getBounds();
-    var ne = maxNe || bounds.getNorthEast();
-    var sw = minSw || bounds.getSouthWest();
-    var neMc = mercatorProjection.lngLatToPoint(ne);
-    var swMc = mercatorProjection.lngLatToPoint(sw);
+   
     var pathStr = "";
     var geojsonStr = "";
     var pathmcStr = "";
-    var path = overlay.getPath();
-    var coordinates = [];
-    for (var i = 0; i < path.length; i++) {
-        pathStr += path[i].lng + "," + path[i].lat + ",";
-        var mc = mercatorProjection.lngLatToPoint(path[i]);
-        pathmcStr += mc.x + "," + mc.y + ",";
-        coordinates.push([path[i].lng, path[i].lat]);
+
+    // 多个区域时
+    if(Array.isArray(overlay)){
+        const pathArr = [];
+        for(let i = 0; i < overlay.length; i++) {
+            pathArr.push(overlay[i].getPath());
+        }
+        var ne = maxNe;
+        var sw = minSw;
+        var neMc = mercatorProjection.lngLatToPoint(ne);
+        var swMc = mercatorProjection.lngLatToPoint(sw);
+        var coordinates = [];
+        for(let i = 0; i < pathArr.length; i++){
+            const pathItem = pathArr[i];
+            for (var j = 0; j < pathItem.length; j++) {
+                pathStr += pathItem[j].lng + "," + pathItem[j].lat + ",";
+                var mc = mercatorProjection.lngLatToPoint(pathItem[j]);
+                pathmcStr += mc.x + "," + mc.y + ",";
+                coordinates.push([pathItem[j].lng, pathItem[j].lat]);
+            }
+            pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1) + ';';
+            pathStr = pathStr.substr(0, pathStr.length - 1) + ';';
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay[0].toString() == '[object Polyline]') {
+            geojsonStr = {
+                "type": "LineString",
+                "coordinates": coordinates
+            };
+        } else if (overlay[0].toString() == '[object Polygon]') {
+            geojsonStr = {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+            };
+        }
+    }else{
+        var bounds = overlay.getBounds();
+        var ne = maxNe || bounds.getNorthEast();
+        var sw = minSw || bounds.getSouthWest();
+        var neMc = mercatorProjection.lngLatToPoint(ne);
+        var swMc = mercatorProjection.lngLatToPoint(sw);
+        var path = overlay.getPath();
+        var coordinates = [];
+        for (var i = 0; i < path.length; i++) {
+            pathStr += path[i].lng + "," + path[i].lat + ",";
+            var mc = mercatorProjection.lngLatToPoint(path[i]);
+            pathmcStr += mc.x + "," + mc.y + ",";
+            coordinates.push([path[i].lng, path[i].lat]);
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay.toString() == '[object Polyline]') {
+            geojsonStr = {
+                "type": "LineString",
+                "coordinates": coordinates
+            };
+        } else if (overlay.toString() == '[object Polygon]') {
+            geojsonStr = {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+            };
+        }
     }
-    pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
-    pathStr = pathStr.substr(0, pathStr.length - 1);
-    if (overlay.toString() == '[object Polyline]') {
-        geojsonStr = {
-            "type": "LineString",
-            "coordinates": coordinates
-        };
-    } else if (overlay.toString() == '[object Polygon]') {
-        geojsonStr = {
-            "type": "Polygon",
-            "coordinates": [coordinates]
-        };
-    }
+
     document.getElementById('result').innerHTML = "<div><span>左下角,右上角(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat + "</p></div>"
                                                  + "<div><span>左下角,右上角(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y + "</p></div>"
                                                  + "<div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + pathStr + "</p></div>"
@@ -604,7 +679,7 @@ var styleOptions = {
                 overlayArr.push(ply);
             }   
             const { maxNe, minSw } = getMaxMin(overlayArr);
-            showResult(ply, maxNe, minSw);
+            showResult(overlayArr, maxNe, minSw);
             map.setViewport(pointArray);    //调整视野                 
         }); 
     }

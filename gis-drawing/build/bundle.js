@@ -23422,11 +23422,9 @@
 	            var navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
 	            map.addControl(navigation);
 
-	            /*
-	            map.setMapStyle({
-	                style: 'light'
-	            });
-	            */
+	            // map.setMapStyle({
+	            //     style: 'light'
+	            // });
 
 	            map.setMapStyleV2({
 	                styleJson: customStyle

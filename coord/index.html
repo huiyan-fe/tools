@@ -69,6 +69,8 @@
     <script type="text/javascript" src="clipboard.min.js"></script>
     <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <link href="//api.map.baidu.com/library/IndoorMap/1.0/src/indoor.min.css?v=1.0.1" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="//api.map.baidu.com/library/IndoorMap/1.0/src/indoor.min.js?v=1.0.1"></script>
     <script type="text/javascript" src="GeoUtils.js"></script>
     <script type="text/javascript" src="CanvasLayer.js"></script>
     <script type="text/javascript" src="mapv.js"></script>
@@ -133,6 +135,7 @@
         var point = new BMap.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??
         map.centerAndZoom(point,15);                     // 鍒濆??嬪寲鍦板浘,璁剧疆涓??蹇冪偣鍧愭爣鍜屽湴鍥剧骇鍒??銆??
         map.enableScrollWheelZoom();
+        var indoorManager = new BMapLib.IndoorManager(map);
 
         var project = map.getMapType().getProjection();
 

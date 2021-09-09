@@ -1,0 +1,804 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>坐标拾取工具</title>
+    <style type="text/css">
+    html,body{
+        width:100%;
+        height:100%;
+        margin:0;
+        padding:0;
+    }
+    #map{
+        width:100%;
+        height:100%;
+    }
+    input {
+        margin-top: 10px;
+        padding: 0 6px;
+        height: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+    button {
+        height: 20px;
+        cursor: pointer;
+        display: inline-block;
+        border: 0;
+        color: #fff;
+        background: #0c88e8;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+    #result {
+        -webkit-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+        -moz-box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+        box-shadow: 0 -1px 1px 0 rgba(0,0,0,.26);
+        z-index: 66;
+    }
+    #result div {
+    }
+    #result p {
+        width: 80%;
+        margin: 0;
+        display: inline-block;
+    }
+    #result span {
+        display: inline-block;
+        width: 185px;
+        background: #0c88e8;
+        padding: 5px;
+        color: #fff;
+    }
+    #result .btn {
+        margin: 0 5px;
+    }
+    #container {
+        -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+        -moz-box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+        box-shadow: 0 1px 1px 0 rgba(0,0,0,.26);
+    }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <link href="//mapopen.bj.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.css" rel="stylesheet">
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=3.0&type=webgl&ak=1XjLLEhZhQNUzd93EjU5nOGQ"></script>
+    <script src="//mapopen.bj.bcebos.com/github/BMapGLLib/DrawingManager/src/DrawingManager.min.js"></script>
+    <script type="text/javascript" src="clipboard.min.js"></script>
+    <script type="text/javascript" src="//apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//mapopen.bj.bcebos.com/github/BMapGLLib/GeoUtils/src/GeoUtils.min.js"></script>
+    <script type="text/javascript" src="//mapv.baidu.com/build/mapv.min.js"></script>
+
+    <div id="polylineLength" style="position:absolute;right:10px;top:50px;background:white;"></div>
+    <div id="container" style="position:absolute;z-index: 66;left:0px;top:0;background:rgba(255,255,255,1);padding: 10px 10px 20px;">
+        <input id="searchText" placeholder="POI点"/>
+        <button onclick="poisearch()">搜索</button>
+        </br>
+        <input id="boundaryText" placeholder="行政区划"/>
+        <button onclick="boundarySearch()">搜索</button>
+        </br>
+        <textarea type="text" style="width: 300px;height: 80px;margin-top:20px;outline: none;" id="more" placeholder="需要转换的数据格式示例：116.391639,39.915941,116.391639,39.910849"></textarea>
+        <div style="margin-top:10px;">
+            <button onclick="morePointToLngLat()">PointToLngLat</button>
+            <button onclick="moreLnglatToPoint()">LnglatToPoint</button>
+            <button onclick="moremarker()">打点</button>
+            <button onclick="morePolyline()">画线</button>
+            <button onclick="morePolygon()">画面</button>
+            <button onclick="moreCircle()">画圆</button>
+        </div>
+        <label><input id="showText" type="checkbox" checked/>隐藏文本</label>
+        </div>
+    </div>
+    <div id="result" style="position:absolute;bottom:0px;left:0px; right:0px;background:#fff; overflow: auto;line-height: 24px; font-size: 14px;">
+    </div>
+    <script type="text/javascript">
+        var textLayer;
+
+        var mapOptions = {
+            enableMapClick: true
+        }
+
+        var map = new BMapGL.Map('map', mapOptions);
+
+        var mapType = new BMapGL.MapTypeControl({anchor: BMAP_ANCHOR_TOP_LEFT, offset: new BMapGL.Size(400, 10)});
+        map.addControl(mapType);
+
+        var scaleControl = new BMapGL.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT});// 左上角，添加比例尺
+        map.addControl(scaleControl);
+
+
+        // 鐧惧害鍦板浘API鍔熻兘
+        var point = new BMapGL.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??
+        map.centerAndZoom(point,15);                     // 鍒濆??嬪寲鍦板浘,璁剧疆涓??蹇冪偣鍧愭爣鍜屽湴鍥剧骇鍒??銆??
+        map.enableScrollWheelZoom();
+
+        var projection = {
+            lngLatToPoint(point) {
+                var arr = map.lnglatToMercator(point.lng, point.lat);
+                return {
+                    x: arr[0],
+                    y: arr[1]
+                }
+            },
+            pointToLngLat(pixel) {
+                var arr = map.mercatorToLnglat(pixel.x, pixel.y);
+                return {
+                    lng: arr[0],
+                    lat: arr[1]
+                }
+            }
+        }
+
+        function lnglatToPoint(){
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var lnglat = projection.lngLatToPoint(new BMapGL.Point(x, y));
+            document.getElementById('result').innerHTML = lnglat.x + ',' + lnglat.y;
+        }
+
+        function pointToLngLat(){
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var lnglat = projection.pointToLngLat(new BMapGL.Pixel(x, y));
+            document.getElementById('result').innerHTML = lnglat.lng + ',' + lnglat.lat;
+        }
+
+        function marker() {
+            var x = document.getElementById('x').value;
+            var y = document.getElementById('y').value;
+            var point = new BMapGL.Point(x, y);
+            var marker = new BMapGL.Marker(point);
+            map.addOverlay(marker);
+
+            var opts = {
+            }
+            var infoWindow = new BMapGL.InfoWindow(x + ',' + y, opts);  // 创建信息窗口对象 
+            var points = [point];
+            map.setViewport(points);
+            marker.addEventListener("click", function(){          
+                map.openInfoWindow(infoWindow, point); //开启信息窗口
+            });
+
+        }
+
+        function moremarker() {
+            var tex = document.getElementById('more').value;
+            var html="";
+            var pointArr = [];
+
+            var myIcon = new BMapGL.Icon("http://api.map.baidu.com/library/CurveLine/1.5/src/circle.png", new BMapGL.Size(16,16));
+
+            if (tex.indexOf(';') > 0) {
+                var points=tex.split(";");
+                for (var i=0; i < points.length; i++) {
+                    var item = points[i].split(",");
+                    if (item[1] > 10000) {
+                        point = projection.pointToLngLat(new BMapGL.Pixel(item[1], item[2]));
+                    } else {
+                        point = new BMapGL.Point(item[1], item[2]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMapGL.Marker(point, {
+                        icon: myIcon
+                    });
+                    marker.enableDragging();
+                    map.addOverlay(marker);
+
+                    var opts = {
+                      position : point,    // 指定文本标注所在的地理位置
+                      offset   : new BMapGL.Size(-item[0].length * 12 / 2 - 5, 3)    //设置文本偏移量
+                    }
+
+                    var label = new BMapGL.Label(item[0], opts);  // 创建文本标注对象
+                        label.setStyle({
+                             color : "#fff",
+                             padding: '3px 5px',
+                             border: 0,
+                             background: '#ee5d5b',
+                             fontSize : "12px",
+                             height : "20px",
+                             lineHeight : "20px",
+                             fontFamily:"微软雅黑"
+                         });
+                    labels.push(label);
+                    map.addOverlay(label); 
+                }
+            }else if (tex.indexOf('|') > 0) {
+                var points=tex.split(";");
+                for (var i=0; i < points.length; i++) {
+                    var item = points[i].split(",");
+                    if (item[1] > 10000) {
+                        point = projection.pointToLngLat(new BMapGL.Pixel(item[1], item[2]));
+                    } else {
+                        point = new BMapGL.Point(item[1], item[2]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMapGL.Marker(point, {
+                        icon: myIcon
+                    });
+                    marker.enableDragging();
+                    map.addOverlay(marker);
+
+                    var opts = {
+                      position : point,    // 指定文本标注所在的地理位置
+                      offset   : new BMapGL.Size(-item[0].length * 12 / 2 - 5, 3)    //设置文本偏移量
+                    }
+
+                    var label = new BMapGL.Label(item[0], opts);  // 创建文本标注对象
+                        label.setStyle({
+                             color : "#fff",
+                             padding: '3px 5px',
+                             border: 0,
+                             background: '#ee5d5b',
+                             fontSize : "12px",
+                             height : "20px",
+                             lineHeight : "20px",
+                             fontFamily:"微软雅黑"
+                         });    
+                    labels.push(label);
+                    map.addOverlay(label); 
+                }
+            }else {
+                var points=tex.split(",");
+                for (var i = 0; i < points.length; i += 2) {
+                    if (points[i] > 10000) {
+                        point = projection.pointToLngLat(new BMapGL.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMapGL.Point(points[i], points[i+1]);
+                    }
+                    pointArr.push(point);
+                    var marker = new BMapGL.Marker(point);
+                    map.addOverlay(marker);
+
+                    (function(marker, point){
+                    var opts = {};
+                    var infoWindow = new BMapGL.InfoWindow(point.lng + ',' + point.lat, opts);  // 创建信息窗口对象 
+                    marker.addEventListener("click", function(){          
+                        map.openInfoWindow(infoWindow, point); //开启信息窗口
+                    });
+                    })(marker, point);
+                }
+            }
+            map.setViewport(pointArr);
+        }
+        function morePolyline() {
+            var tex=document.getElementById('more').value;
+            var pointArrs = [];
+            var data = [];
+            var textData = [];
+            var coordType = 'bd09ll';
+            var lines = tex.split(";");
+            for (var j = 0; j < lines.length; j++) {
+                var item = lines[j].split("|");
+                var list = item[0];
+                var points = list.split(",");
+                var pointArr = [];
+                var coordinates = [];
+                for(var i=0;i<points.length;i+=2){
+                    if (points[i] > 10000) {
+                        coordType = 'bd09mc';
+                        point = projection.pointToLngLat(new BMapGL.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMapGL.Point(points[i], points[i+1]);
+                    }
+                    pointArr.push(point);
+                    pointArrs.push(point);
+                    coordinates.push([points[i], points[i+1]]);
+                }
+                map.addOverlay(getDirection(pointArr, ~~(pointArr.length / 3)));
+                map.addOverlay(getDirection(pointArr, ~~(pointArr.length / 3 * 2)));
+                data.push({
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: coordinates
+                    },
+                    count: 1
+                });
+                if (item.length > 1) {
+                    textData.push({
+                        geometry: {
+                            type: 'Point',
+                            coordinates: coordinates[~~(coordinates.length / 2)]
+                        },
+                        text: item[1]
+                    });
+                }
+                var polyline = new BMapGL.Polyline(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                // map.addOverlay(polyline);
+                var distance = parseInt(BMapGLLib.GeoUtils.getPolylineDistance(polyline));
+                var opts = {
+                  position : polyline.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+                  offset   : new BMapGL.Size(30, -30)    //设置文本偏移量
+                }
+                var label = new BMapGL.Label("长度:" + Math.round(distance) + "米", opts);  // 创建文本标注对象
+                    label.setStyle({
+                         color : "red",
+                         fontSize : "12px",
+                         height : "20px",
+                         lineHeight : "20px",
+                         fontFamily:"微软雅黑"
+                     });
+                map.addOverlay(label); 
+            }
+
+            var dataSet = new mapv.DataSet(data);
+
+            var options = {
+                strokeStyle: 'rgba(255, 50, 50, 1)',
+                shadowColor: 'rgba(255, 250, 50, 1)',
+                coordType: coordType,
+                shadowBlur: 20,
+                lineWidth: 3,
+                draw: 'simple'
+            }
+
+            var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+            if (item.length > 1) {
+                textLayer = new mapv.baiduMapLayer(map, new mapv.DataSet(textData), {
+                    fillStyle: 'blue',
+                    font: "bold 22px Arial",
+                    shadowBlur: 20,
+                    coordType: coordType,
+                    shadowColor: 'yellow',
+                    draw: 'text',
+                });
+            }
+
+            map.setViewport(pointArrs);
+        };
+        function morePolygon() {
+            var tex = document.getElementById('more').value;
+            var polygons = tex.split(";");
+            var allPointArr = [];
+            for (var j = 0; j < polygons.length; j++) {
+                var points = polygons[j].split(",");
+                var pointArr = [];
+                for(var i=0;i < points.length;i+=2){
+                    if (points[i] > 10000) {
+                        point = projection.pointToLngLat(new BMapGL.Pixel(points[i], points[i+1]));
+                    } else {
+                        point = new BMapGL.Point(points[i], points[i+1]);
+                    }
+                    pointArr.push(point);
+                    allPointArr.push(point);
+                }
+                var polygon = new BMapGL.Polygon(pointArr,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                polygon.enableEditing();
+                polygon.addEventListener('lineupdate', function (e) {
+                    showResult(polygon);
+                });
+                map.addOverlay(polygon);
+                var area = parseInt(BMapGLLib.GeoUtils.getPolygonArea(polygon));
+                console.log(area);
+                var opts = {
+                  position : polygon.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+                  offset   : new BMapGL.Size(30, -30)    //设置文本偏移量
+                }
+                var label = new BMapGL.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+                    label.setStyle({
+                         color : "red",
+                         fontSize : "12px",
+                         height : "20px",
+                         lineHeight : "20px",
+                         fontFamily:"微软雅黑"
+                     });
+                map.addOverlay(label);
+            }
+            map.setViewport(allPointArr);
+        }
+
+        function moreCircle() {
+            var tex = document.getElementById('more').value;
+            var polygons = tex.split(";");
+            var allPointArr = [];
+            for (var j = 0; j < polygons.length; j++) {
+                var points = polygons[j].split(",");
+                var point;
+                if (points[0] > 10000) {
+                    point = projection.pointToLngLat(new BMapGL.Pixel(points[0], points[1]));
+                } else {
+                    point = new BMapGL.Point(points[0], points[1]);
+                }
+                allPointArr.push(point);
+                var polygon = new BMapGL.Circle(point, points[2], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+                map.addOverlay(polygon);
+            }
+
+            map.setViewport(allPointArr);
+
+            polygon.enableEditing();
+            polygon.addEventListener('lineupdate', function () {
+                showResult(polygon);
+            });
+             
+        };
+
+        function morePointToLngLat(){
+            var tex=document.getElementById('more').value;
+            var points=tex.split(",");
+            var html="";
+            for(var i=0;i<points.length;i+=2){
+                var lnglat = projection.pointToLngLat(new BMapGL.Pixel(points[i], points[i+1]));
+                html = html+lnglat.lng + ',' + lnglat.lat+",";
+            }
+            document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + html + "</p></div>";
+        }
+
+        function moreLnglatToPoint(){
+            var tex=document.getElementById('more').value;
+            var points=tex.split(",");
+            var html="";
+            for(var i=0;i<points.length;i+=2){
+                var lnglat = projection.lngLatToPoint(new BMapGL.Point(points[i], points[i+1]));
+                html = html+lnglat.x + ',' + lnglat.y+",";
+            }
+            document.getElementById('result').innerHTML = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + html + "</p></div>";
+        }
+
+        var trigger = document.getElementsByClassName('copyText');
+        var clipboard = new Clipboard('.btn', {
+            target: function(trigger) {
+                return trigger.nextElementSibling;
+            }
+        });
+        clipboard.on('success', function(e) {
+            console.log(this);
+        });
+
+        var overlays = [];
+var overlaycomplete = function(e){
+    overlays.push(e.overlay);
+    var overlay = e.overlay;
+    if (e.overlay.toString() == 'Marker') {
+        var point  = e.overlay.getPosition();
+        var pixel = projection.lngLatToPoint(point);
+        var html = "<div><span>经纬度：</span><button class='btn'>复制</button><p class='copyText'>" + point.lng + "," + point.lat + "</p></div>";
+        html += "<div><span>墨卡托：</span><button class='btn'>复制</button><p class='copyText'>" + pixel.x + "," + pixel.y + "</p></div>";
+        document.getElementById('result').innerHTML = html;
+        return;
+    }
+
+    if (e.overlay.toString() == 'Circle') {
+        var opts = {
+          position : e.overlay.getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMapGL.Size(30, -30)    //设置文本偏移量
+        }
+        map.addOverlay(new BMapGL.Marker(e.overlay.getCenter()));
+
+        var label = new BMapGL.Label("半径是:" + parseInt(e.overlay.getRadius()), opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label);
+    }
+
+    if (e.overlay.toString() == 'Polygon') {
+        e.overlay.enableEditing();
+        e.overlay.addEventListener('lineupdate', function () {
+            showResult(e.overlay);
+        });
+        var area = parseInt(BMapGLLib.GeoUtils.getPolygonArea(overlay));
+        var opts = {
+          position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMapGL.Size(30, -30)    //设置文本偏移量
+        }
+        var label = new BMapGL.Label("面积:" + Math.round(area / 10000) + "万平米", opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label); 
+    } else if (e.overlay.toString() == 'Polyline') {
+        var distance = parseInt(BMapGLLib.GeoUtils.getPolylineDistance(overlay));
+        var opts = {
+          position : overlay.getBounds().getCenter(),    // 指定文本标注所在的地理位置
+          offset   : new BMapGL.Size(30, -30)    //设置文本偏移量
+        }
+        var label = new BMapGL.Label("长度:" + Math.round(distance) + "米", opts);  // 创建文本标注对象
+            label.setStyle({
+                 color : "red",
+                 fontSize : "12px",
+                 height : "20px",
+                 lineHeight : "20px",
+                 fontFamily:"微软雅黑"
+             });
+        map.addOverlay(label); 
+    }
+
+    showResult(e.overlay);
+};
+
+
+function getPathStr(overlay) {
+    var pathStr = "";
+    var path = overlay.getPath();
+    for (var i = 0; i < path.length; i++) {
+        pathStr += path[i].lng + "," + path[i].lat + ",";
+    }
+    pathStr = pathStr.substr(0, pathStr.length - 1);
+    return pathStr;
+}
+
+function showResult (overlay, minSw, maxNe) {
+   
+    var pathStr = "";
+    var geojsonStr = "";
+    var pathmcStr = "";
+
+    // 多个区域时
+    if(Array.isArray(overlay)){
+        const pathArr = [];
+        for(let i = 0; i < overlay.length; i++) {
+            pathArr.push(overlay[i].getPath());
+        }
+        var ne = maxNe;
+        var sw = minSw;
+        var neMc = projection.lngLatToPoint(ne);
+        var swMc = projection.lngLatToPoint(sw);
+        var coordinates = [];
+        for(let i = 0; i < pathArr.length; i++){
+            const pathItem = pathArr[i];
+            for (var j = 0; j < pathItem.length; j++) {
+                pathStr += pathItem[j].lng + "," + pathItem[j].lat + ",";
+                var mc = projection.lngLatToPoint(pathItem[j]);
+                pathmcStr += mc.x + "," + mc.y + ",";
+                coordinates.push([pathItem[j].lng, pathItem[j].lat]);
+            }
+            pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1) + ';';
+            pathStr = pathStr.substr(0, pathStr.length - 1) + ';';
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay[0].toString() == 'Polyline') {
+            geojsonStr = {
+                "type": "LineString",
+                "coordinates": coordinates
+            };
+        } else if (overlay[0].toString() == 'Polygon') {
+            geojsonStr = {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+            };
+        }
+    }else{
+        var bounds = overlay.getBounds();
+        var ne = maxNe || bounds.getNorthEast();
+        var sw = minSw || bounds.getSouthWest();
+        var neMc = projection.lngLatToPoint(ne);
+        var swMc = projection.lngLatToPoint(sw);
+        var path = overlay.getPath();
+        var coordinates = [];
+        for (var i = 0; i < path.length; i++) {
+            pathStr += path[i].lng + "," + path[i].lat + ",";
+            var mc = projection.lngLatToPoint(path[i]);
+            pathmcStr += mc.x + "," + mc.y + ",";
+            coordinates.push([path[i].lng, path[i].lat]);
+        }
+        pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1);
+        pathStr = pathStr.substr(0, pathStr.length - 1);
+        if (overlay.toString() == 'Polyline') {
+            geojsonStr = {
+                "type": "LineString",
+                "coordinates": coordinates
+            };
+        } else if (overlay.toString() == 'Polygon') {
+            geojsonStr = {
+                "type": "Polygon",
+                "coordinates": [coordinates]
+            };
+        }
+    }
+
+    document.getElementById('result').innerHTML = "<div><span>左下角,右上角(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + sw.lng + "," + sw.lat + "," + ne.lng + "," + ne.lat + "</p></div>"
+                                                 + "<div><span>左下角,右上角(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + swMc.x + "," + swMc.y + "," + neMc.x + "," + neMc.y + "</p></div>"
+                                                 + "<div><span>坐标集(经纬度)：</span><button class='btn'>复制</button><p class='copyText'>" + pathStr + "</p></div>"
+                                                 + "<div><span>坐标集(墨卡托坐标)：</span><button class='btn'>复制</button><p class='copyText'>" + pathmcStr + "</p></div>"
+                                                 + "<div><span>geojson：</span><button class='btn'>复制</button><p class='copyText' style='white-space:nowrap;'>" + JSON.stringify(geojsonStr) + "</p></div>";
+}
+
+var styleOptions = {
+        strokeColor:"red",    //边线颜色。
+        fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+        strokeWeight: 3,       //边线的宽度，以像素为单位。
+        strokeOpacity: 0.8,    //边线透明度，取值范围0 - 1。
+        fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+        strokeStyle: 'solid' //边线的样式，solid或dashed。
+    }
+
+
+//实例化鼠标绘制工具
+var drawingManager = new BMapGLLib.DrawingManager(map, {
+            // isOpen: true, //是否开启绘制模式
+            enableDrawingTool: true, // 是否显示工具栏
+            enableCalculate: true, // 绘制是否进行测距(画线时候)、测面(画圆、多边形、矩形) 
+            enableSorption: true,
+            drawingToolOptions: {
+                enableTips: true,
+                // customContainer: 'selectbox_Drawing',
+                hasCustomStyle: true,
+                anchor: BMAP_ANCHOR_TOP_RIGHT,
+                offset: new BMapGL.Size(15, 15), // 偏离值
+                scale: 1, // 工具栏缩放比例
+                drawingModes: [
+                    BMAP_DRAWING_MARKER,
+                    BMAP_DRAWING_POLYLINE,
+                    BMAP_DRAWING_RECTANGLE,
+                    BMAP_DRAWING_POLYGON,
+                    BMAP_DRAWING_CIRCLE,
+                ]
+            },
+            enableSorption: true, // 是否开启边界吸附功能
+            sorptionDistance: 20, // 边界吸附距离
+            enableGpc: true, // 是否开启延边裁剪功能
+            enableLimit: true,  // 是否开启超限提示
+            limitOptions: {
+                area: 50000000, // 面积超限值
+                distance: 30000
+            },
+            circleOptions: styleOptions, // 圆的样式
+            polylineOptions: styleOptions, // 线的样式
+            polygonOptions: styleOptions, // 多边形的样式
+            rectangleOptions: styleOptions, // 矩形的样式
+        });
+          
+     //添加鼠标绘制工具监听事件，用于获取绘制结果
+    drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+
+    var local = new BMapGL.LocalSearch(map, {
+        renderOptions:{map: map}
+    });
+    function poisearch() {
+        var text = document.getElementById('searchText').value;
+        local.search(text);
+    }
+
+    function getBoundary(text) {
+        var bdary = new BMapGL.Boundary();
+        bdary.get(text , function(rs){       //获取行政区域
+            //map.clearOverlays();        //清除地图覆盖物       
+            var count = rs.boundaries.length; //行政区域的点有多少个
+            if (count === 0) {
+                alert('未能获取当前输入行政区域');
+                return ;
+            }
+            var pointArray = [];
+            var pathArr = [];
+            var overlayArr = [];
+            for (var i = 0; i < count; i++) {
+                var ply = new BMapGL.Polygon(rs.boundaries[i], {strokeWeight: 2, fillOpacity: 0.2, strokeColor: "#0000ff"}); //建立多边形覆盖物
+
+                (function(ply){
+                    ply.addEventListener('click', function() {
+                        showResult(ply);
+                    });
+                })(ply);
+                pathArr.push(getPathStr(ply));
+
+                map.addOverlay(ply);  //添加覆盖物
+                
+                var path = ply.getPath();
+                var result = [];
+                for (var j = 0; j < path.length; j++) {
+                    var px = projection.lngLatToPoint(path[j]);
+                    result.push(px.x + ',' + px.y);
+                }
+                pointArray = pointArray.concat(path);
+                overlayArr.push(ply);
+            }   
+            const { maxNe, minSw } = getMaxMin(overlayArr);
+            showResult(overlayArr, maxNe, minSw);
+            map.setViewport(pointArray);    //调整视野                 
+        }); 
+    }
+
+    function getMaxMin(overlayArr){
+        var bounds0 = overlayArr[0].getBounds();
+        var ne0 = bounds0.getNorthEast();
+        var sw0 = bounds0.getSouthWest();
+
+        let maxLng = ne0.lng;
+        let minLng = sw0.lng;
+        let maxNe;
+        let minSw;
+        for(let i=0; i<overlayArr.length; i++){
+            var bounds = overlayArr[i].getBounds();
+            var ne = bounds.getNorthEast();
+            var sw = bounds.getSouthWest();
+
+            if(maxLng <= ne.lng) maxNe = ne;
+            if(minLng >= sw.lng) minSw = sw;
+            
+        }
+
+        return { maxNe, minSw };
+    }
+
+    function boundarySearch(){
+        var text = document.getElementById('boundaryText').value;
+        text = text.split(',');
+        for (var i = 0; i < text.length; i++) {
+            getBoundary(text[i]);
+        }
+    }
+
+
+    var showText = true;
+    var labels = [];
+    $('#showText').bind('change', function() {
+        showText = $(this).is(':checked');
+        if (showText) {
+            textLayer.show();
+        } else {
+            textLayer.hide();
+        }
+        for(var i = 0; i < labels.length; i++) {
+            if (showText) {
+                map.addOverlay(labels[i]);
+            } else {
+                map.removeOverlay(labels[i]);
+            }
+        }
+    });
+
+
+function getDirection(points, i) {
+    if (i >= points.length - 1) {
+        return null;
+    }
+    var icon = new BMapGL.Icon("direction.png", new BMapGL.Size(20, 20), {
+        imageSize: new BMapGL.Size(20, 20)
+    });
+
+    var curIndex = i;
+    var curPos = points[curIndex];
+    var marker = new BMapGL.Marker(curPos);
+    map.addOverlay(marker);
+    marker.setIcon(icon);
+    // marker.setShadow(icon);
+    var targetPos = points[curIndex + 1]; 
+    var curPos =  map.pointToPixel(curPos);
+    var targetPos =  map.pointToPixel(targetPos);   
+
+
+    if(targetPos.x != curPos.x){
+        var tan = (targetPos.y - curPos.y)/(targetPos.x - curPos.x),
+        atan  = Math.atan(tan);
+        deg = atan*360/(2*Math.PI);
+        //degree  correction;
+        if(targetPos.x < curPos.x){
+            deg = -deg + 90 + 90;
+
+        } else {
+            deg = -deg;
+        }
+
+        marker.setRotation(-deg);   
+
+    }else {
+        var disy = targetPos.y- curPos.y ;
+        var bias = 0;
+        if(disy > 0)
+            bias=-1
+        else
+            bias = 1
+        marker.setRotation(-bias * 90);  
+    }
+    return marker;
+}
+
+
+    </script>
+    
+</body>
+</html>
+

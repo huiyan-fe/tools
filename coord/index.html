@@ -537,7 +537,7 @@ function getPathStr(overlay) {
 }
 
 function showResult (overlay, minSw, maxNe) {
-   
+    
     var pathStr = "";
     var geojsonStr = "";
     var pathmcStr = "";
@@ -688,21 +688,15 @@ var styleOptions = {
     }
 
     function getMaxMin(overlayArr){
-        var bounds0 = overlayArr[0].getBounds();
-        var ne0 = bounds0.getNorthEast();
-        var sw0 = bounds0.getSouthWest();
-
-        let maxLng = ne0.lng;
-        let minLng = sw0.lng;
-        let maxNe;
-        let minSw;
+        let maxNe = {lng: 0};
+        let minSw = {lng: 1000};
         for(let i=0; i<overlayArr.length; i++){
             var bounds = overlayArr[i].getBounds();
             var ne = bounds.getNorthEast();
             var sw = bounds.getSouthWest();
 
-            if(maxLng <= ne.lng) maxNe = ne;
-            if(minLng >= sw.lng) minSw = sw;
+            if(maxNe.lng <= ne.lng) maxNe = ne;
+            if(minSw.lng >= sw.lng) minSw = sw;
             
         }
 

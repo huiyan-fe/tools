@@ -857,7 +857,7 @@ var customStyle = [{
     "featureType": "highway",
     "elementType": "labels",
     "stylers": {
-        "visibility": "on"
+        "visibility": "off"
     }
 }, {
     "featureType": "highway",
@@ -923,7 +923,7 @@ var customStyle = [{
     "featureType": "districtlabel",
     "elementType": "labels",
     "stylers": {
-        "visibility": "on"
+        "visibility": "off"
     }
 }, {
     "featureType": "districtlabel",
@@ -960,24 +960,6 @@ var customStyle = [{
     "elementType": "labels",
     "stylers": {
         "visibility": "off"
-    }
-}, {
-    "featureType": "districtlabel",
-    "elementType": "labels.text",
-    "stylers": {
-        "fontsize": 14
-    }
-}, {
-    "featureType": "districtlabel",
-    "elementType": "labels.text.fill",
-    "stylers": {
-        "weight": 10
-    }
-}, {
-    "featureType": "districtlabel",
-    "elementType": "labels.text.stroke",
-    "stylers": {
-        "weight": 1
     }
 }];
 

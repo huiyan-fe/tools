@@ -135,6 +135,9 @@
         var point = new BMap.Point(116.404, 39.915);    // 鍒涘缓鐐瑰潗鏍??
         map.centerAndZoom(point,15);                     // 鍒濆??嬪寲鍦板浘,璁剧疆涓??蹇冪偣鍧愭爣鍜屽湴鍥剧骇鍒??銆??
         map.enableScrollWheelZoom();
+        map.addEventListener("zoomstart", function(type, target){     
+            map.setMaxZoom(19);
+        });
         var indoorManager = new BMapLib.IndoorManager(map);
 
         var project = map.getMapType().getProjection();

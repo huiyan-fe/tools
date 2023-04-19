@@ -659,13 +659,13 @@ class App extends Component {
             dataWeRender,
             selectValue
         } = this.state;
-
+        console.log('dataWeRender', dataWeRender);
         if (!dataWeRender[0] || !dataWeRender[0].loc) {
             alert('请您核对下上传数据')
             return;
         }
         let mc = [dataWeRender[0].loc.split(',')[0], dataWeRender[0].loc.split(',')[1]];
-
+        console.log('mcmcmc', mc);
         return (
             <React.Fragment>
             <TitleHeader />

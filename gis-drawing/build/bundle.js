@@ -60,6 +60,10 @@
 
 	var _map2 = _interopRequireDefault(_map);
 
+	var _miniMap = __webpack_require__(195);
+
+	var _miniMap2 = _interopRequireDefault(_miniMap);
+
 	var _panel = __webpack_require__(188);
 
 	var _panel2 = _interopRequireDefault(_panel);
@@ -81,8 +85,10 @@
 	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
 
 	        _this.state = {
-	            isFullMap: false
+	            isFullMap: false,
+	            showMiniMap: true
 	        };
+	        _this.hideOrShowMiniMap = _this.hideOrShowMiniMap.bind(_this);
 	        return _this;
 	    }
 
@@ -94,17 +100,26 @@
 	            });
 	        }
 	    }, {
+	        key: 'hideOrShowMiniMap',
+	        value: function hideOrShowMiniMap(showMiniMap) {
+	            this.setState({
+	                showMiniMap: showMiniMap
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            var className = "container";
 	            if (this.state.isFullMap) {
 	                className = "full-map";
 	            }
+	            console.log('showMiniMap', this.state.showMiniMap);
 	            return _react2.default.createElement(
 	                'div',
 	                { className: className },
-	                _react2.default.createElement(_panel2.default, null),
+	                _react2.default.createElement(_panel2.default, { hideOrShowMiniMap: this.hideOrShowMiniMap }),
 	                _react2.default.createElement(_map2.default, null),
+	                _react2.default.createElement(_miniMap2.default, { showMiniMap: this.state.showMiniMap }),
 	                _react2.default.createElement(
 	                    'div',
 	                    { className: 'switch is-full-map-btn' },
@@ -23464,29 +23479,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var pt = new BMap.Point(131.733142, 23.226515);
-	var jiuduanwidth = 227;
-	var jiuduanheight = 338;
-	var scale = 2.5;
-
-	var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-	    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
-	});
-
-	var jiuduanDarkIcon = new BMap.Icon("./static/images/jiuduanxian_dark.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-	    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
-	});
-
-	var jiuduanxianMarker = new BMap.Marker(pt, {
-	    icon: jiuduanIcon,
-	    enableMassClear: false
-	}); // 创建标注
-
-	var jiuduanxianDark = new BMap.Marker(pt, {
-	    icon: jiuduanDarkIcon,
-	    enableMassClear: false
-	}); // 创建标注
-
 	var chinaLayer = null;
 
 	$.get('static/china.json', function (geojson) {
@@ -23508,8 +23500,6 @@
 
 	    chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
 	    chinaLayer.hide();
-
-	    map.addOverlay(jiuduanxianMarker);
 	});
 
 	var customStyle = [{
@@ -26796,6 +26786,7 @@
 	        key: 'clearRoads',
 	        value: function clearRoads() {
 	            map.clearOverlays();
+	            miniMap.clearOverlays();
 	        }
 	    }, {
 	        key: 'addPoints',
@@ -26825,6 +26816,7 @@
 	            };
 
 	            var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+	            var mapvLayerMini = new mapv.baiduMapLayer(miniMap, dataSet, options);
 	        }
 	    }, {
 	        key: 'renderRoads',
@@ -26979,20 +26971,27 @@
 	                    map.setMapStyle({
 	                        style: 'midnight'
 	                    });
+	                    miniMap.setMapStyle({
+	                        style: 'midnight'
+	                    });
 	                } else {
 	                    if (this.state.isShowRoadLabel) {
 	                        map.setMapStyleV2({
+	                            styleJson: []
+	                        });
+	                        miniMap.setMapStyleV2({
 	                            styleJson: []
 	                        });
 	                    } else {
 	                        map.setMapStyleV2({
 	                            styleJson: customStyle
 	                        });
+	                        miniMap.setMapStyleV2({
+	                            styleJson: customStyle
+	                        });
 	                    }
 	                }
 	            }
-
-	            this.showJiuduan();
 	        }
 	    }, {
 	        key: 'changeText',
@@ -27029,27 +27028,10 @@
 	    }, {
 	        key: 'changeJiuduan',
 	        value: function changeJiuduan(flag) {
-	            var self = this;
-	            var data = this.state.data;
-
 	            this.setState({
 	                isShowJiuduan: flag
-	            }, function () {
-	                this.showJiuduan();
 	            });
-	        }
-	    }, {
-	        key: 'showJiuduan',
-	        value: function showJiuduan() {
-	            map.removeOverlay(jiuduanxianMarker);
-	            map.removeOverlay(jiuduanxianDark);
-	            if (this.state.isShowJiuduan) {
-	                if (this.state.isDark) {
-	                    map.addOverlay(jiuduanxianDark);
-	                } else {
-	                    map.addOverlay(jiuduanxianMarker);
-	                }
-	            }
+	            this.props.hideOrShowMiniMap(flag);
 	        }
 	    }, {
 	        key: 'changeStrokeWeight',
@@ -27999,6 +27981,1051 @@
 	};
 
 	exports.default = centers;
+
+/***/ }),
+/* 195 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var customStyle = [{
+	    "featureType": "estatelabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "restaurantlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "restaurantlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "lifeservicelabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "lifeservicelabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "transportationlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "transportationlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "financelabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "financelabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "land",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "building",
+	    "elementType": "geometry.fill",
+	    "stylers": {
+	        "color": "#e7dfd6ff"
+	    }
+	}, {
+	    "featureType": "building",
+	    "elementType": "geometry.stroke",
+	    "stylers": {
+	        "color": "#b9a797ff"
+	    }
+	}, {
+	    "featureType": "estatelabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "estatelabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "estatelabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 28
+	    }
+	}, {
+	    "featureType": "manmade",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "manmade",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "manmade",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "manmade",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "green",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "education",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "medical",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "scenicspots",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "entertainment",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "estate",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "shopping",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "transportation",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "color": "#ecececff",
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "transportation",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "transportation",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "transportation",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "medical",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "medical",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "medical",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "education",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "education",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "education",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "carservicelabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "carservicelabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "shoppinglabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "hotellabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "governmentlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "companylabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "businesstowerlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "entertainmentlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "entertainmentlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "medicallabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "educationlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "scenicspotslabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "airportlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "airportlabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "airportlabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "airportlabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "scenicspotslabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 28
+	    }
+	}, {
+	    "featureType": "scenicspotslabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#4a4a4aff"
+	    }
+	}, {
+	    "featureType": "scenicspotslabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "educationlabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "educationlabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "educationlabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 26
+	    }
+	}, {
+	    "featureType": "medicallabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "medicallabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "medicallabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 24
+	    }
+	}, {
+	    "featureType": "businesstowerlabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "businesstowerlabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "businesstowerlabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 24
+	    }
+	}, {
+	    "featureType": "companylabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "hotellabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "hotellabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "hotellabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 24
+	    }
+	}, {
+	    "featureType": "shoppinglabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#8d694eff"
+	    }
+	}, {
+	    "featureType": "shoppinglabel",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ebe1d8ff"
+	    }
+	}, {
+	    "featureType": "transportationlabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#4a4a4aff"
+	    }
+	}, {
+	    "featureType": "transportationlabel",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 24
+	    }
+	}, {
+	    "featureType": "scenicspots",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff"
+	    }
+	}, {
+	    "featureType": "scenicspots",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#b6997fff"
+	    }
+	}, {
+	    "featureType": "scenicspots",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 36
+	    }
+	}, {
+	    "featureType": "governmentlabel",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#4a4a4aff"
+	    }
+	}, {
+	    "featureType": "scenicspotslabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "district",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "district",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#72533aff",
+	        "weight": 3.5
+	    }
+	}, {
+	    "featureType": "town",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#72533aff",
+	        "weight": 3
+	    }
+	}, {
+	    "featureType": "town",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "village",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ffffffff",
+	        "weight": 2.5
+	    }
+	}, {
+	    "featureType": "village",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#72533aff",
+	        "weight": 40
+	    }
+	}, {
+	    "featureType": "village",
+	    "elementType": "labels.text",
+	    "stylers": {
+	        "fontsize": 20
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "geometry.fill",
+	    "stylers": {
+	        "color": "#fdf0daff"
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "geometry.stroke",
+	    "stylers": {
+	        "color": "#ffd993ff"
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#000000ff"
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "geometry.fill",
+	    "stylers": {
+	        "color": "#fdf0daff"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "geometry.stroke",
+	    "stylers": {
+	        "color": "#ffd993ff"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#000000ff"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "provincialway",
+	    "elementType": "geometry.stroke",
+	    "stylers": {
+	        "color": "#ffd993ff"
+	    }
+	}, {
+	    "featureType": "provincialway",
+	    "elementType": "geometry.fill",
+	    "stylers": {
+	        "color": "#fdf0daff"
+	    }
+	}, {
+	    "featureType": "provincialway",
+	    "elementType": "labels.text.fill",
+	    "stylers": {
+	        "color": "#000000ff"
+	    }
+	}, {
+	    "featureType": "provincialway",
+	    "elementType": "labels.text.stroke",
+	    "stylers": {
+	        "color": "#ffffffff"
+	    }
+	}, {
+	    "featureType": "subway",
+	    "elementType": "geometry.fill",
+	    "stylers": {
+	        "color": "#f5a117ff"
+	    }
+	}, {
+	    "featureType": "manmade",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "water",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "on"
+	    }
+	}, {
+	    "featureType": "building",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "subwaystation",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "poilabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "poilabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "governmentlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "village",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "town",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "district",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "city",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "road",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "road",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "roadarrow",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "subwaylabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "subwaylabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "tertiarywaysign",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "tertiarywaysign",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "provincialwaysign",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "provincialwaysign",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "highwaysign",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "highwaysign",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "subway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "railway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "vacationway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "universityway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "scenicspotsway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "local",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "local",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "local",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "fourlevelway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "fourlevelway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "fourlevelway",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "airportlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "educationlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "medicallabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "estatelabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "businesstowerlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "hotellabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "shoppinglabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "continent",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "country",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "city",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "highway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "on"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "nationalway",
+	    "elementType": "geometry",
+	    "stylers": {
+	        "visibility": "on"
+	    }
+	}, {
+	    "featureType": "provincialway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "arterial",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "arterial",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "tertiaryway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "tertiaryway",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "nationalwaysign",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "cityhighway",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "districtlabel",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "districtlabel",
+	    "elementType": "labels.icon",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "water",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "education",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "medical",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "scenicspots",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}, {
+	    "featureType": "transportation",
+	    "elementType": "labels",
+	    "stylers": {
+	        "visibility": "off"
+	    }
+	}];
+
+	var App = function (_React$Component) {
+	    _inherits(App, _React$Component);
+
+	    function App(args) {
+	        _classCallCheck(this, App);
+
+	        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, args));
+
+	        _this.state = {};
+	        return _this;
+	    }
+
+	    _createClass(App, [{
+	        key: "componentDidMount",
+	        value: function componentDidMount() {
+	            this.initMap();
+	        }
+	    }, {
+	        key: "initMap",
+	        value: function initMap() {
+	            // 百度地图API功能
+	            var map = window.miniMap = new BMap.Map(this.refs.miniMap, {
+	                enableMapClick: false
+	            }); // 创建Map实例
+	            var centerPoint = new BMap.Point(116.034832, 12.937306);
+	            map.centerAndZoom(centerPoint, 4); // 初始化地图,设置中心点坐标和地图级别
+	            map.setViewport([{
+	                lng: 106.54182718365324,
+	                lat: 0.4547390703322879
+	            }, {
+	                lng: 124.86553482037648,
+	                lat: 24.551090982312914
+	            }], {
+	                margins: [20, 0, 0, 20]
+	            });
+	            map.getContainer().style.zIndex = 1;
+	            map.disableScrollWheelZoom(); // 开启鼠标滚轮缩放
+	            map.enableMapClick(false); // 开启鼠标滚轮缩放
+	            map.disableDragging();
+	            map.disableInertialDragging();
+	            map.disableContinuousZoom();
+	            map.disableDoubleClickZoom();
+	            map.disablePinchToZoom();
+	            map.setMapStyleV2({
+	                styleJson: customStyle
+	            });
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement("div", { className: this.props.showMiniMap ? "miniMap" : "miniMap hide", ref: "miniMap" });
+	        }
+	    }]);
+
+	    return App;
+	}(_react2.default.Component);
+
+	exports.default = App;
 
 /***/ })
 /******/ ]);

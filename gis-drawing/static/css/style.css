@@ -22,6 +22,30 @@ html, body, .container{
     left: 0;
 }
 
+.miniMap {
+    position: absolute;
+    width: 90px;
+    height: 135px;
+    bottom: 182px;
+    right: 380px;
+    z-index: 2;
+}
+
+.miniMap.hide {
+    display: none;
+}
+
+.miniMap .map {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.miniMap .map .BMap_stdMpCtrl {
+    display: none;
+}
+
 .commonBox {
     position:absolute;
     background: #fff;

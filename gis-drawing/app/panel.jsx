@@ -4,29 +4,6 @@ import DraggingTip from './map/DraggingTip.js';
 import DraggingLabel from './map/DraggingLabel.js';
 import center from './center.js';
 
-var pt = new BMap.Point(131.733142,  23.226515);
-var jiuduanwidth = 227;
-var jiuduanheight = 338;
-var scale = 2.5;
-
-var jiuduanIcon = new BMap.Icon("./static/images/jiuduanxian.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
-});
-
-var jiuduanDarkIcon= new BMap.Icon("./static/images/jiuduanxian_dark.png", new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale), {
-    imageSize: new BMap.Size(jiuduanwidth / scale, jiuduanheight / scale)
-});
-
-var jiuduanxianMarker = new BMap.Marker(pt,{
-    icon: jiuduanIcon, 
-    enableMassClear: false,
-});  // 创建标注
-
-var jiuduanxianDark = new BMap.Marker(pt,{
-    icon: jiuduanDarkIcon, 
-    enableMassClear: false,
-});  // 创建标注
-
 var chinaLayer = null;
 
 
@@ -49,9 +26,6 @@ $.get('static/china.json', function(geojson) {
 
     chinaLayer = new mapv.baiduMapLayer(map, dataSet, options);
     chinaLayer.hide();
-
-    map.addOverlay(jiuduanxianMarker);
-
 });
 
 var customStyle = [{
@@ -3327,6 +3301,7 @@ class App extends React.Component {
 
     clearRoads() {
         map.clearOverlays();
+        miniMap.clearOverlays();
     }
 
     addPoints(pointArrs) {
@@ -3355,6 +3330,7 @@ class App extends React.Component {
         }
 
         var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+        var mapvLayerMini = new mapv.baiduMapLayer(miniMap, dataSet, options);
     }
 
     renderRoads() {
@@ -3506,22 +3482,28 @@ class App extends React.Component {
                 map.setMapStyle({
                     style: 'midnight'
                 });
+                miniMap.setMapStyle({
+                    style: 'midnight'
+                });
             } else {
                 if (this.state.isShowRoadLabel) {
                     map.setMapStyleV2({
+                        styleJson: []
+                    });
+                    miniMap.setMapStyleV2({
                         styleJson: []
                     });
                 } else {
                     map.setMapStyleV2({
                         styleJson: customStyle
                     });
+                    miniMap.setMapStyleV2({
+                        styleJson: customStyle
+                    });
                 }
             }
             
         }
-
-        this.showJiuduan();
-        
     }
 
     changeText(flag) {
@@ -3555,26 +3537,10 @@ class App extends React.Component {
     }
 
     changeJiuduan(flag) {
-        var self = this;
-        var data = this.state.data;
-
         this.setState({
             isShowJiuduan: flag
-        }, function() {
-            this.showJiuduan();
         });
-    }
-
-    showJiuduan() {
-        map.removeOverlay(jiuduanxianMarker);
-        map.removeOverlay(jiuduanxianDark);
-        if (this.state.isShowJiuduan) {
-            if (this.state.isDark) {
-                map.addOverlay(jiuduanxianDark);
-            } else {
-                map.addOverlay(jiuduanxianMarker);
-            }
-        } 
+        this.props.hideOrShowMiniMap(flag);
     }
 
     changeStrokeWeight() {

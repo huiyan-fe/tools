@@ -562,12 +562,14 @@ function showResult (overlay, minSw, maxNe) {
         var coordinates = [];
         for(let i = 0; i < pathArr.length; i++){
             const pathItem = pathArr[i];
+            let coordinate = [];
             for (var j = 0; j < pathItem.length; j++) {
                 pathStr += pathItem[j].lng + "," + pathItem[j].lat + ",";
                 var mc = mercatorProjection.lngLatToPoint(pathItem[j]);
                 pathmcStr += mc.x + "," + mc.y + ",";
-                coordinates.push([pathItem[j].lng, pathItem[j].lat]);
+                coordinate.push([pathItem[j].lng, pathItem[j].lat]);
             }
+            coordinates.push(coordinate)
             pathmcStr = pathmcStr.substr(0, pathmcStr.length - 1) + ';';
             pathStr = pathStr.substr(0, pathStr.length - 1) + ';';
         }
@@ -581,7 +583,7 @@ function showResult (overlay, minSw, maxNe) {
         } else if (overlay[0].toString() == '[object Polygon]') {
             geojsonStr = {
                 "type": "Polygon",
-                "coordinates": [coordinates]
+                "coordinates": coordinates
             };
         }
     }else{
